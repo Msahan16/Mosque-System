@@ -1,0 +1,199 @@
+<?php
+
+namespace App\Livewire\Mosque;
+
+use App\Models\Donation;
+use App\Models\Family;
+use Livewire\Component;
+use Livewire\Attributes\Layout;
+use Livewire\WithPagination;
+
+#[Layout('components.layouts.app')]
+class Donations extends Component
+{
+    use WithPagination;
+
+    protected $listeners = ['confirmDeleteDonation' => 'deleteDonation'];
+
+    public $search = '';
+    public $filterPurpose = '';
+    public $filterMethod = '';
+    public $showModal = false;
+    public $editMode = false;
+    public $donationId;
+
+    public $family_id, $donor_name, $donor_phone, $donor_email, $amount;
+    public $donation_type, $payment_method, $receipt_number, $donation_date;
+    public $purpose, $notes, $is_anonymous = false;
+
+    protected function rules()
+    {
+        $rules = [
+            'family_id' => 'nullable|exists:families,id',
+            'donor_name' => 'required|string|max:255',
+            'donor_phone' => 'nullable|string|max:20',
+            'donor_email' => 'nullable|email|max:255',
+            'amount' => 'required|numeric|min:0',
+            'donation_type' => 'required|string',
+            'payment_method' => 'required|string',
+            'donation_date' => 'required|date',
+            'purpose' => 'nullable|string',
+            'notes' => 'nullable|string',
+            'is_anonymous' => 'boolean',
+        ];
+
+        if (!$this->editMode) {
+            $rules['receipt_number'] = 'required|string|unique:donations,receipt_number';
+        } else {
+            $rules['receipt_number'] = 'required|string|unique:donations,receipt_number,'.$this->donationId;
+        }
+
+        return $rules;
+    }
+
+    public function mount()
+    {
+        $this->generateReceiptNumber();
+    }
+
+    public function generateReceiptNumber()
+    {
+        if (!$this->editMode) {
+            $this->receipt_number = 'DON-' . strtoupper(uniqid());
+        }
+    }
+
+    public function openModal()
+    {
+        $this->resetForm();
+        $this->donation_date = today()->format('Y-m-d');
+        $this->generateReceiptNumber();
+        $this->showModal = true;
+    }
+
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->resetForm();
+    }
+
+    public function editDonation($id)
+    {
+        $donation = Donation::findOrFail($id);
+        $this->donationId = $donation->id;
+        $this->family_id = $donation->family_id;
+        $this->donor_name = $donation->donor_name;
+        $this->donor_phone = $donation->donor_phone;
+        $this->donor_email = $donation->donor_email;
+        $this->amount = $donation->amount;
+        $this->donation_type = $donation->donation_type;
+        $this->payment_method = $donation->payment_method;
+        $this->receipt_number = $donation->receipt_number;
+        $this->donation_date = $donation->donation_date->format('Y-m-d');
+        $this->purpose = $donation->purpose;
+        $this->notes = $donation->notes;
+        $this->is_anonymous = $donation->is_anonymous;
+        $this->editMode = true;
+        $this->showModal = true;
+    }
+
+    public function saveDonation()
+    {
+        $this->validate();
+
+        try {
+            $data = [
+                'mosque_id' => auth()->user()->mosque_id,
+                'family_id' => $this->family_id,
+                'donor_name' => $this->donor_name,
+                'donor_phone' => $this->donor_phone,
+                'donor_email' => $this->donor_email,
+                'amount' => $this->amount,
+                'donation_type' => $this->donation_type,
+                'payment_method' => $this->payment_method,
+                'receipt_number' => $this->receipt_number,
+                'donation_date' => $this->donation_date,
+                'purpose' => $this->purpose,
+                'notes' => $this->notes,
+                'is_anonymous' => $this->is_anonymous,
+            ];
+
+            if ($this->editMode) {
+                Donation::findOrFail($this->donationId)->update($data);
+                $this->dispatch('swal:success', title: 'Success', text: 'Donation updated successfully!');
+            } else {
+                Donation::create($data);
+                $this->dispatch('swal:success', title: 'Success', text: 'Donation recorded successfully!');
+            }
+
+            $this->closeModal();
+        } catch (\Exception $e) {
+            $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
+        }
+    }
+
+    public function deleteDonation($id)
+    {
+        try {
+            Donation::findOrFail($id)->delete();
+            $this->dispatch('swal:success', title: 'Success', text: 'Donation deleted successfully!');
+        } catch (\Exception $e) {
+            $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
+        }
+    }
+
+    private function resetForm()
+    {
+        $this->reset([
+            'donationId', 'family_id', 'donor_name', 'donor_phone', 'donor_email',
+            'amount', 'donation_type', 'payment_method', 'receipt_number',
+            'donation_date', 'purpose', 'notes', 'is_anonymous', 'editMode'
+        ]);
+        $this->is_anonymous = false;
+    }
+
+    public function render()
+    {
+        $user = auth()->user();
+        
+        $donations = Donation::where('mosque_id', $user->mosque_id)
+            ->when($this->search, function ($query) {
+                $query->where('donor_name', 'like', '%' . $this->search . '%')
+                      ->orWhere('receipt_number', 'like', '%' . $this->search . '%');
+            })
+            ->when($this->filterPurpose, function ($query) {
+                $query->where('purpose', $this->filterPurpose);
+            })
+            ->when($this->filterMethod, function ($query) {
+                $query->where('payment_method', $this->filterMethod);
+            })
+            ->with('family')
+            ->latest('donation_date')
+            ->paginate(10);
+
+        // Calculate statistics
+        $totalDonations = Donation::where('mosque_id', $user->mosque_id)->sum('amount');
+        $thisMonthDonations = Donation::where('mosque_id', $user->mosque_id)
+            ->whereMonth('donation_date', now()->month)
+            ->whereYear('donation_date', now()->year)
+            ->sum('amount');
+        $totalDonors = Donation::where('mosque_id', $user->mosque_id)
+            ->distinct('donor_name')
+            ->count('donor_name');
+        $averageDonation = $totalDonors > 0 ? round($totalDonations / $totalDonors, 0) : 0;
+
+        $families = Family::where('mosque_id', $user->mosque_id)
+            ->where('is_active', true)
+            ->orderBy('family_head_name')
+            ->get();
+
+        return view('livewire.mosque.donations', [
+            'donations' => $donations,
+            'families' => $families,
+            'totalDonations' => $totalDonations,
+            'thisMonthDonations' => $thisMonthDonations,
+            'totalDonors' => $totalDonors,
+            'averageDonation' => $averageDonation,
+        ]);
+    }
+}

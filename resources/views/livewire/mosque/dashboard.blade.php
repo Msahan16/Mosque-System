@@ -1,0 +1,196 @@
+<div class="bg-gradient-to-br from-blue-50 via-slate-50 to-emerald-50 dark:from-slate-900 dark:via-blue-900 dark:to-slate-900 min-h-screen">
+    <!-- Mosque Background Header -->
+    <div class="mosque-bg h-48 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-blue-600/70 to-transparent dark:from-blue-900/70"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-center text-white z-10">
+                <h2 class="text-4xl font-bold mb-2 flex items-center justify-center gap-3">
+                    <img src="{{ asset('images/mosque.png') }}" alt="Mosque Logo" class="w-12 h-12 object-contain">
+                    {{ $mosqueName }}
+                </h2>
+                <p class="text-blue-100">Dashboard & Management</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="px-6 py-8 -mt-16 relative z-10">
+        <!-- Statistics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Families Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-blue-600">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Active</span>
+                </div>
+                <p class="text-slate-600 dark:text-slate-400 text-sm mb-2">Total Families</p>
+                <p class="text-4xl font-bold text-blue-600 dark:text-blue-400">{{ $totalFamilies }}</p>
+            </div>
+
+            <!-- Members Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-emerald-600">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 10H9m6 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-blue-600 dark:text-blue-400">Growing</span>
+                </div>
+                <p class="text-slate-600 dark:text-slate-400 text-sm mb-2">Total Members</p>
+                <p class="text-4xl font-bold text-emerald-600 dark:text-emerald-400">{{ $totalMembers }}</p>
+            </div>
+
+            <!-- Donations Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-cyan-600">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="bg-cyan-100 dark:bg-cyan-900/30 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">↑ 12%</span>
+                </div>
+                <p class="text-slate-600 dark:text-slate-400 text-sm mb-2">Total Donations</p>
+                <p class="text-4xl font-bold text-cyan-600 dark:text-cyan-400">₹{{ number_format($totalDonations, 0) }}</p>
+            </div>
+
+            <!-- Paid This Month Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-purple-600">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Regular</span>
+                </div>
+                <p class="text-slate-600 dark:text-slate-400 text-sm mb-2">This Month Paid</p>
+                <p class="text-4xl font-bold text-purple-600 dark:text-purple-400">{{ $todaySanthas }}</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <a href="{{ route('mosque.families') }}" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all p-8 text-center border border-slate-200 dark:border-slate-700">
+                <div class="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-xl mx-auto w-fit mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 dark:text-white mb-1">Manage Families</h3>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Add, edit & manage family records</p>
+            </a>
+
+            <a href="{{ route('mosque.santhas') }}" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all p-8 text-center border border-slate-200 dark:border-slate-700">
+                <div class="bg-purple-100 dark:bg-purple-900/30 p-4 rounded-xl mx-auto w-fit mb-4">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 dark:text-white mb-1">Santha Collection</h3>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Collect monthly membership fees</p>
+            </a>
+
+            <a href="{{ route('mosque.donations') }}" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all p-8 text-center border border-slate-200 dark:border-slate-700">
+                <div class="bg-cyan-100 dark:bg-cyan-900/30 p-4 rounded-xl mx-auto w-fit mb-4">
+                    <svg class="w-8 h-8 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 dark:text-white mb-1">Record Donations</h3>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Track all donations received</p>
+            </a>
+
+            <a href="{{ route('profile.show') }}" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all p-8 text-center border border-slate-200 dark:border-slate-700">
+                <div class="bg-emerald-100 dark:bg-emerald-900/30 p-4 rounded-xl mx-auto w-fit mb-4">
+                    <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 dark:text-white mb-1">Settings</h3>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Configure mosque settings</p>
+            </a>
+        </div>
+
+        <!-- Three Column Layout for Lists -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Recent Families -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-4">
+                    <h3 class="text-lg font-bold text-white">Recent Families</h3>
+                    <p class="text-blue-100 text-sm mt-1">Latest registrations</p>
+                </div>
+                <div class="divide-y divide-slate-200 dark:divide-slate-700 max-h-96 overflow-y-auto">
+                    @forelse($recentFamilies as $family)
+                        <div class="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <h4 class="font-bold text-slate-900 dark:text-white">{{ $family->family_head_name }}</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">{{ $family->total_members }} Members</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">{{ $family->phone }}</p>
+                        </div>
+                    @empty
+                        <div class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                            <p>No families yet</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Recent Donations -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                    <h3 class="text-lg font-bold text-white">Recent Donations</h3>
+                    <p class="text-cyan-100 text-sm mt-1">Latest received</p>
+                </div>
+                <div class="divide-y divide-slate-200 dark:divide-slate-700 max-h-96 overflow-y-auto">
+                    @forelse($recentDonations as $donation)
+                        <div class="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-900 dark:text-white">{{ $donation->donor_name }}</h4>
+                                    <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ $donation->donation_type }}</p>
+                                </div>
+                                <div class="text-cyan-600 dark:text-cyan-400 font-bold">₹{{ number_format($donation->amount, 0) }}</div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                            <p>No donations yet</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Pending Payments -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
+                    <h3 class="text-lg font-bold text-white">Pending Payments</h3>
+                    <p class="text-purple-100 text-sm mt-1">Unpaid santhas</p>
+                </div>
+                <div class="divide-y divide-slate-200 dark:divide-slate-700 max-h-96 overflow-y-auto">
+                    @forelse($upcomingSanthas as $santha)
+                        <div class="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <h4 class="font-bold text-slate-900 dark:text-white">{{ $santha->family->family_head_name }}</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">{{ $santha->month }} {{ $santha->year }}</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <span class="px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                    Unpaid
+                                </span>
+                                <span class="font-bold text-purple-600 dark:text-purple-400">₹{{ number_format($santha->amount, 0) }}</span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                            <p>All paid! ✨</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

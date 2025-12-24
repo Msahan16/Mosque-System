@@ -1,0 +1,27 @@
+WebXKey Logo Placement Guide
+=============================
+
+SAVE THE LOGO HERE:
+📁 d:\Clinic\ClinicSystem\public\images\logo.png
+
+The logo file MUST be named exactly: logo.png
+
+After saving the logo, it will automatically appear in:
+
+1. Browser Tab (Favicon)
+   - All pages across the application
+   
+2. Side Panel Navigation
+   - Staff menu (left side panel)
+   - Admin menu (left side panel)
+   
+3. Login Pages
+   - Custom login (staff/doctor login)
+   - Standard login (patient login)
+
+Current Status:
+✅ All code updated to reference the logo
+✅ Color theme changed from blue to teal/green
+⏳ PENDING: Save logo.png to public/images/ folder
+
+Once you save the logo image, refresh your browser to see the changes!
