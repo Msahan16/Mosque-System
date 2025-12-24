@@ -4,11 +4,11 @@
     <div class=" mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <h2 class="text-3xl font-bold text-white dark:text-white">Santha Management</h2>
-                <p class="text-white/80 dark:text-gray-400 mt-1">Track monthly membership payments from families</p>
+            <div class="w-full sm:w-auto">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white dark:text-white">Santha Management</h2>
+                <p class="text-white/80 dark:text-gray-400 mt-1 text-sm sm:text-base">Track monthly membership payments from families</p>
             </div>
-            <button wire:click="openModal" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-green-700 transition shadow-lg">
+            <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-green-700 transition shadow-lg text-sm sm:text-base">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>

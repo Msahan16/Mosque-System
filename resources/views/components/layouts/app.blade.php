@@ -83,7 +83,7 @@
 <body class="antialiased">
     <div class="flex h-screen bg-white dark:bg-slate-900">
         <!-- Sidebar -->
-        <div id="sidebar" class="sidebar-transition fixed lg:relative inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 shadow-2xl overflow-y-auto">
+        <div id="sidebar" class="sidebar-transition fixed lg:relative inset-y-0 left-0 z-40 w-64 h-screen lg:h-auto bg-gradient-to-b from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 shadow-2xl overflow-y-auto -translate-x-full lg:translate-x-0">
             <!-- Logo Section -->
             <div class="bg-gradient-to-r from-blue-700 to-blue-900 dark:from-blue-900 dark:to-blue-950 px-6 py-8 border-b border-blue-500">
                 <div class="flex items-center gap-3">
@@ -181,6 +181,19 @@
 
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col overflow-hidden mosque-bg">
+            <!-- Mobile Menu Toggle -->
+            <div class="lg:hidden bg-blue-600 text-white p-4 flex items-center justify-between shadow-lg">
+                <button onclick="toggleSidebar()" class="p-2 hover:bg-blue-500 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="flex-1 text-center">
+                    <h1 class="text-lg font-bold">Mosque System</h1>
+                </div>
+                <div class="w-6"></div>
+            </div>
+
             <!-- Main Content -->
             <main class="flex-1 overflow-auto">
                 <div class="h-full w-full">

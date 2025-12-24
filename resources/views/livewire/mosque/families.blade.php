@@ -4,11 +4,11 @@
     <div class=" mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <h2 class="text-3xl font-bold text-white dark:text-white">Families Management</h2>
-                <p class="text-white/80 dark:text-white-400 mt-1">Manage registered families and their members</p>
+            <div class="w-full sm:w-auto">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white dark:text-white">Families Management</h2>
+                <p class="text-white/80 dark:text-white-400 mt-1 text-sm sm:text-base">Manage registered families and their members</p>
             </div>
-            <button wire:click="openModal" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition shadow-lg">
+            <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition shadow-lg text-sm sm:text-base">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
@@ -24,8 +24,9 @@
 
         <!-- Families Table -->
         <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <div class="overflow-x-auto -mx-4 sm:mx-0">
+                <div class="inline-block min-w-full">
+                    <table class="w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
                     <thead class="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Family Head</th>
@@ -88,7 +89,8 @@
                             </tr>
                         @endforelse
                     </tbody>
-                </table>
+                    </table>
+                </div>
             </div>
             
             <!-- Pagination -->

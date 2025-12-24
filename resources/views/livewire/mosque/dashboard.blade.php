@@ -1,20 +1,20 @@
-<div class="bg-gradient-to-br from-blue-50 via-slate-50 to-emerald-50 dark:from-slate-900 dark:via-blue-900 dark:to-slate-900 min-h-screen">
-    <!-- Mosque Background Header -->
-    <div class="mosque-bg h-48 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-b from-blue-600/70 to-transparent dark:from-blue-900/70"></div>
+<div class="min-h-screen bg-white dark:bg-gray-900">
+    <!-- Mosque Background Header with Silhouette Image -->
+    <div class="h-64 relative overflow-hidden" style="background-image: url('{{ asset('images/mosq1.jpg') }}'); background-size: cover; background-position: center;">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-blue-900/80"></div>
         <div class="absolute inset-0 flex items-center justify-center">
             <div class="text-center text-white z-10">
                 <h2 class="text-4xl font-bold mb-2 flex items-center justify-center gap-3">
                     <img src="{{ asset('images/mosque.png') }}" alt="Mosque Logo" class="w-12 h-12 object-contain">
                     {{ $mosqueName }}
                 </h2>
-                <p class="text-blue-100">Dashboard & Management</p>
+                <p class="text-blue-100 text-lg">Dashboard & Management</p>
             </div>
         </div>
     </div>
 
     <!-- Content -->
-    <div class="px-6 py-8 -mt-16 relative z-10">
+    <div class="px-6 py-8 -mt-12 relative z-10">
         <!-- Statistics Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- Families Card -->

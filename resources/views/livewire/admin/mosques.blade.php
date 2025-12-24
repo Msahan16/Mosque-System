@@ -1,12 +1,12 @@
 <div class="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
     <div class=" mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="mb-8 flex justify-between items-center">
-            <div>
-                <h2 class="text-3xl font-bold text-white dark:text-white">Mosque Management</h2>
-                <p class="text-white/80 dark:text-gray-400 mt-1">Manage all registered mosques in the system</p>
+        <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="w-full sm:w-auto">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white dark:text-white">Mosque Management</h2>
+                <p class="text-white/80 dark:text-gray-400 mt-1 text-sm sm:text-base">Manage all registered mosques in the system</p>
             </div>
-            <button wire:click="openModal" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition shadow-lg">
+            <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition shadow-lg text-sm sm:text-base">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
