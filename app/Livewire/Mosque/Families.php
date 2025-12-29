@@ -23,8 +23,8 @@ class Families extends Component
     public $selectedFamily;
 
     // Family fields
-    public $family_head_name, $phone, $alternate_phone, $email;
-    public $address, $city, $state, $postal_code;
+    public $family_head_name, $family_head_profession, $phone, $email;
+    public $address;
     public $total_members, $registration_date, $notes, $is_active = true;
 
     // Member fields
@@ -37,13 +37,10 @@ class Families extends Component
     {
         return [
             'family_head_name' => 'required|string|max:255',
+            'family_head_profession' => 'nullable|string|max:255',
             'phone' => 'required|string|max:20',
-            'alternate_phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'address' => 'required|string',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'postal_code' => 'required|string|max:20',
             'total_members' => 'required|integer|min:1',
             'registration_date' => 'required|date',
             'notes' => 'nullable|string',
@@ -69,13 +66,10 @@ class Families extends Component
         $family = Family::findOrFail($id);
         $this->familyId = $family->id;
         $this->family_head_name = $family->family_head_name;
+        $this->family_head_profession = $family->family_head_profession;
         $this->phone = $family->phone;
-        $this->alternate_phone = $family->alternate_phone;
         $this->email = $family->email;
         $this->address = $family->address;
-        $this->city = $family->city;
-        $this->state = $family->state;
-        $this->postal_code = $family->postal_code;
         $this->total_members = $family->total_members;
         $this->registration_date = $family->registration_date->format('Y-m-d');
         $this->notes = $family->notes;
@@ -92,13 +86,10 @@ class Families extends Component
             $data = [
                 'mosque_id' => auth()->user()->mosque_id,
                 'family_head_name' => $this->family_head_name,
+                'family_head_profession' => $this->family_head_profession,
                 'phone' => $this->phone,
-                'alternate_phone' => $this->alternate_phone,
                 'email' => $this->email,
                 'address' => $this->address,
-                'city' => $this->city,
-                'state' => $this->state,
-                'postal_code' => $this->postal_code,
                 'total_members' => $this->total_members,
                 'registration_date' => $this->registration_date,
                 'notes' => $this->notes,
@@ -107,10 +98,10 @@ class Families extends Component
 
             if ($this->editMode) {
                 Family::findOrFail($this->familyId)->update($data);
-                $this->dispatch('swal:success', title: 'Success', text: 'Family updated successfully!');
+                $this->dispatch('swal:success', title: 'Success', text: 'Family updated successfully');
             } else {
                 Family::create($data);
-                $this->dispatch('swal:success', title: 'Success', text: 'Family registered successfully!');
+                $this->dispatch('swal:success', title: 'Success', text: 'Family registered successfully');
             }
 
             $this->closeModal();
@@ -123,7 +114,7 @@ class Families extends Component
     {
         try {
             Family::findOrFail($id)->delete();
-            $this->dispatch('swal:success', title: 'Success', text: 'Family deleted successfully!');
+            $this->dispatch('swal:success', title: 'Success', text: 'Family deleted successfully');
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
         }
@@ -144,8 +135,8 @@ class Families extends Component
     private function resetForm()
     {
         $this->reset([
-            'familyId', 'family_head_name', 'phone', 'alternate_phone', 'email',
-            'address', 'city', 'state', 'postal_code', 'total_members',
+            'familyId', 'family_head_name', 'family_head_profession', 'phone', 'email',
+            'address', 'total_members',
             'registration_date', 'notes', 'is_active', 'editMode'
         ]);
         $this->is_active = true;

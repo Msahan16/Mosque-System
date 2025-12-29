@@ -16,6 +16,9 @@ class Santhas extends Component
     protected $listeners = ['confirmDeleteSantha' => 'deleteSantha'];
 
     public $search = '';
+    public $filterMonth = '';
+    public $filterYear = '';
+    public $filterStatus = '';
     public $showModal = false;
     public $editMode = false;
     public $santhaId;
@@ -61,6 +64,7 @@ class Santhas extends Component
     {
         $this->resetForm();
         $this->payment_date = today()->format('Y-m-d');
+        $this->payment_method = 'cash';
         $this->month = now()->format('F Y');
         $this->year = now()->year;
         $this->generateReceiptNumber();
@@ -110,10 +114,10 @@ class Santhas extends Component
 
             if ($this->editMode) {
                 Santha::findOrFail($this->santhaId)->update($data);
-                $this->dispatch('swal:success', title: 'Success', text: 'Santha payment updated successfully!');
+                $this->dispatch('swal:success', title: 'Success', text: 'Santha payment updated successfully');
             } else {
                 Santha::create($data);
-                $this->dispatch('swal:success', title: 'Success', text: 'Santha payment recorded successfully!');
+                $this->dispatch('swal:success', title: 'Success', text: 'Santha payment recorded successfully');
             }
 
             $this->closeModal();
@@ -126,7 +130,7 @@ class Santhas extends Component
     {
         try {
             Santha::findOrFail($id)->delete();
-            $this->dispatch('swal:success', title: 'Success', text: 'Santha payment deleted successfully!');
+            $this->dispatch('swal:success', title: 'Success', text: 'Santha payment deleted successfully');
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
         }
@@ -155,6 +159,18 @@ class Santhas extends Component
                 })
                 ->orWhere('receipt_number', 'like', '%' . $this->search . '%')
                 ->orWhere('month', 'like', '%' . $this->search . '%');
+            })
+            ->when($this->filterMonth, function ($query) {
+                $query->whereMonth('payment_date', $this->filterMonth);
+            })
+            ->when($this->filterYear, function ($query) {
+                $query->whereYear('payment_date', $this->filterYear);
+            })
+            ->when($this->filterStatus === 'paid', function ($query) {
+                $query->where('is_paid', true);
+            })
+            ->when($this->filterStatus === 'unpaid', function ($query) {
+                $query->where('is_paid', false);
             })
             ->with('family')
             ->orderBy('year', 'desc')

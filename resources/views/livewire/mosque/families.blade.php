@@ -171,6 +171,25 @@
                                     class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
                                 @error('total_members') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
+
+                            <!-- Registration Date -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Registration Date <span class="text-red-500">*</span>
+                                </label>
+                                <input wire:model="registration_date" type="date" required
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                                @error('registration_date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- Active Status -->
+                            <div class="flex items-center pt-6">
+                                <input wire:model="is_active" type="checkbox" id="is_active"
+                                    class="w-5 h-5 text-emerald-600 border-gray-300 dark:border-gray-600 rounded focus:ring-emerald-500">
+                                <label for="is_active" class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Active
+                                </label>
+                            </div>
                         </div>
 
                         <!-- Address -->

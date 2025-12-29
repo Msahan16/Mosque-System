@@ -153,15 +153,7 @@
                                         Edit
                                     </button>
                                     <button 
-                                        wire:click="$dispatch('swal:confirm', {
-                                            title: 'Delete Payment?',
-                                            text: 'This will permanently delete this santha payment record. This action cannot be undone.',
-                                            icon: 'warning',
-                                            confirmButtonText: 'Yes, Delete',
-                                            cancelButtonText: 'Cancel',
-                                            eventName: 'confirmDeleteSantha',
-                                            eventParams: [{{ $santha->id }}]
-                                        })"
+                                        onclick="confirmDelete('confirmDeleteSantha', {{ $santha->id }}, 'Delete Payment?', 'This will permanently delete this santha payment record. This action cannot be undone.')"
                                         class="inline-flex items-center px-3 py-1 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 transition">
                                         Delete
                                     </button>

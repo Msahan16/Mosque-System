@@ -67,6 +67,7 @@ class Donations extends Component
     {
         $this->resetForm();
         $this->donation_date = today()->format('Y-m-d');
+        $this->payment_method = 'cash';
         $this->generateReceiptNumber();
         $this->showModal = true;
     }
@@ -120,10 +121,10 @@ class Donations extends Component
 
             if ($this->editMode) {
                 Donation::findOrFail($this->donationId)->update($data);
-                $this->dispatch('swal:success', title: 'Success', text: 'Donation updated successfully!');
+                $this->dispatch('swal:success', title: 'Success', text: 'Donation updated successfully');
             } else {
                 Donation::create($data);
-                $this->dispatch('swal:success', title: 'Success', text: 'Donation recorded successfully!');
+                $this->dispatch('swal:success', title: 'Success', text: 'Donation recorded successfully');
             }
 
             $this->closeModal();
@@ -136,7 +137,7 @@ class Donations extends Component
     {
         try {
             Donation::findOrFail($id)->delete();
-            $this->dispatch('swal:success', title: 'Success', text: 'Donation deleted successfully!');
+            $this->dispatch('swal:success', title: 'Success', text: 'Donation deleted successfully');
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
         }

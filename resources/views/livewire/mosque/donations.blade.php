@@ -210,6 +210,21 @@
                             @error('donor_name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
+                        <!-- Family (Optional) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Family (Optional)
+                            </label>
+                            <select wire:model="family_id"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500">
+                                <option value="">Select Family</option>
+                                @foreach($families as $family)
+                                    <option value="{{ $family->id }}">{{ $family->family_head_name }} - {{ $family->phone }}</option>
+                                @endforeach
+                            </select>
+                            @error('family_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
                         <!-- Contact Information -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -238,6 +253,23 @@
                             <input wire:model="amount" type="number" step="0.01" required
                                 class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500">
                             @error('amount') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
+                        <!-- Donation Type -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Donation Type <span class="text-red-500">*</span>
+                            </label>
+                            <select wire:model="donation_type" required
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500">
+                                <option value="">Select Type</option>
+                                <option value="cash">Cash</option>
+                                <option value="zakat">Zakat</option>
+                                <option value="sadaqah">Sadaqah</option>
+                                <option value="waqf">Waqf</option>
+                                <option value="other">Other</option>
+                            </select>
+                            @error('donation_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Purpose -->

@@ -242,6 +242,48 @@
                 }
             });
         }
+
+        // Livewire hook for dispatched events
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('swal:success', (event) => {
+                Swal.fire({
+                    title: event.title || 'Success!',
+                    text: event.text || 'Operation completed successfully.',
+                    icon: 'success',
+                    confirmButtonColor: '#10b981',
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+            });
+
+            Livewire.on('swal:error', (event) => {
+                Swal.fire({
+                    title: event.title || 'Error!',
+                    text: event.text || 'Something went wrong.',
+                    icon: 'error',
+                    confirmButtonColor: '#dc2626',
+                    confirmButtonText: 'OK',
+                });
+            });
+
+            Livewire.on('swal:confirm', (event) => {
+                Swal.fire({
+                    title: event.title || 'Confirm',
+                    text: event.text || 'Are you sure?',
+                    icon: event.icon || 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3b82f6',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: event.confirmButtonText || 'Confirm',
+                    cancelButtonText: event.cancelButtonText || 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Livewire.dispatch(event.eventName, event.eventParams || []);
+                    }
+                });
+            });
+        });
     </script>
 
     <!-- SweetAlert2 -->
