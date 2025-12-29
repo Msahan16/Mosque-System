@@ -22,9 +22,10 @@ return new class extends Migration
             $table->string('phone');
             $table->string('email')->unique();
             $table->text('description')->nullable();
-            $table->string('imam_name')->nullable();
+            $table->string('Head_name')->nullable();
             $table->string('logo')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->string('status')->default('active'); // active, inactive, closed
             $table->timestamps();
         });
     }

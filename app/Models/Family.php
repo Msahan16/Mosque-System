@@ -20,6 +20,7 @@ class Family extends Model
         'registration_date',
         'notes',
         'is_active',
+        'family_income',
     ];
 
     protected $casts = [

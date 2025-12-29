@@ -16,10 +16,8 @@ class FamilyMember extends Model
         'date_of_birth',
         'gender',
         'occupation',
-        'education',
         'phone',
         'email',
-        'blood_group',
         'notes',
     ];
 

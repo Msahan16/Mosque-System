@@ -49,7 +49,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '011-2345678',
             'email' => 'info@alnoormasjid.com',
             'description' => 'A community mosque serving the local Muslim community with daily prayers and Islamic education.',
-            'imam_name' => 'Sheikh Abdul Rahman',
+            'Head_name' => 'Sheikh Abdul Rahman',
             'is_active' => true,
         ]);
 
@@ -67,17 +67,15 @@ class DatabaseSeeder extends Seeder
         $family1 = Family::create([
             'mosque_id' => $mosque->id,
             'family_head_name' => 'Ahmed Hassan',
+            'family_head_profession' => 'Engineer',
             'phone' => '077-1234567',
-            'alternate_phone' => '011-9876543',
             'email' => 'ahmed.hassan@example.com',
-            'address' => '45 Main Street',
-            'city' => 'Colombo',
-            'state' => 'Western Province',
-            'postal_code' => '00200',
+            'address' => '45 Main Street, Colombo',
             'total_members' => 4,
             'registration_date' => now()->subMonths(6),
             'notes' => 'Active community member',
             'is_active' => true,
+            'family_income' => 150000.00,
         ]);
 
         // Create Family Members
@@ -88,10 +86,8 @@ class DatabaseSeeder extends Seeder
             'date_of_birth' => '1985-05-15',
             'gender' => 'Male',
             'occupation' => 'Engineer',
-            'education' => 'Bachelor of Engineering',
             'phone' => '077-1234567',
             'email' => 'ahmed.hassan@example.com',
-            'blood_group' => 'O+',
         ]);
 
         FamilyMember::create([
@@ -101,22 +97,19 @@ class DatabaseSeeder extends Seeder
             'date_of_birth' => '1988-08-20',
             'gender' => 'Female',
             'occupation' => 'Teacher',
-            'education' => 'Bachelor of Education',
-            'blood_group' => 'A+',
         ]);
 
         $family2 = Family::create([
             'mosque_id' => $mosque->id,
             'family_head_name' => 'Ibrahim Ali',
+            'family_head_profession' => 'Doctor',
             'phone' => '077-7654321',
             'email' => 'ibrahim.ali@example.com',
-            'address' => '78 Park Avenue',
-            'city' => 'Colombo',
-            'state' => 'Western Province',
-            'postal_code' => '00300',
+            'address' => '78 Park Avenue, Colombo',
             'total_members' => 3,
             'registration_date' => now()->subMonths(3),
             'is_active' => true,
+            'family_income' => 200000.00,
         ]);
 
         // Create Sample Donations

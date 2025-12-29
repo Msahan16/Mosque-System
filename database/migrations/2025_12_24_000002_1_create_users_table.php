@@ -20,6 +20,10 @@ return new class extends Migration
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
+            $table->string('role')->default('mosque'); // admin, mosque
+            $table->foreignId('mosque_id')->nullable()->constrained()->onDelete('cascade');
+            $table->boolean('is_active')->default(true);
+            $table->string('status')->default('active'); // active, inactive, suspended
             $table->timestamps();
         });
 

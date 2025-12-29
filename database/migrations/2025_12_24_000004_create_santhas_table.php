@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('receipt_number')->unique();
             $table->boolean('is_paid')->default(false);
             $table->text('notes')->nullable();
+            $table->string('status')->default('pending'); // pending, paid, cancelled
             $table->timestamps();
         });
     }

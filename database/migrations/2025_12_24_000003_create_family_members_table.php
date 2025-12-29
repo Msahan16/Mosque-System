@@ -19,11 +19,10 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->string('gender');
             $table->string('occupation')->nullable();
-            $table->string('education')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
-            $table->string('blood_group')->nullable();
             $table->text('notes')->nullable();
+            $table->string('status')->default('active'); // active, inactive, moved
             $table->timestamps();
         });
     }

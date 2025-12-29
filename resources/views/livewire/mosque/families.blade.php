@@ -182,6 +182,16 @@
                                 @error('registration_date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
 
+                            <!-- Family Income -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Family Income
+                                </label>
+                                <input wire:model="family_income" type="number" step="0.01" min="0"
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                                @error('family_income') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            </div>
+
                             <!-- Active Status -->
                             <div class="flex items-center pt-6">
                                 <input wire:model="is_active" type="checkbox" id="is_active"
@@ -249,20 +259,13 @@
                                         <input wire:model="memberOccupation" type="text" placeholder="Occupation"
                                             class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
                                     </div>
-                                    <div>
-                                        <input wire:model="memberEducation" type="text" placeholder="Education"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
-                                    </div>
+                                    
                                     <div>
                                         <input wire:model="memberPhone" type="tel" placeholder="Phone"
                                             class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
                                     </div>
                                     <div>
                                         <input wire:model="memberEmail" type="email" placeholder="Email"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
-                                    </div>
-                                    <div>
-                                        <input wire:model="memberBloodGroup" type="text" placeholder="Blood Group"
                                             class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
                                     </div>
                                     <div>
@@ -379,12 +382,7 @@
                                                 <p class="font-medium text-gray-900 dark:text-white">{{ $member->occupation }}</p>
                                             </div>
                                         @endif
-                                        @if($member->education)
-                                            <div>
-                                                <span class="text-gray-600 dark:text-gray-400">Education:</span>
-                                                <p class="font-medium text-gray-900 dark:text-white">{{ $member->education }}</p>
-                                            </div>
-                                        @endif
+                                       
                                         @if($member->blood_group)
                                             <div>
                                                 <span class="text-gray-600 dark:text-gray-400">Blood Group:</span>

@@ -25,13 +25,13 @@ class Families extends Component
     // Family fields
     public $family_head_name, $family_head_profession, $phone, $email;
     public $address;
-    public $total_members, $registration_date, $notes, $is_active = true;
+    public $total_members, $registration_date, $notes, $is_active = true, $family_income;
 
     // Member fields
     public $members = [];
     public $memberName, $memberRelation, $memberDob, $memberGender;
-    public $memberOccupation, $memberEducation, $memberPhone, $memberEmail;
-    public $memberBloodGroup, $memberNotes;
+    public $memberOccupation, $memberPhone, $memberEmail;
+    public $memberNotes;
 
     protected function familyRules()
     {
@@ -45,6 +45,7 @@ class Families extends Component
             'registration_date' => 'required|date',
             'notes' => 'nullable|string',
             'is_active' => 'boolean',
+            'family_income' => 'nullable|numeric|min:0',
         ];
     }
 
@@ -56,10 +57,8 @@ class Families extends Component
             'memberDob' => 'nullable|date|before:today',
             'memberGender' => 'required|in:Male,Female,Other',
             'memberOccupation' => 'nullable|string|max:255',
-            'memberEducation' => 'nullable|string|max:255',
             'memberPhone' => 'nullable|string|max:20',
             'memberEmail' => 'nullable|email|max:255',
-            'memberBloodGroup' => 'nullable|string|max:10',
             'memberNotes' => 'nullable|string',
         ];
     }
@@ -74,18 +73,16 @@ class Families extends Component
             'date_of_birth' => $this->memberDob,
             'gender' => $this->memberGender,
             'occupation' => $this->memberOccupation,
-            'education' => $this->memberEducation,
             'phone' => $this->memberPhone,
             'email' => $this->memberEmail,
-            'blood_group' => $this->memberBloodGroup,
             'notes' => $this->memberNotes,
         ];
 
         // Reset member fields
         $this->reset([
             'memberName', 'memberRelation', 'memberDob', 'memberGender',
-            'memberOccupation', 'memberEducation', 'memberPhone', 'memberEmail',
-            'memberBloodGroup', 'memberNotes'
+            'memberOccupation', 'memberPhone', 'memberEmail',
+            'memberNotes'
         ]);
     }
 
@@ -121,6 +118,7 @@ class Families extends Component
         $this->registration_date = $family->registration_date->format('Y-m-d');
         $this->notes = $family->notes;
         $this->is_active = $family->is_active;
+        $this->family_income = $family->family_income;
         
         // Load existing members
         $this->members = $family->members->map(function($member) {
@@ -131,10 +129,8 @@ class Families extends Component
                 'date_of_birth' => $member->date_of_birth ? $member->date_of_birth->format('Y-m-d') : null,
                 'gender' => $member->gender,
                 'occupation' => $member->occupation,
-                'education' => $member->education,
                 'phone' => $member->phone,
                 'email' => $member->email,
-                'blood_group' => $member->blood_group,
                 'notes' => $member->notes,
             ];
         })->toArray();
@@ -159,6 +155,7 @@ class Families extends Component
                 'registration_date' => $this->registration_date,
                 'notes' => $this->notes,
                 'is_active' => $this->is_active,
+                'family_income' => $this->family_income,
             ];
 
             if ($this->editMode) {
@@ -183,10 +180,8 @@ class Families extends Component
                     'date_of_birth' => $memberData['date_of_birth'],
                     'gender' => $memberData['gender'],
                     'occupation' => $memberData['occupation'],
-                    'education' => $memberData['education'],
                     'phone' => $memberData['phone'],
                     'email' => $memberData['email'],
-                    'blood_group' => $memberData['blood_group'],
                     'notes' => $memberData['notes'],
                 ]);
             }
@@ -226,8 +221,8 @@ class Families extends Component
             'address', 'total_members',
             'registration_date', 'notes', 'is_active', 'editMode', 'members',
             'memberName', 'memberRelation', 'memberDob', 'memberGender',
-            'memberOccupation', 'memberEducation', 'memberPhone', 'memberEmail',
-            'memberBloodGroup', 'memberNotes'
+            'memberOccupation', 'memberPhone', 'memberEmail',
+            'memberNotes', 'family_income'
         ]);
         $this->is_active = true;
         $this->members = [];
