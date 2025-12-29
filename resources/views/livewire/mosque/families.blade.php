@@ -212,6 +212,103 @@
                             @error('notes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
+                        <!-- Family Members Section -->
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-5 mt-5">
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Family Members</h4>
+                            
+                            <!-- Add Member Form -->
+                            <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 mb-4">
+                                <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Add New Member</h5>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                        <input wire:model="memberName" type="text" placeholder="Full Name *"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                        @error('memberName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                    </div>
+                                    <div>
+                                        <input wire:model="memberRelation" type="text" placeholder="Relation *"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                        @error('memberRelation') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                    </div>
+                                    <div>
+                                        <select wire:model="memberGender"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                            <option value="">Select Gender *</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        @error('memberGender') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                    </div>
+                                    <div>
+                                        <input wire:model="memberDob" type="date" placeholder="Date of Birth"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                        @error('memberDob') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                    </div>
+                                    <div>
+                                        <input wire:model="memberOccupation" type="text" placeholder="Occupation"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                    </div>
+                                    <div>
+                                        <input wire:model="memberEducation" type="text" placeholder="Education"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                    </div>
+                                    <div>
+                                        <input wire:model="memberPhone" type="tel" placeholder="Phone"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                    </div>
+                                    <div>
+                                        <input wire:model="memberEmail" type="email" placeholder="Email"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                    </div>
+                                    <div>
+                                        <input wire:model="memberBloodGroup" type="text" placeholder="Blood Group"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                    </div>
+                                    <div>
+                                        <input wire:model="memberNotes" type="text" placeholder="Notes"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                    </div>
+                                </div>
+                                <button type="button" wire:click="addMember"
+                                    class="mt-3 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                                    + Add Member
+                                </button>
+                            </div>
+
+                            <!-- Members List -->
+                            @if(count($members) > 0)
+                                <div class="space-y-2">
+                                    <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Added Members ({{ count($members) }})</h5>
+                                    @foreach($members as $index => $member)
+                                        <div class="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                                            <div class="flex-1">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    {{ $member['name'] }} 
+                                                    <span class="text-gray-500 dark:text-gray-400">({{ $member['relation'] }})</span>
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    {{ $member['gender'] }}
+                                                    @if($member['date_of_birth'])
+                                                        • {{ \Carbon\Carbon::parse($member['date_of_birth'])->age }} years
+                                                    @endif
+                                                    @if($member['occupation'])
+                                                        • {{ $member['occupation'] }}
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <button type="button" wire:click="removeMember({{ $index }})"
+                                                class="ml-3 px-3 py-1 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 transition">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No members added yet</p>
+                            @endif
+                        </div>
+
                         <!-- Submit Button -->
                         <div class="flex space-x-3 pt-4">
                             <button type="button" wire:click="closeModal"
