@@ -16,9 +16,11 @@ class FamilyMember extends Model
         'date_of_birth',
         'gender',
         'occupation',
+        'education',
         'phone',
         'email',
         'notes',
+        'status',
     ];
 
     protected $casts = [

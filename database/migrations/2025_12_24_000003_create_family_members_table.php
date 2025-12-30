@@ -16,9 +16,10 @@ return new class extends Migration
             $table->foreignId('family_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('relation'); // Head, Wife, Son, Daughter, etc.
-            $table->date('date_of_birth');
+            $table->date('date_of_birth')->nullable();
             $table->string('gender');
             $table->string('occupation')->nullable();
+            $table->string('education')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->text('notes')->nullable();

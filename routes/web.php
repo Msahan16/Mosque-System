@@ -10,6 +10,8 @@ use App\Livewire\Mosque\Dashboard as MosqueDashboard;
 use App\Livewire\Mosque\Families;
 use App\Livewire\Mosque\Santhas;
 use App\Livewire\Mosque\Donations;
+use App\Livewire\Mosque\Settings;
+use App\Livewire\Mosque\IslamicCalendar;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,5 +78,7 @@ Route::middleware([
         Route::get('/families', Families::class)->name('families');
         Route::get('/santhas', Santhas::class)->name('santhas');
         Route::get('/donations', Donations::class)->name('donations');
+        Route::get('/settings', Settings::class)->name('settings');
+        Route::get('/islamic-calendar', IslamicCalendar::class)->name('islamic-calendar');
     });
 });

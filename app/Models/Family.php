@@ -21,6 +21,7 @@ class Family extends Model
         'notes',
         'is_active',
         'family_income',
+        'status',
     ];
 
     protected $casts = [

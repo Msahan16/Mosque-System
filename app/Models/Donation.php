@@ -23,6 +23,8 @@ class Donation extends Model
         'purpose',
         'notes',
         'is_anonymous',
+        'status',
+        'transaction_type',
     ];
 
     protected $casts = [

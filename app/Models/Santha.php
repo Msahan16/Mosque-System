@@ -20,6 +20,7 @@ class Santha extends Model
         'receipt_number',
         'is_paid',
         'notes',
+        'status',
     ];
 
     protected $casts = [

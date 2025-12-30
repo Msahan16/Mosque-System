@@ -25,6 +25,10 @@ class Santhas extends Component
 
     public $family_id, $amount, $month, $year, $payment_date, $payment_method;
     public $receipt_number, $is_paid = false, $notes;
+    public $unpaidSanthas = [];
+    public $selectedSanthaId = null;
+    public $payment_type = 'this_month'; // 'this_month' or 'multiple_months'
+    public $monthly_santha_amount = 0;
 
     protected function rules()
     {
@@ -65,10 +69,67 @@ class Santhas extends Component
         $this->resetForm();
         $this->payment_date = today()->format('Y-m-d');
         $this->payment_method = 'cash';
-        $this->month = now()->format('F Y');
+        $this->month = now()->format('F');
         $this->year = now()->year;
         $this->generateReceiptNumber();
+        $this->unpaidSanthas = [];
+        $this->selectedSanthaId = null;
+        $this->payment_type = 'this_month';
+        $this->monthly_santha_amount = 0;
         $this->showModal = true;
+    }
+
+    public function updatedFamilyId($value)
+    {
+        if ($value) {
+            // Get mosque settings for monthly santha amount
+            $mosqueSettings = \App\Models\MosqueSetting::where('mosque_id', auth()->user()->mosque_id)->first();
+            $this->monthly_santha_amount = $mosqueSettings ? $mosqueSettings->santha_amount : 500;
+            
+            // Fetch unpaid santhas for this family
+            $this->unpaidSanthas = Santha::where('family_id', $value)
+                ->where('mosque_id', auth()->user()->mosque_id)
+                ->where('is_paid', false)
+                ->orderBy('year', 'asc')
+                ->orderBy('month', 'asc')
+                ->get()
+                ->map(function($santha) {
+                    return [
+                        'id' => $santha->id,
+                        'month' => $santha->month,
+                        'year' => $santha->year,
+                        'amount' => $santha->amount,
+                        'receipt_number' => $santha->receipt_number,
+                    ];
+                })
+                ->toArray();
+            
+            // If there are unpaid santhas, auto-select the oldest one
+            if (count($this->unpaidSanthas) > 0) {
+                $oldestSantha = $this->unpaidSanthas[0];
+                $this->selectedSanthaId = $oldestSantha['id'];
+                $this->loadSanthaDetails($oldestSantha['id']);
+            }
+        } else {
+            $this->unpaidSanthas = [];
+            $this->selectedSanthaId = null;
+        }
+    }
+
+    public function updatedSelectedSanthaId($value)
+    {
+        if ($value) {
+            $this->loadSanthaDetails($value);
+        }
+    }
+
+    private function loadSanthaDetails($santhaId)
+    {
+        $santha = Santha::findOrFail($santhaId);
+        $this->amount = $santha->amount;
+        $this->month = $santha->month;
+        $this->year = $santha->year;
+        $this->receipt_number = $santha->receipt_number;
     }
 
     public function closeModal()
@@ -99,25 +160,105 @@ class Santhas extends Component
         $this->validate();
 
         try {
-            $data = [
-                'mosque_id' => auth()->user()->mosque_id,
-                'family_id' => $this->family_id,
-                'amount' => $this->amount,
-                'month' => $this->month,
-                'year' => $this->year,
-                'payment_date' => $this->payment_date,
-                'payment_method' => $this->payment_method,
-                'receipt_number' => $this->receipt_number,
-                'is_paid' => $this->is_paid,
-                'notes' => $this->notes,
-            ];
+            if ($this->payment_type === 'this_month') {
+                // Pay only the selected month with the entered amount
+                $data = [
+                    'mosque_id' => auth()->user()->mosque_id,
+                    'family_id' => $this->family_id,
+                    'amount' => $this->amount,
+                    'month' => $this->month,
+                    'year' => $this->year,
+                    'payment_date' => $this->payment_date,
+                    'payment_method' => $this->payment_method,
+                    'receipt_number' => $this->receipt_number,
+                    'is_paid' => true,
+                    'status' => 'paid',
+                    'notes' => $this->notes,
+                ];
 
-            if ($this->editMode) {
-                Santha::findOrFail($this->santhaId)->update($data);
-                $this->dispatch('swal:success', title: 'Success', text: 'Santha payment updated successfully');
+                if ($this->editMode) {
+                    Santha::findOrFail($this->santhaId)->update($data);
+                    $this->dispatch('swal:success', title: 'Success', text: 'Payment updated for ' . $this->month . ' ' . $this->year);
+                } elseif ($this->selectedSanthaId) {
+                    // Update existing unpaid santha
+                    Santha::findOrFail($this->selectedSanthaId)->update($data);
+                    $this->dispatch('swal:success', title: 'Success', text: 'Payment recorded for ' . $this->month . ' ' . $this->year);
+                } else {
+                    // Create new santha record
+                    Santha::create($data);
+                    $this->dispatch('swal:success', title: 'Success', text: 'Payment recorded for ' . $this->month . ' ' . $this->year);
+                }
             } else {
-                Santha::create($data);
-                $this->dispatch('swal:success', title: 'Success', text: 'Santha payment recorded successfully');
+                // Pay multiple months based on santha amount
+                if ($this->monthly_santha_amount <= 0) {
+                    throw new \Exception('Monthly santha amount not configured. Please update mosque settings.');
+                }
+                
+                $monthsToPay = floor($this->amount / $this->monthly_santha_amount);
+                $remainingAmount = $this->amount % $this->monthly_santha_amount;
+                
+                if ($monthsToPay == 0) {
+                    throw new \Exception('Amount is less than monthly santha amount (₹' . $this->monthly_santha_amount . ')');
+                }
+                
+                // Get unpaid santhas ordered by oldest first
+                $unpaidSanthas = Santha::where('family_id', $this->family_id)
+                    ->where('mosque_id', auth()->user()->mosque_id)
+                    ->where('is_paid', false)
+                    ->orderBy('year', 'asc')
+                    ->orderBy('month', 'asc')
+                    ->limit($monthsToPay)
+                    ->get();
+                
+                $paidCount = 0;
+                
+                // Pay existing unpaid santhas first
+                foreach ($unpaidSanthas as $santha) {
+                    if ($paidCount >= $monthsToPay) break;
+                    
+                    $santha->update([
+                        'is_paid' => true,
+                        'status' => 'paid',
+                        'amount' => $this->monthly_santha_amount,
+                        'payment_date' => $this->payment_date,
+                        'payment_method' => $this->payment_method,
+                        'notes' => ($this->notes ? $this->notes . ' | ' : '') . 'Paid via bulk payment',
+                    ]);
+                    $paidCount++;
+                }
+                
+                // If more months to pay, create new upcoming payment records
+                if ($paidCount < $monthsToPay) {
+                    $startDate = now(); // Start from current month
+                    $remainingMonths = $monthsToPay - $paidCount;
+                    
+                    for ($i = 0; $i < $remainingMonths; $i++) {
+                        $monthDate = $startDate->copy()->addMonths($i);
+                        $receiptNumber = 'SAN-' . $monthDate->format('Ym') . '-' . str_pad(Santha::where('mosque_id', auth()->user()->mosque_id)->count() + 1, 3, '0', STR_PAD_LEFT);
+                        
+                        Santha::create([
+                            'mosque_id' => auth()->user()->mosque_id,
+                            'family_id' => $this->family_id,
+                            'amount' => $this->monthly_santha_amount,
+                            'month' => $monthDate->format('F'),
+                            'year' => $monthDate->year,
+                            'payment_date' => $this->payment_date,
+                            'payment_method' => $this->payment_method,
+                            'receipt_number' => $receiptNumber,
+                            'is_paid' => true,
+                            'status' => 'paid',
+                            'notes' => ($this->notes ? $this->notes . ' | ' : '') . 'Paid via bulk payment (upcoming)',
+                        ]);
+                        $paidCount++;
+                    }
+                }
+                
+                $message = "Payment recorded for {$paidCount} month(s)";
+                if ($remainingAmount > 0) {
+                    $message .= ". Remaining ₹{$remainingAmount} not applied.";
+                }
+                
+                $this->dispatch('swal:success', title: 'Success', text: $message);
             }
 
             $this->closeModal();
@@ -131,6 +272,21 @@ class Santhas extends Component
         try {
             Santha::findOrFail($id)->delete();
             $this->dispatch('swal:success', title: 'Success', text: 'Santha payment deleted successfully');
+        } catch (\Exception $e) {
+            $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
+        }
+    }
+
+    public function markAsPaid($id)
+    {
+        try {
+            $santha = Santha::findOrFail($id);
+            $santha->update([
+                'is_paid' => true,
+                'status' => 'paid',
+                'payment_date' => today(),
+            ]);
+            $this->dispatch('swal:success', title: 'Success', text: 'Payment marked as paid successfully');
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
         }

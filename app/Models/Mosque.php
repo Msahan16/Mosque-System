@@ -19,14 +19,24 @@ class Mosque extends Model
         'phone',
         'email',
         'description',
-        'imam_name',
         'logo',
         'is_active',
+        'country',
+        'timezone',
+        'latitude',
+        'longitude',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
+
+    public function prayerSchedules()
+    {
+        return $this->hasMany(PrayerSchedule::class);
+    }
 
     public function families()
     {
@@ -46,5 +56,10 @@ class Mosque extends Model
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function settings()
+    {
+        return $this->hasOne(MosqueSetting::class);
     }
 }

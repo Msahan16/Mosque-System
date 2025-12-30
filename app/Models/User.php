@@ -32,6 +32,7 @@ class User extends Authenticatable
         'role',
         'mosque_id',
         'is_active',
+        'status',
     ];
 
     /**

@@ -23,7 +23,8 @@ class Mosques extends Component
 
     // Mosque fields
     public $name, $arabic_name, $address, $city, $state, $postal_code;
-    public $phone, $email, $description, $imam_name, $logo, $is_active = true;
+    public $phone, $email, $description, $logo, $is_active = true;
+    public $country = '', $timezone = 'UTC', $latitude, $longitude;
 
     // User credentials
     public $user_name, $user_email, $user_password;
@@ -40,9 +41,12 @@ class Mosques extends Component
             'phone' => 'required|string|max:20',
             'email' => $this->editMode ? 'required|email|unique:mosques,email,'.$this->mosqueId : 'required|email|unique:mosques,email',
             'description' => 'nullable|string',
-            'imam_name' => 'nullable|string|max:255',
             'logo' => 'nullable|image|max:2048',
             'is_active' => 'boolean',
+            'country' => 'required|string|max:255',
+            'timezone' => 'required|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ];
 
         if (!$this->editMode) {
@@ -79,8 +83,11 @@ class Mosques extends Component
         $this->phone = $mosque->phone;
         $this->email = $mosque->email;
         $this->description = $mosque->description;
-        $this->imam_name = $mosque->imam_name;
         $this->is_active = $mosque->is_active;
+        $this->country = $mosque->country;
+        $this->timezone = $mosque->timezone;
+        $this->latitude = $mosque->latitude;
+        $this->longitude = $mosque->longitude;
         $this->editMode = true;
         $this->showModal = true;
     }
@@ -107,9 +114,12 @@ class Mosques extends Component
                     'phone' => $this->phone,
                     'email' => $this->email,
                     'description' => $this->description,
-                    'imam_name' => $this->imam_name,
                     'logo' => $logoPath ?? $mosque->logo,
                     'is_active' => $this->is_active,
+                    'country' => $this->country,
+                    'timezone' => $this->timezone,
+                    'latitude' => $this->latitude,
+                    'longitude' => $this->longitude,
                 ]);
 
                 $this->dispatch('swal:success', title: 'Success', text: 'Mosque updated successfully!');
@@ -124,9 +134,12 @@ class Mosques extends Component
                     'phone' => $this->phone,
                     'email' => $this->email,
                     'description' => $this->description,
-                    'imam_name' => $this->imam_name,
                     'logo' => $logoPath,
                     'is_active' => $this->is_active,
+                    'country' => $this->country,
+                    'timezone' => $this->timezone,
+                    'latitude' => $this->latitude,
+                    'longitude' => $this->longitude,
                 ]);
 
                 // Create user for mosque
@@ -163,9 +176,11 @@ class Mosques extends Component
     {
         $this->reset([
             'mosqueId', 'name', 'arabic_name', 'address', 'city', 'state', 
-            'postal_code', 'phone', 'email', 'description', 'imam_name', 'logo', 
-            'is_active', 'user_name', 'user_email', 'user_password', 'editMode'
+            'postal_code', 'phone', 'email', 'description', 'logo', 
+            'is_active', 'user_name', 'user_email', 'user_password', 'editMode',
+            'country', 'timezone', 'latitude', 'longitude'
         ]);
+        $this->timezone = 'UTC';
         $this->is_active = true;
     }
 

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->text('purpose')->nullable();
             $table->text('notes')->nullable();
             $table->boolean('is_anonymous')->default(false);
+            $table->string('transaction_type')->default('received'); // received or given
             $table->string('status')->default('verified'); // pending, verified, rejected
             $table->timestamps();
         });

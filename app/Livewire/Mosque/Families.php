@@ -31,7 +31,7 @@ class Families extends Component
     public $members = [];
     public $memberName, $memberRelation, $memberDob, $memberGender;
     public $memberOccupation, $memberPhone, $memberEmail;
-    public $memberNotes;
+    public $memberNotes, $memberEducation;
 
     protected function familyRules()
     {
@@ -57,6 +57,7 @@ class Families extends Component
             'memberDob' => 'nullable|date|before:today',
             'memberGender' => 'required|in:Male,Female,Other',
             'memberOccupation' => 'nullable|string|max:255',
+            'memberEducation' => 'nullable|string|max:255',
             'memberPhone' => 'nullable|string|max:20',
             'memberEmail' => 'nullable|email|max:255',
             'memberNotes' => 'nullable|string',
@@ -67,12 +68,19 @@ class Families extends Component
     {
         $this->validate($this->memberRules());
 
+        // Validate that member data is not empty
+        if (empty($this->memberName) || empty($this->memberRelation)) {
+            $this->dispatch('swal:error', title: 'Validation Error', text: 'Name and Relation are required');
+            return;
+        }
+
         $this->members[] = [
             'name' => $this->memberName,
             'relation' => $this->memberRelation,
             'date_of_birth' => $this->memberDob,
             'gender' => $this->memberGender,
             'occupation' => $this->memberOccupation,
+            'education' => $this->memberEducation,
             'phone' => $this->memberPhone,
             'email' => $this->memberEmail,
             'notes' => $this->memberNotes,
@@ -81,9 +89,11 @@ class Families extends Component
         // Reset member fields
         $this->reset([
             'memberName', 'memberRelation', 'memberDob', 'memberGender',
-            'memberOccupation', 'memberPhone', 'memberEmail',
+            'memberOccupation', 'memberEducation', 'memberPhone', 'memberEmail',
             'memberNotes'
         ]);
+
+        $this->dispatch('swal:success', title: 'Success', text: 'Member added successfully');
     }
 
     public function removeMember($index)
@@ -129,6 +139,7 @@ class Families extends Component
                 'date_of_birth' => $member->date_of_birth ? $member->date_of_birth->format('Y-m-d') : null,
                 'gender' => $member->gender,
                 'occupation' => $member->occupation,
+                'education' => $member->education,
                 'phone' => $member->phone,
                 'email' => $member->email,
                 'notes' => $member->notes,
@@ -172,18 +183,37 @@ class Families extends Component
             }
 
             // Save members
+            // First, automatically add family head as a member
+            FamilyMember::create([
+                'family_id' => $family->id,
+                'name' => $this->family_head_name,
+                'relation' => 'Head',
+                'date_of_birth' => null,
+                'gender' => 'Male', // Default, can be updated separately
+                'occupation' => $this->family_head_profession,
+                'phone' => $this->phone,
+                'email' => $this->email,
+            ]);
+
+            // Then save any additional members
             foreach ($this->members as $memberData) {
-                FamilyMember::create([
-                    'family_id' => $family->id,
-                    'name' => $memberData['name'],
-                    'relation' => $memberData['relation'],
-                    'date_of_birth' => $memberData['date_of_birth'],
-                    'gender' => $memberData['gender'],
-                    'occupation' => $memberData['occupation'],
-                    'phone' => $memberData['phone'],
-                    'email' => $memberData['email'],
-                    'notes' => $memberData['notes'],
-                ]);
+                try {
+                    FamilyMember::create([
+                        'family_id' => $family->id,
+                        'name' => $memberData['name'],
+                        'relation' => $memberData['relation'],
+                        'date_of_birth' => $memberData['date_of_birth'] ?? null,
+                        'gender' => $memberData['gender'],
+                        'occupation' => $memberData['occupation'] ?? null,
+                        'education' => $memberData['education'] ?? null,
+                        'phone' => $memberData['phone'] ?? null,
+                        'email' => $memberData['email'] ?? null,
+                        'notes' => $memberData['notes'] ?? null,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to create family member: ' . $e->getMessage());
+                    throw new \Exception('Failed to save member: ' . $memberData['name']);
+                }
             }
 
             $this->closeModal();
@@ -221,7 +251,7 @@ class Families extends Component
             'address', 'total_members',
             'registration_date', 'notes', 'is_active', 'editMode', 'members',
             'memberName', 'memberRelation', 'memberDob', 'memberGender',
-            'memberOccupation', 'memberPhone', 'memberEmail',
+            'memberOccupation', 'memberEducation', 'memberPhone', 'memberEmail',
             'memberNotes', 'family_income'
         ]);
         $this->is_active = true;

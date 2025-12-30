@@ -149,6 +149,14 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center space-x-2">
+                                    @if(!$santha->is_paid)
+                                        <button wire:click="markAsPaid({{ $santha->id }})" class="inline-flex items-center px-3 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Pay
+                                        </button>
+                                    @endif
                                     <button wire:click="editSantha({{ $santha->id }})" class="inline-flex items-center px-3 py-1 bg-purple-600 text-white text-xs font-medium rounded hover:bg-purple-700 transition">
                                         Edit
                                     </button>
@@ -186,13 +194,13 @@
     <!-- Add/Edit Modal -->
     @if($showModal)
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" wire:click.self="closeModal">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto">
                 <!-- Modal Header -->
-                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-green-600 text-white px-6 py-4 rounded-t-2xl">
+                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-green-600 text-white px-5 py-3 rounded-t-2xl">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xl font-bold">{{ $editMode ? 'Edit Payment' : 'Record Payment' }}</h3>
+                        <h3 class="text-lg font-bold">{{ $editMode ? 'Edit Payment' : 'Record Payment' }}</h3>
                         <button wire:click="closeModal" class="text-white hover:text-gray-200 transition">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
@@ -200,113 +208,174 @@
                 </div>
 
                 <!-- Modal Body -->
-                <div class="p-6">
-                    <form wire:submit.prevent="saveSantha" class="space-y-5">
+                <div class="p-4">
+                    <form wire:submit.prevent="saveSantha" class="space-y-3">
                         <!-- Family Selection -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Family <span class="text-red-500">*</span>
                             </label>
-                            <select wire:model="family_id" required
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500">
+                            <select wire:model.live="family_id" required
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 <option value="">Select Family</option>
                                 @foreach($families as $family)
                                     <option value="{{ $family->id }}">{{ $family->family_head_name }} - {{ $family->phone }}</option>
                                 @endforeach
                             </select>
-                            @error('family_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            @error('family_id') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
+
+                        <!-- Unpaid Santhas Section -->
+                        @if(count($unpaidSanthas) > 0)
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <span class="text-blue-600 dark:text-blue-400">💰 Unpaid</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">{{ count($unpaidSanthas) }} pending</span>
+                                </label>
+                                <select wire:model.live="selectedSanthaId" required
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
+                                    <option value="">Select a payment</option>
+                                    @foreach($unpaidSanthas as $santha)
+                                        <option value="{{ $santha['id'] }}">
+                                            {{ $santha['month'] }} - ₹{{ number_format($santha['amount'], 2) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @elseif($family_id)
+                            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                                <p class="text-xs text-green-700 dark:text-green-400">
+                                    ✓ No unpaid payments
+                                </p>
+                            </div>
+                        @endif
 
                         <!-- Amount -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Amount (₹) <span class="text-red-500">*</span>
                             </label>
-                            <input wire:model="amount" type="number" step="0.01" required
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500">
-                            @error('amount') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            <input wire:model.live="amount" type="number" step="0.01" required
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
+                            @error('amount') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
-                        <!-- Month and Year -->
-                        <div class="grid grid-cols-2 gap-4">
+                        <!-- Payment Type Selection -->
+                        @if($family_id)
+                            <div class="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border border-blue-300 dark:border-blue-700 rounded-lg p-3">
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    💳 Type <span class="text-red-500">*</span>
+                                </label>
+                                <div class="space-y-2">
+                                    <label class="flex items-start p-2 bg-white dark:bg-gray-800 rounded-lg border-2 cursor-pointer transition
+                                        {{ $payment_type === 'this_month' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : 'border-gray-200 dark:border-gray-700' }}">
+                                        <input type="radio" wire:model.live="payment_type" value="this_month" 
+                                            class="mt-0.5 text-blue-600 focus:ring-blue-500">
+                                        <div class="ml-2 flex-1 text-xs">
+                                            <span class="block font-medium text-gray-900 dark:text-white">This Month Only</span>
+                                            <span class="block text-gray-500 dark:text-gray-400">Pay ₹{{ number_format($amount || 0, 0) }} once</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="flex items-start p-2 bg-white dark:bg-gray-800 rounded-lg border-2 cursor-pointer transition
+                                        {{ $payment_type === 'multiple_months' ? 'border-green-500 bg-green-50 dark:bg-green-900/30' : 'border-gray-200 dark:border-gray-700' }}">
+                                        <input type="radio" wire:model.live="payment_type" value="multiple_months" 
+                                            class="mt-0.5 text-green-600 focus:ring-green-500">
+                                        <div class="ml-2 flex-1 text-xs">
+                                            <span class="block font-medium text-gray-900 dark:text-white">Multiple Months</span>
+                                            @if($amount && $monthly_santha_amount > 0)
+                                                <span class="block text-green-600 dark:text-green-400 font-semibold">
+                                                    {{ floor($amount / $monthly_santha_amount) }} months
+                                                </span>
+                                            @else
+                                                <span class="block text-gray-500 dark:text-gray-400">÷ ₹{{ number_format($monthly_santha_amount || 0, 0) }}/mo</span>
+                                            @endif
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Month & Year -->
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Month <span class="text-red-500">*</span>
                                 </label>
                                 <select wire:model="month" required
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                     @for($m = 1; $m <= 12; $m++)
-                                        <option value="{{ $m }}">{{ date('F', mktime(0, 0, 0, $m, 1)) }}</option>
+                                        <option value="{{ $m }}">{{ date('M', mktime(0, 0, 0, $m, 1)) }}</option>
                                     @endfor
                                 </select>
-                                @error('month') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                @error('month') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Year <span class="text-red-500">*</span>
                                 </label>
                                 <select wire:model="year" required
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                     @for($y = date('Y'); $y >= date('Y') - 5; $y--)
                                         <option value="{{ $y }}">{{ $y }}</option>
                                     @endfor
                                 </select>
-                                @error('year') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                @error('year') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
-                        <!-- Payment Date -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Payment Date <span class="text-red-500">*</span>
-                            </label>
-                            <input wire:model="payment_date" type="date" required
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500">
-                            @error('payment_date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        <!-- Payment Date & Method -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Payment Date <span class="text-red-500">*</span>
+                                </label>
+                                <input wire:model="payment_date" type="date" required
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
+                                @error('payment_date') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Method <span class="text-red-500">*</span>
+                                </label>
+                                <select wire:model="payment_method" required
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
+                                    <option value="cash">Cash</option>
+                                    <option value="online">Online</option>
+                                    <option value="check">Check</option>
+                                </select>
+                                @error('payment_method') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
                         </div>
 
-                        <!-- Payment Method -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Payment Method <span class="text-red-500">*</span>
-                            </label>
-                            <select wire:model="payment_method" required
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500">
-                                <option value="cash">Cash</option>
-                                <option value="online">Online</option>
-                                <option value="check">Check</option>
-                            </select>
-                            @error('payment_method') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
-
-                        <!-- Payment Status -->
-                        <div class="flex items-center">
+                        <!-- Paid Checkbox & Notes -->
+                        <div class="flex items-center gap-2">
                             <input wire:model="is_paid" type="checkbox" id="is_paid"
-                                class="w-5 h-5 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500">
-                            <label for="is_paid" class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                class="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500">
+                            <label for="is_paid" class="text-xs font-medium text-gray-700 dark:text-gray-300">
                                 Mark as Paid
                             </label>
                         </div>
 
                         <!-- Notes -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Notes
                             </label>
-                            <textarea wire:model="notes" rows="2"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"></textarea>
-                            @error('notes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            <textarea wire:model="notes" rows="1"
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"></textarea>
+                            @error('notes') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Submit Button -->
-                        <div class="flex space-x-3 pt-4">
+                        <div class="flex gap-2 pt-1">
                             <button type="button" wire:click="closeModal"
-                                class="flex-1 px-6 py-3 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold transition">
+                                class="flex-1 px-4 py-1.5 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold text-xs transition">
                                 Cancel
                             </button>
                             <button type="submit"
-                                class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 font-semibold transition shadow-lg">
-                                {{ $editMode ? 'Update Payment' : 'Record Payment' }}
+                                class="flex-1 px-4 py-1.5 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 font-semibold text-xs transition shadow-lg">
+                                {{ $editMode ? 'Update' : 'Record' }}
                             </button>
                         </div>
                     </form>

@@ -105,13 +105,13 @@
     <!-- Add/Edit Modal -->
     @if($showModal)
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" wire:click.self="closeModal">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto">
                 <!-- Modal Header -->
-                <div class="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-4 rounded-t-2xl">
+                <div class="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-3 rounded-t-2xl">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xl font-bold">{{ $editMode ? 'Edit Family' : 'Add New Family' }}</h3>
+                        <h3 class="text-lg font-bold">{{ $editMode ? 'Edit Family' : 'Add Family' }}</h3>
                         <button wire:click="closeModal" class="text-white hover:text-gray-200 transition">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
@@ -119,116 +119,121 @@
                 </div>
 
                 <!-- Modal Body -->
-                <div class="p-6">
-                    <form wire:submit.prevent="saveFamily" class="space-y-5">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Family Head Name -->
+                <div class="p-4">
+                    <form wire:submit.prevent="saveFamily" class="space-y-3">
+                        <!-- Family Head Name & Profession -->
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Family Head Name <span class="text-red-500">*</span>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Head Name <span class="text-red-500">*</span>
                                 </label>
-                                <input wire:model="family_head_name" type="text" required
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                                @error('family_head_name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                <input wire:model="family_head_name" type="text" required placeholder="Full name"
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                @error('family_head_name') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
-
-                            <!-- Profession -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Profession
                                 </label>
-                                <input wire:model="family_head_profession" type="text"
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                                @error('family_head_profession') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                <input wire:model="family_head_profession" type="text" placeholder="Job/profession"
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                @error('family_head_profession') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
+                        </div>
 
-                            <!-- Phone -->
+                        <!-- Phone & Email -->
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Phone <span class="text-red-500">*</span>
                                 </label>
-                                <input wire:model="phone" type="tel" required
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                                @error('phone') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                <input wire:model="phone" type="tel" required placeholder="Phone"
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                @error('phone') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
-
-                            <!-- Email -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Email
                                 </label>
-                                <input wire:model="email" type="email"
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                                @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                            </div>
-
-                            <!-- Total Members -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Total Members <span class="text-red-500">*</span>
-                                </label>
-                                <input wire:model="total_members" type="number" min="1" required
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                                @error('total_members') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                            </div>
-
-                            <!-- Registration Date -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Registration Date <span class="text-red-500">*</span>
-                                </label>
-                                <input wire:model="registration_date" type="date" required
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                                @error('registration_date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                            </div>
-
-                            <!-- Family Income -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Family Income
-                                </label>
-                                <input wire:model="family_income" type="number" step="0.01" min="0"
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
-                                @error('family_income') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                            </div>
-
-                            <!-- Active Status -->
-                            <div class="flex items-center pt-6">
-                                <input wire:model="is_active" type="checkbox" id="is_active"
-                                    class="w-5 h-5 text-emerald-600 border-gray-300 dark:border-gray-600 rounded focus:ring-emerald-500">
-                                <label for="is_active" class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Active
-                                </label>
+                                <input wire:model="email" type="email" placeholder="Email"
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                @error('email') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
                         <!-- Address -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Address <span class="text-red-500">*</span>
                             </label>
-                            <textarea wire:model="address" rows="3" required
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500"></textarea>
-                            @error('address') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            <textarea wire:model="address" required rows="2" placeholder="Address"
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"></textarea>
+                            @error('address') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
+                        <!-- Members & Income -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Members <span class="text-red-500">*</span>
+                                </label>
+                                <input wire:model="total_members" type="number" required min="1" placeholder="No. of members"
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                @error('total_members') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Income (₹)
+                                </label>
+                                <input wire:model="family_income" type="number" step="0.01" placeholder="Monthly income"
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                @error('family_income') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+
+                        <!-- Registration Date & Active -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Reg. Date <span class="text-red-500">*</span>
+                                </label>
+                                <input wire:model="registration_date" type="date" required
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                @error('registration_date') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div class="flex items-end">
+                                <label class="flex items-center gap-2">
+                                    <input wire:model="is_active" type="checkbox"
+                                        class="w-4 h-4 text-emerald-600 border-gray-300 dark:border-gray-600 rounded focus:ring-emerald-500">
+                                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Active</span>
+                                </label>
+                            </div>
                         </div>
 
                         <!-- Notes -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Notes
                             </label>
-                            <textarea wire:model="notes" rows="2"
-                                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500"></textarea>
-                            @error('notes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            <textarea wire:model="notes" rows="1" placeholder="Optional notes..."
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"></textarea>
+                            @error('notes') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Family Members Section -->
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-5 mt-5">
-                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Family Members</h4>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+                                <p class="text-sm text-blue-800 dark:text-blue-300">
+                                    <strong>✓ Family Head</strong> will be automatically added as the first member when you click "Add Family"
+                                </p>
+                            </div>
+
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Additional Family Members</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Add other family members (wife, children, parents, etc.)</p>
                             
                             <!-- Add Member Form -->
                             <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 mb-4">
-                                <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Add New Member</h5>
+                                <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Add Additional Member</h5>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
                                         <input wire:model="memberName" type="text" placeholder="Full Name *"
@@ -236,7 +241,7 @@
                                         @error('memberName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
-                                        <input wire:model="memberRelation" type="text" placeholder="Relation *"
+                                        <input wire:model="memberRelation" type="text" placeholder="Relation (Wife, Son, Daughter, etc.) *"
                                             class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
                                         @error('memberRelation') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                     </div>
@@ -259,7 +264,10 @@
                                         <input wire:model="memberOccupation" type="text" placeholder="Occupation"
                                             class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
                                     </div>
-                                    
+                                    <div>
+                                        <input wire:model="memberEducation" type="text" placeholder="Education"
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                    </div>
                                     <div>
                                         <input wire:model="memberPhone" type="tel" placeholder="Phone"
                                             class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
@@ -275,14 +283,14 @@
                                 </div>
                                 <button type="button" wire:click="addMember"
                                     class="mt-3 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-                                    + Add Member
+                                    + Add Additional Member
                                 </button>
                             </div>
 
                             <!-- Members List -->
                             @if(count($members) > 0)
                                 <div class="space-y-2">
-                                    <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Added Members ({{ count($members) }})</h5>
+                                    <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Additional Members ({{ count($members) }})</h5>
                                     @foreach($members as $index => $member)
                                         <div class="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
                                             <div class="flex-1">
@@ -308,19 +316,19 @@
                                     @endforeach
                                 </div>
                             @else
-                                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No members added yet</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No additional members added yet</p>
                             @endif
                         </div>
 
                         <!-- Submit Button -->
-                        <div class="flex space-x-3 pt-4">
+                        <div class="flex gap-2 pt-1">
                             <button type="button" wire:click="closeModal"
-                                class="flex-1 px-6 py-3 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold transition">
+                                class="flex-1 px-4 py-1.5 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold text-xs transition">
                                 Cancel
                             </button>
                             <button type="submit"
-                                class="flex-1 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 font-semibold transition shadow-lg">
-                                {{ $editMode ? 'Update Family' : 'Add Family' }}
+                                class="flex-1 px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 font-semibold text-xs transition shadow-lg">
+                                {{ $editMode ? 'Update' : 'Add Family' }}
                             </button>
                         </div>
                     </form>

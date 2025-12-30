@@ -18,13 +18,14 @@ class Donations extends Component
     public $search = '';
     public $filterPurpose = '';
     public $filterMethod = '';
+    public $filterType = 'received'; // received or given
     public $showModal = false;
     public $editMode = false;
     public $donationId;
 
     public $family_id, $donor_name, $donor_phone, $donor_email, $amount;
     public $donation_type, $payment_method, $receipt_number, $donation_date;
-    public $purpose, $notes, $is_anonymous = false;
+    public $purpose, $notes, $is_anonymous = false, $transaction_type = 'received';
 
     protected function rules()
     {
@@ -40,6 +41,7 @@ class Donations extends Component
             'purpose' => 'nullable|string',
             'notes' => 'nullable|string',
             'is_anonymous' => 'boolean',
+            'transaction_type' => 'required|in:received,given',
         ];
 
         if (!$this->editMode) {
@@ -63,9 +65,10 @@ class Donations extends Component
         }
     }
 
-    public function openModal()
+    public function openModal($type = 'received')
     {
         $this->resetForm();
+        $this->transaction_type = $type;
         $this->donation_date = today()->format('Y-m-d');
         $this->payment_method = 'cash';
         $this->generateReceiptNumber();
@@ -94,6 +97,7 @@ class Donations extends Component
         $this->purpose = $donation->purpose;
         $this->notes = $donation->notes;
         $this->is_anonymous = $donation->is_anonymous;
+        $this->transaction_type = $donation->transaction_type ?? 'received';
         $this->editMode = true;
         $this->showModal = true;
     }
@@ -117,6 +121,7 @@ class Donations extends Component
                 'purpose' => $this->purpose,
                 'notes' => $this->notes,
                 'is_anonymous' => $this->is_anonymous,
+                'transaction_type' => $this->transaction_type,
             ];
 
             if ($this->editMode) {
@@ -124,7 +129,8 @@ class Donations extends Component
                 $this->dispatch('swal:success', title: 'Success', text: 'Donation updated successfully');
             } else {
                 Donation::create($data);
-                $this->dispatch('swal:success', title: 'Success', text: 'Donation recorded successfully');
+                $message = $this->transaction_type === 'received' ? 'Donation received successfully' : 'Donation given successfully';
+                $this->dispatch('swal:success', title: 'Success', text: $message);
             }
 
             $this->closeModal();
@@ -148,9 +154,10 @@ class Donations extends Component
         $this->reset([
             'donationId', 'family_id', 'donor_name', 'donor_phone', 'donor_email',
             'amount', 'donation_type', 'payment_method', 'receipt_number',
-            'donation_date', 'purpose', 'notes', 'is_anonymous', 'editMode'
+            'donation_date', 'purpose', 'notes', 'is_anonymous', 'editMode', 'transaction_type'
         ]);
         $this->is_anonymous = false;
+        $this->transaction_type = 'received';
     }
 
     public function render()
@@ -158,6 +165,9 @@ class Donations extends Component
         $user = auth()->user();
         
         $donations = Donation::where('mosque_id', $user->mosque_id)
+            ->when($this->filterType, function ($query) {
+                $query->where('transaction_type', $this->filterType);
+            })
             ->when($this->search, function ($query) {
                 $query->where('donor_name', 'like', '%' . $this->search . '%')
                       ->orWhere('receipt_number', 'like', '%' . $this->search . '%');
@@ -172,16 +182,36 @@ class Donations extends Component
             ->latest('donation_date')
             ->paginate(10);
 
-        // Calculate statistics
-        $totalDonations = Donation::where('mosque_id', $user->mosque_id)->sum('amount');
-        $thisMonthDonations = Donation::where('mosque_id', $user->mosque_id)
+        // Calculate statistics - Received
+        $totalReceivedDonations = Donation::where('mosque_id', $user->mosque_id)
+            ->where('transaction_type', 'received')
+            ->sum('amount');
+        $thisMonthReceivedDonations = Donation::where('mosque_id', $user->mosque_id)
+            ->where('transaction_type', 'received')
             ->whereMonth('donation_date', now()->month)
             ->whereYear('donation_date', now()->year)
             ->sum('amount');
-        $totalDonors = Donation::where('mosque_id', $user->mosque_id)
+        $totalReceivedDonors = Donation::where('mosque_id', $user->mosque_id)
+            ->where('transaction_type', 'received')
             ->distinct('donor_name')
             ->count('donor_name');
-        $averageDonation = $totalDonors > 0 ? round($totalDonations / $totalDonors, 0) : 0;
+        $averageReceivedDonation = $totalReceivedDonors > 0 ? round($totalReceivedDonations / $totalReceivedDonors, 0) : 0;
+
+        // Calculate statistics - Given
+        $totalGivenDonations = Donation::where('mosque_id', $user->mosque_id)
+            ->where('transaction_type', 'given')
+            ->sum('amount');
+        $thisMonthGivenDonations = Donation::where('mosque_id', $user->mosque_id)
+            ->where('transaction_type', 'given')
+            ->whereMonth('donation_date', now()->month)
+            ->whereYear('donation_date', now()->year)
+            ->sum('amount');
+        $totalGivenFamilies = Donation::where('mosque_id', $user->mosque_id)
+            ->where('transaction_type', 'given')
+            ->distinct('family_id')
+            ->whereNotNull('family_id')
+            ->count('family_id');
+        $averageGivenDonation = $totalGivenFamilies > 0 ? round($totalGivenDonations / $totalGivenFamilies, 0) : 0;
 
         $families = Family::where('mosque_id', $user->mosque_id)
             ->where('is_active', true)
@@ -191,10 +221,14 @@ class Donations extends Component
         return view('livewire.mosque.donations', [
             'donations' => $donations,
             'families' => $families,
-            'totalDonations' => $totalDonations,
-            'thisMonthDonations' => $thisMonthDonations,
-            'totalDonors' => $totalDonors,
-            'averageDonation' => $averageDonation,
+            'totalReceivedDonations' => $totalReceivedDonations,
+            'thisMonthReceivedDonations' => $thisMonthReceivedDonations,
+            'totalReceivedDonors' => $totalReceivedDonors,
+            'averageReceivedDonation' => $averageReceivedDonation,
+            'totalGivenDonations' => $totalGivenDonations,
+            'thisMonthGivenDonations' => $thisMonthGivenDonations,
+            'totalGivenFamilies' => $totalGivenFamilies,
+            'averageGivenDonation' => $averageGivenDonation,
         ]);
     }
 }
