@@ -43,14 +43,15 @@ class DatabaseSeeder extends Seeder
             'name' => 'Al-Noor Masjid',
             'arabic_name' => 'مسجد النور',
             'address' => '123 Masjid Road',
-            'city' => 'Colombo',
-            'state' => 'Western Province',
-            'postal_code' => '00100',
+            'state' => 'Colombo (Western)',
             'phone' => '011-2345678',
             'email' => 'info@alnoormasjid.com',
             'description' => 'A community mosque serving the local Muslim community with daily prayers and Islamic education.',
-            'Head_name' => 'Sheikh Abdul Rahman',
             'is_active' => true,
+            'country' => 'Sri Lanka',
+            'timezone' => 'Asia/Colombo',
+            'latitude' => 6.9271,
+            'longitude' => 80.7744,
         ]);
 
         // Create Mosque User

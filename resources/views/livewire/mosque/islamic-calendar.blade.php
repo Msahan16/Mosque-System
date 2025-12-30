@@ -12,8 +12,8 @@
                 <!-- Gregorian Date -->
                 <div class="text-center">
                     <p class="text-emerald-100 text-sm font-medium mb-2">Gregorian Date</p>
-                    <p class="text-3xl font-bold">{{ \Carbon\Carbon::now()->format('d M Y') }}</p>
-                    <p class="text-emerald-100 text-sm mt-1">{{ \Carbon\Carbon::now()->format('l') }}</p>
+                    <p class="text-3xl font-bold">{{ \Carbon\Carbon::now($timezone)->format('d M Y') }}</p>
+                    <p class="text-emerald-100 text-sm mt-1">{{ \Carbon\Carbon::now($timezone)->format('l') }}</p>
                 </div>
 
                 <!-- Current Time -->
@@ -52,7 +52,7 @@
                     <!-- Time Remaining -->
                     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4">
                         <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Time Remaining</p>
-                        <p class="text-4xl font-bold text-blue-600 dark:text-blue-400 font-mono" wire:poll="calculateRemainingTime">{{ $remainingTime }}</p>
+                        <p class="text-4xl font-bold text-blue-600 dark:text-blue-400 font-mono" wire:poll="updateRemainingTime">{{ $remainingTime }}</p>
                     </div>
                 </div>
             </div>
@@ -65,7 +65,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-2xl font-bold">Prayer Times Schedule</h3>
-                        <p class="text-blue-100 text-sm mt-1">{{ \Carbon\Carbon::createFromFormat('Y-m-d', $selectedDate)->format('l, d F Y') }}</p>
+                        <p class="text-blue-100 text-sm mt-1">{{ \Carbon\Carbon::createFromFormat('Y-m-d', $selectedDate, $timezone)->format('l, d F Y') }}</p>
                     </div>
                     <div class="flex gap-2">
                         <button wire:click="changeDate(-1)" class="p-2 hover:bg-blue-700 rounded-lg transition">
@@ -87,7 +87,28 @@
 
             <!-- Prayer Times Grid -->
             <div class="p-6">
-                @if($prayerSchedule)
+                @if($loadingPrayers)
+                    <div class="flex flex-col items-center justify-center py-12">
+                        <svg class="w-12 h-12 text-blue-600 animate-spin mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p class="text-gray-600 dark:text-gray-400 text-lg">Loading prayer times...</p>
+                    </div>
+                @elseif($apiError)
+                    <div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-600 rounded-lg p-6 mb-6">
+                        <div class="flex items-start gap-4">
+                            <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-red-800 dark:text-red-200 font-semibold">{{ $apiError }}</p>
+                                <button wire:click="retryLoadPrayers" class="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition duration-200">
+                                    Retry
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @elseif($prayerSchedule)
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- Fajr -->
                         <div class="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-6 border-l-4 border-purple-600">
@@ -151,12 +172,46 @@
                     </div>
                 @else
                     <div class="text-center py-12">
-                        <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <p class="text-gray-500 dark:text-gray-400 text-lg">Loading prayer times...</p>
+                        <p class="text-gray-600 dark:text-gray-400">No prayer times available</p>
                     </div>
                 @endif
+            </div>
+        </div>
+
+        <!-- Important Islamic Dates Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden mb-8">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-6 py-4">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <h3 class="text-2xl font-bold">Important Islamic Dates & Events</h3>
+                </div>
+            </div>
+
+            <!-- Important Dates Grid -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach($importantDates as $event)
+                        <div class="rounded-lg p-4 border-l-4 
+                            @if($event['color'] === 'blue') border-blue-500 bg-blue-50 dark:bg-blue-900/20
+                            @elseif($event['color'] === 'purple') border-purple-500 bg-purple-50 dark:bg-purple-900/20
+                            @elseif($event['color'] === 'green') border-green-500 bg-green-50 dark:bg-green-900/20
+                            @elseif($event['color'] === 'indigo') border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20
+                            @elseif($event['color'] === 'yellow') border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20
+                            @elseif($event['color'] === 'teal') border-teal-500 bg-teal-50 dark:bg-teal-900/20
+                            @elseif($event['color'] === 'red') border-red-500 bg-red-50 dark:bg-red-900/20
+                            @endif
+                        ">
+                            <div class="flex items-start gap-3">
+                                <span class="text-3xl">{{ $event['emoji'] }}</span>
+                                <div class="flex-1">
+                                    <p class="font-bold text-sm text-gray-600 dark:text-gray-400">{{ $event['date'] }}</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white text-base">{{ $event['event'] }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
 
@@ -176,7 +231,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-600 dark:text-gray-400">Calculation Method</p>
-                        <p class="font-semibold text-gray-900 dark:text-white">ISNA (Islamic Society of North America)</p>
+                        <p class="font-semibold text-gray-900 dark:text-white">Karachi Method (Sri Lanka)</p>
                     </div>
                     <div>
                         <p class="text-sm text-gray-600 dark:text-gray-400">Data Source</p>

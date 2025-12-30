@@ -22,36 +22,46 @@ class Mosques extends Component
     public $mosqueId;
 
     // Mosque fields
-    public $name, $arabic_name, $address, $city, $state, $postal_code;
+    public $name, $arabic_name, $address, $state;
     public $phone, $email, $description, $logo, $is_active = true;
-    public $country = '', $timezone = 'UTC', $latitude, $longitude;
+    public $country = 'Sri Lanka', $timezone = 'Asia/Colombo', $latitude = 6.9271, $longitude = 80.7744;
+    public $selectedProvince = 'Colombo';
 
     // User credentials
     public $user_name, $user_email, $user_password;
+
+    // Sri Lanka provinces with coordinates and timezone
+    public $sriLankaProvinces = [
+        'Colombo' => ['lat' => 6.9271, 'lng' => 80.7744, 'name' => 'Colombo (Western)', 'timezone' => 'Asia/Colombo'],
+        'Kandy' => ['lat' => 6.9271, 'lng' => 80.6386, 'name' => 'Kandy (Central)', 'timezone' => 'Asia/Colombo'],
+        'Galle' => ['lat' => 6.0535, 'lng' => 80.2170, 'name' => 'Galle (Southern)', 'timezone' => 'Asia/Colombo'],
+        'Jaffna' => ['lat' => 9.6615, 'lng' => 80.7855, 'name' => 'Jaffna (Northern)', 'timezone' => 'Asia/Colombo'],
+        'Trincomalee' => ['lat' => 8.5874, 'lng' => 81.2346, 'name' => 'Trincomalee (Eastern)', 'timezone' => 'Asia/Colombo'],
+        'Matara' => ['lat' => 5.7489, 'lng' => 80.5375, 'name' => 'Matara (Southern)', 'timezone' => 'Asia/Colombo'],
+        'Badulla' => ['lat' => 6.9906, 'lng' => 81.2680, 'name' => 'Badulla (Uva)', 'timezone' => 'Asia/Colombo'],
+        'Kurunegala' => ['lat' => 7.4818, 'lng' => 80.6337, 'name' => 'Kurunegala (North Western)', 'timezone' => 'Asia/Colombo'],
+        'Anuradhapura' => ['lat' => 8.3154, 'lng' => 80.7691, 'name' => 'Anuradhapura (North Central)', 'timezone' => 'Asia/Colombo'],
+        'Ratnapura' => ['lat' => 6.6828, 'lng' => 80.7992, 'name' => 'Ratnapura (Sabaragamuwa)', 'timezone' => 'Asia/Colombo'],
+    ];
 
     protected function rules()
     {
         $rules = [
             'name' => 'required|string|max:255',
             'arabic_name' => 'nullable|string|max:255',
-            'address' => 'required|string',
-            'city' => 'required|string|max:255',
+            'address' => 'nullable|string',
             'state' => 'required|string|max:255',
-            'postal_code' => 'required|string|max:20',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|regex:/^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/',
             'email' => $this->editMode ? 'required|email|unique:mosques,email,'.$this->mosqueId : 'required|email|unique:mosques,email',
             'description' => 'nullable|string',
             'logo' => 'nullable|image|max:2048',
             'is_active' => 'boolean',
             'country' => 'required|string|max:255',
-            'timezone' => 'required|string|max:255',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
+            'selectedProvince' => 'required|string|in:' . implode(',', array_keys($this->sriLankaProvinces)),
         ];
 
         if (!$this->editMode) {
-            $rules['user_name'] = 'required|string|max:255';
-            $rules['user_email'] = 'required|email|unique:users,email';
+            $rules['user_name'] = 'required|email|unique:users,email';
             $rules['user_password'] = 'required|string|min:8';
         }
 
@@ -68,6 +78,17 @@ class Mosques extends Component
     {
         $this->showModal = false;
         $this->resetForm();
+    }
+
+    public function updateProvinceLocation()
+    {
+        if (isset($this->sriLankaProvinces[$this->selectedProvince])) {
+            $province = $this->sriLankaProvinces[$this->selectedProvince];
+            $this->timezone = $province['timezone'];
+            $this->latitude = $province['lat'];
+            $this->longitude = $province['lng'];
+            $this->state = $province['name']; // Auto-fill state with province name
+        }
     }
 
     public function editMosque($id)
@@ -88,6 +109,15 @@ class Mosques extends Component
         $this->timezone = $mosque->timezone;
         $this->latitude = $mosque->latitude;
         $this->longitude = $mosque->longitude;
+        
+        // Find matching province based on coordinates
+        foreach ($this->sriLankaProvinces as $key => $province) {
+            if ($province['lat'] == $mosque->latitude && $province['lng'] == $mosque->longitude) {
+                $this->selectedProvince = $key;
+                break;
+            }
+        }
+        
         $this->editMode = true;
         $this->showModal = true;
     }
@@ -108,9 +138,7 @@ class Mosques extends Component
                     'name' => $this->name,
                     'arabic_name' => $this->arabic_name,
                     'address' => $this->address,
-                    'city' => $this->city,
                     'state' => $this->state,
-                    'postal_code' => $this->postal_code,
                     'phone' => $this->phone,
                     'email' => $this->email,
                     'description' => $this->description,
@@ -128,9 +156,7 @@ class Mosques extends Component
                     'name' => $this->name,
                     'arabic_name' => $this->arabic_name,
                     'address' => $this->address,
-                    'city' => $this->city,
                     'state' => $this->state,
-                    'postal_code' => $this->postal_code,
                     'phone' => $this->phone,
                     'email' => $this->email,
                     'description' => $this->description,
@@ -145,7 +171,7 @@ class Mosques extends Component
                 // Create user for mosque
                 User::create([
                     'name' => $this->user_name,
-                    'email' => $this->user_email,
+                    'email' => $this->user_name,
                     'password' => Hash::make($this->user_password),
                     'role' => 'mosque',
                     'mosque_id' => $mosque->id,
@@ -175,13 +201,18 @@ class Mosques extends Component
     private function resetForm()
     {
         $this->reset([
-            'mosqueId', 'name', 'arabic_name', 'address', 'city', 'state', 
-            'postal_code', 'phone', 'email', 'description', 'logo', 
-            'is_active', 'user_name', 'user_email', 'user_password', 'editMode',
-            'country', 'timezone', 'latitude', 'longitude'
+            'mosqueId', 'name', 'arabic_name', 'address', 'state', 
+            'phone', 'email', 'description', 'logo', 
+            'is_active', 'user_name', 'user_password', 'editMode',
+            'country', 'timezone', 'latitude', 'longitude', 'selectedProvince'
         ]);
-        $this->timezone = 'UTC';
+        $this->selectedProvince = 'Colombo';
+        $this->timezone = 'Asia/Colombo';
+        $this->country = 'Sri Lanka';
+        $this->latitude = 6.9271;
+        $this->longitude = 80.7744;
         $this->is_active = true;
+        $this->state = 'Colombo (Western)';
     }
 
     public function render()
@@ -194,7 +225,8 @@ class Mosques extends Component
         ->paginate(10);
 
         return view('livewire.admin.mosques', [
-            'mosques' => $mosques
+            'mosques' => $mosques,
+            'sriLankaProvinces' => $this->sriLankaProvinces
         ]);
     }
 }
