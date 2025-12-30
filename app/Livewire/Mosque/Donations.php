@@ -26,6 +26,9 @@ class Donations extends Component
     public $family_id, $donor_name, $donor_phone, $donor_email, $amount;
     public $donation_type, $payment_method, $receipt_number, $donation_date;
     public $purpose, $notes, $is_anonymous = false, $transaction_type = 'received';
+    // Receipt viewing
+    public $showReceiptModal = false;
+    public $viewingDonation = null;
 
     protected function rules()
     {
@@ -147,6 +150,34 @@ class Donations extends Component
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
         }
+    }
+
+    public function viewReceipt($id)
+    {
+        $donation = Donation::with('family')->findOrFail($id);
+
+        $this->viewingDonation = [
+            'id' => $donation->id,
+            'receipt_number' => $donation->receipt_number,
+            'donor_name' => $donation->donor_name,
+            'donor_phone' => $donation->donor_phone,
+            'donor_email' => $donation->donor_email,
+            'amount' => $donation->amount,
+            'purpose' => $donation->purpose,
+            'donation_date' => $donation->donation_date?->format('d M, Y'),
+            'payment_method' => $donation->payment_method,
+            'notes' => $donation->notes,
+            'mosque_name' => optional($donation->mosque)->name ?? config('app.name'),
+            'family_name' => $donation->family?->family_head_name,
+        ];
+
+        $this->showReceiptModal = true;
+    }
+
+    public function closeReceiptModal()
+    {
+        $this->showReceiptModal = false;
+        $this->viewingDonation = null;
     }
 
     private function resetForm()

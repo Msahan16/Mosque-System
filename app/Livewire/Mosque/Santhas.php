@@ -29,6 +29,9 @@ class Santhas extends Component
     public $selectedSanthaId = null;
     public $payment_type = 'this_month'; // 'this_month' or 'multiple_months'
     public $monthly_santha_amount = 0;
+    // Receipt viewing
+    public $showReceiptModal = false;
+    public $viewingSantha = null;
 
     protected function rules()
     {
@@ -275,6 +278,33 @@ class Santhas extends Component
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
         }
+    }
+
+    public function viewReceipt($id)
+    {
+        $santha = Santha::with('family')->findOrFail($id);
+
+        $this->viewingSantha = [
+            'id' => $santha->id,
+            'receipt_number' => $santha->receipt_number,
+            'family_head_name' => $santha->family?->family_head_name,
+            'family_phone' => $santha->family?->phone,
+            'amount' => $santha->amount,
+            'month' => $santha->month,
+            'year' => $santha->year,
+            'payment_date' => $santha->payment_date?->format('d M, Y'),
+            'payment_method' => $santha->payment_method,
+            'notes' => $santha->notes,
+            'mosque_name' => optional($santha->mosque)->name ?? config('app.name'),
+        ];
+
+        $this->showReceiptModal = true;
+    }
+
+    public function closeReceiptModal()
+    {
+        $this->showReceiptModal = false;
+        $this->viewingSantha = null;
     }
 
     public function markAsPaid($id)
