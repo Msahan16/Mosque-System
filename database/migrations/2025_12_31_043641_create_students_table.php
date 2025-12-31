@@ -23,8 +23,6 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->date('enrollment_date');
             $table->enum('class_level', ['Beginner', 'Intermediate', 'Advanced'])->default('Beginner');
-            $table->decimal('fee_amount', 8, 2)->default(0);
-            $table->enum('payment_status', ['Paid', 'Pending', 'Overdue'])->default('Pending');
             $table->boolean('is_active')->default(true);
             $table->text('notes')->nullable();
             $table->timestamps();

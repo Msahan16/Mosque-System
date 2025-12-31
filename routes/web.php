@@ -82,5 +82,6 @@ Route::middleware([
         Route::get('/islamic-calendar', IslamicCalendar::class)->name('islamic-calendar');
         Route::get('/madrasa', \App\Livewire\Mosque\Madrasa::class)->name('madrasa');
         Route::get('/imam-management', \App\Livewire\Mosque\ImamManagement::class)->name('imam-management');
+        Route::get('/ramadan-porridge', \App\Livewire\Mosque\RamadanPorridge::class)->name('ramadan-porridge');
     });
 });

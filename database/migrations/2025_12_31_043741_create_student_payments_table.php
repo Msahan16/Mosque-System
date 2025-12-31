@@ -20,6 +20,8 @@ return new class extends Migration
             $table->enum('payment_method', ['Cash', 'Bank Transfer', 'Online', 'Other'])->default('Cash');
             $table->string('transaction_id')->nullable();
             $table->enum('payment_type', ['Monthly Fee', 'Registration', 'Books', 'Other'])->default('Monthly Fee');
+            $table->json('payment_months')->nullable(); // Array of months (1-12)
+            $table->year('payment_year')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
         });

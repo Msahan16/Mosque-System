@@ -38,11 +38,16 @@ return new class extends Migration
             $table->string('day_of_week'); // monday, tuesday, etc.
             $table->boolean('is_available')->default(true);
             $table->date('specific_date')->nullable(); // for one-time availability
+            $table->time('start_time')->nullable(); // for time availability
+            $table->time('end_time')->nullable(); // for time availability
+            $table->date('start_date')->nullable(); // for period availability
+            $table->date('end_date')->nullable(); // for period availability
             $table->text('notes')->nullable();
             $table->timestamps();
 
             $table->index(['imam_id', 'day_of_week']);
             $table->index(['mosque_id', 'specific_date']);
+            $table->index(['mosque_id', 'start_date', 'end_date']);
         });
     }
 

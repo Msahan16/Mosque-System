@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('mosque_id')->unique()->constrained()->onDelete('cascade');
             $table->decimal('santha_amount', 10, 2)->default(500); // Monthly santha payment amount
             $table->integer('santha_collection_date')->default(25); // Last date to collect (1-31)
+            $table->decimal('porridge_amount', 10, 2)->default(10); // Amount per porridge serving
             $table->text('notes')->nullable();
             $table->timestamps();
         });

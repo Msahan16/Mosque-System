@@ -15,11 +15,13 @@ class MosqueSetting extends Model
         'mosque_id',
         'santha_amount',
         'santha_collection_date',
+        'porridge_amount',
         'notes',
     ];
 
     protected $casts = [
         'santha_amount' => 'decimal:2',
+        'porridge_amount' => 'decimal:2',
     ];
 
     public function mosque()

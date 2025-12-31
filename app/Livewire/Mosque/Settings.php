@@ -14,6 +14,7 @@ class Settings extends Component
     public $setting;
     public $santha_amount;
     public $santha_collection_date;
+    public $porridge_amount;
     public $notes;
     public $editMode = false;
 
@@ -25,11 +26,13 @@ class Settings extends Component
         if ($this->setting) {
             $this->santha_amount = $this->setting->santha_amount;
             $this->santha_collection_date = $this->setting->santha_collection_date;
+            $this->porridge_amount = $this->setting->porridge_amount;
             $this->notes = $this->setting->notes;
             $this->editMode = true;
         } else {
             $this->santha_amount = 500;
             $this->santha_collection_date = 25;
+            $this->porridge_amount = 10;
         }
     }
 
@@ -38,6 +41,7 @@ class Settings extends Component
         return [
             'santha_amount' => 'required|numeric|min:0',
             'santha_collection_date' => 'required|integer|min:1|max:31',
+            'porridge_amount' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
         ];
     }
@@ -55,6 +59,7 @@ class Settings extends Component
                 $this->setting->update([
                     'santha_amount' => $this->santha_amount,
                     'santha_collection_date' => $this->santha_collection_date,
+                    'porridge_amount' => $this->porridge_amount,
                     'notes' => $this->notes,
                 ]);
                 $this->dispatch('swal:success', title: 'Success', text: 'Settings updated successfully');
@@ -64,6 +69,7 @@ class Settings extends Component
                     'mosque_id' => $this->mosque->id,
                     'santha_amount' => $this->santha_amount,
                     'santha_collection_date' => $this->santha_collection_date,
+                    'porridge_amount' => $this->porridge_amount,
                     'notes' => $this->notes,
                 ]);
                 $this->dispatch('swal:success', title: 'Success', text: 'Settings saved successfully');

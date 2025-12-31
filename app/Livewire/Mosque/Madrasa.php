@@ -15,9 +15,9 @@ class Madrasa extends Component
     use WithPagination;
 
     protected $listeners = [
-        'confirmDeleteUstad' => 'deleteUstad',
-        'confirmDeleteStudent' => 'deleteStudent',
-        'confirmDeletePayment' => 'deletePayment'
+        'deleteUstad' => 'deleteUstad',
+        'deleteStudent' => 'deleteStudent',
+        'deletePayment' => 'deletePayment'
     ];
 
     // Active tab
@@ -29,6 +29,7 @@ class Madrasa extends Component
     // Ustad management
     public $showUstadModal = false;
     public $editUstadMode = false;
+    public $viewUstadMode = false;
     public $ustadId;
     public $ustad_name, $ustad_phone, $ustad_email, $ustad_address;
     public $ustad_specialization, $ustad_experience_years, $ustad_qualification;
@@ -131,6 +132,26 @@ class Madrasa extends Component
         $this->ustad_is_active = $ustad->is_active;
 
         $this->editUstadMode = true;
+        $this->showUstadModal = true;
+    }
+
+    public function viewUstad($id)
+    {
+        $ustad = Ustad::findOrFail($id);
+        $this->ustadId = $ustad->id;
+        $this->ustad_name = $ustad->name;
+        $this->ustad_phone = $ustad->phone;
+        $this->ustad_email = $ustad->email;
+        $this->ustad_address = $ustad->address;
+        $this->ustad_specialization = $ustad->specialization;
+        $this->ustad_experience_years = $ustad->experience_years;
+        $this->ustad_qualification = $ustad->qualification;
+        $this->ustad_salary = $ustad->salary;
+        $this->ustad_joining_date = $ustad->joining_date->format('Y-m-d');
+        $this->ustad_notes = $ustad->notes;
+        $this->ustad_is_active = $ustad->is_active;
+
+        $this->viewUstadMode = true;
         $this->showUstadModal = true;
     }
 
@@ -320,7 +341,7 @@ class Madrasa extends Component
         $this->reset([
             'ustadId', 'ustad_name', 'ustad_phone', 'ustad_email', 'ustad_address',
             'ustad_specialization', 'ustad_experience_years', 'ustad_qualification',
-            'ustad_salary', 'ustad_joining_date', 'ustad_notes', 'editUstadMode'
+            'ustad_salary', 'ustad_joining_date', 'ustad_notes', 'editUstadMode', 'viewUstadMode'
         ]);
         $this->ustad_is_active = true;
     }
