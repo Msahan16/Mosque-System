@@ -156,7 +156,7 @@ class DatabaseSeeder extends Seeder
             'year' => now()->year,
             'payment_date' => now()->startOfMonth(),
             'payment_method' => 'Cash',
-            'receipt_number' => 'SAN-' . now()->format('Ym') . '-001',
+            'receipt_number' => 'SAN-' . now()->format('Ymd') . '-001',
             'is_paid' => true,
             'notes' => 'Monthly membership payment',
         ]);
@@ -169,7 +169,7 @@ class DatabaseSeeder extends Seeder
             'year' => now()->year,
             'payment_date' => now()->startOfMonth()->addDays(5),
             'payment_method' => 'Bank Transfer',
-            'receipt_number' => 'SAN-' . now()->format('Ym') . '-002',
+            'receipt_number' => 'SAN-' . now()->format('Ymd') . '-002',
             'is_paid' => true,
         ]);
 
@@ -182,7 +182,7 @@ class DatabaseSeeder extends Seeder
             'year' => now()->subMonth()->year,
             'payment_date' => now()->subMonth()->startOfMonth(),
             'payment_method' => 'Cash',
-            'receipt_number' => 'SAN-' . now()->subMonth()->format('Ym') . '-001',
+            'receipt_number' => 'SAN-' . now()->subMonth()->format('Ymd') . '-001',
             'is_paid' => true,
         ]);
     }
