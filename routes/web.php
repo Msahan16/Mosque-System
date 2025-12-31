@@ -80,5 +80,7 @@ Route::middleware([
         Route::get('/donations', Donations::class)->name('donations');
         Route::get('/settings', Settings::class)->name('settings');
         Route::get('/islamic-calendar', IslamicCalendar::class)->name('islamic-calendar');
+        Route::get('/madrasa', \App\Livewire\Mosque\Madrasa::class)->name('madrasa');
+        Route::get('/imam-management', \App\Livewire\Mosque\ImamManagement::class)->name('imam-management');
     });
 });
