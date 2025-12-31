@@ -293,7 +293,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Amount (₹) <span class="text-red-500">*</span>
+                                    Amount (LKR) <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="amount" type="number" step="0.01" required placeholder="0"
                                     class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-amber-500">
