@@ -58,7 +58,7 @@ class RamadanPorridge extends Component
     public function mount()
     {
         $this->ramadanYear = date('Y');
-        $this->porridgeAmount = MosqueSetting::where('mosque_id', auth()->user()->mosque_id)->value('porridge_amount') ?? 10;
+        $this->porridgeAmount = MosqueSetting::where('mosque_id', auth()->user()->mosque_id)->value('porridge_amount') ?? 0;
     }
 
     public function setActiveTab($tab)

@@ -135,9 +135,7 @@
                                                 </div>
                                             @else
                                                 <div class="text-sm text-gray-500">Available for sponsorship</div>
-                                                <div class="text-xs text-blue-400 mt-1">
-                                                    LKR {{ number_format($daySummary[$day]['remaining_budget'], 2) }} available
-                                                </div>
+                                               
                                             @endif
                                         </div>
                                     </button>
@@ -375,15 +373,7 @@
                             @error('sponsor_phone') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
-                        <!-- Porridge Count -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Number of Porridges <span class="text-red-500">*</span>
-                            </label>
-                            <input wire:model="porridge_count" type="number" min="1" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
-                            @error('porridge_count') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
-                        </div>
+                      
 
                         <!-- Custom Amount per Porridge -->
                         <div>
