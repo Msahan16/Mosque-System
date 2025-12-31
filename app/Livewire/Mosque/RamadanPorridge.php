@@ -4,6 +4,7 @@ namespace App\Livewire\Mosque;
 
 use App\Models\MosqueSetting;
 use App\Models\PorridgeSponsor;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
@@ -58,7 +59,7 @@ class RamadanPorridge extends Component
     public function mount()
     {
         $this->ramadanYear = date('Y');
-        $this->porridgeAmount = MosqueSetting::where('mosque_id', auth()->user()->mosque_id)->value('porridge_amount') ?? 0;
+        $this->porridgeAmount = MosqueSetting::where('mosque_id', Auth::user()->mosque_id)->value('porridge_amount') ?? 10;
     }
 
     public function setActiveTab($tab)
@@ -120,7 +121,7 @@ class RamadanPorridge extends Component
         try {
             // Check daily budget limit using porridge_amount as the daily limit
             $dailyBudgetLimit = $this->porridgeAmount; // Use porridge_amount as daily limit
-            $currentAmountForDay = PorridgeSponsor::where('mosque_id', auth()->user()->mosque_id)
+            $currentAmountForDay = PorridgeSponsor::where('mosque_id', Auth::user()->mosque_id)
                 ->where('ramadan_year', $this->ramadanYear)
                 ->where('day_number', $this->day_number)
                 ->when($this->editMode, function ($query) {
@@ -139,7 +140,7 @@ class RamadanPorridge extends Component
             $amountPerPorridge = $this->custom_amount_per_porridge ?? $this->porridgeAmount;
             
             $data = [
-                'mosque_id' => auth()->user()->mosque_id,
+                'mosque_id' => Auth::user()->mosque_id,
                 'ramadan_year' => $this->ramadanYear,
                 'day_number' => $this->day_number,
                 'sponsor_name' => $this->is_anonymous ? null : $this->sponsor_name,
@@ -152,7 +153,7 @@ class RamadanPorridge extends Component
                 'payment_method' => $this->payment_method,
                 'distribution_status' => $this->distribution_status,
                 'notes' => $this->notes,
-                'created_by' => auth()->id(),
+                'created_by' => Auth::id(),
             ];
 
             if ($this->editMode) {
@@ -219,7 +220,7 @@ class RamadanPorridge extends Component
 
     public function render()
     {
-        $mosqueId = auth()->user()->mosque_id;
+        $mosqueId = Auth::user()->mosque_id;
 
         // Get sponsors for the current year
         $sponsors = PorridgeSponsor::where('mosque_id', $mosqueId)

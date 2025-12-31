@@ -8,6 +8,7 @@ use App\Models\StudentPayment;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Auth;
 
 #[Layout('components.layouts.app')]
 class Madrasa extends Component
@@ -161,7 +162,7 @@ class Madrasa extends Component
 
         try {
             $data = [
-                'mosque_id' => auth()->user()->mosque_id,
+                'mosque_id' => Auth::user()->mosque_id,
                 'name' => $this->ustad_name,
                 'phone' => $this->ustad_phone,
                 'email' => $this->ustad_email,
@@ -239,7 +240,7 @@ class Madrasa extends Component
 
         try {
             $data = [
-                'mosque_id' => auth()->user()->mosque_id,
+                'mosque_id' => Auth::user()->mosque_id,
                 'name' => $this->student_name,
                 'date_of_birth' => $this->student_date_of_birth,
                 'gender' => $this->student_gender,
@@ -300,7 +301,7 @@ class Madrasa extends Component
         try {
             StudentPayment::create([
                 'student_id' => $this->payment_student_id,
-                'mosque_id' => auth()->user()->mosque_id,
+                'mosque_id' => Auth::user()->mosque_id,
                 'amount' => $this->payment_amount,
                 'payment_date' => $this->payment_date,
                 'payment_method' => $this->payment_method,
@@ -367,7 +368,7 @@ class Madrasa extends Component
 
     public function render()
     {
-        $mosqueId = auth()->user()->mosque_id;
+        $mosqueId = Auth::user()->mosque_id;
 
         $ustads = Ustad::where('mosque_id', $mosqueId)
             ->when($this->search && $this->activeTab === 'ustads', function ($query) {
