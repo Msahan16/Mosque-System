@@ -1,9 +1,17 @@
-<div class="py-6 min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-    <div class="mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Islamic Calendar</h2>
-            <p class="text-gray-600 dark:text-gray-400 mt-2">Prayer times, Azan schedule & Islamic dates for {{ $mosque->name }}</p>
+<div class="py-6 min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800" style="margin-left: 0 !important;">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <!-- Header with Back Button -->
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Islamic Calendar</h2>
+                <p class="text-gray-600 dark:text-gray-400 mt-2">Prayer times, Azan schedule & Islamic dates for {{ $mosque->name }}</p>
+            </div>
+            <a href="{{ route('mosque.dashboard') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition shadow-lg">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Dashboard
+            </a>
         </div>
 
         <!-- Current Date & Hijri Date Card -->
@@ -257,6 +265,16 @@
         <style>
             [wire\:poll] {
                 transition: color 0.3s ease;
+            }
+            
+            /* Hide sidebar and overlay for full page view */
+            #sidebar, #sidebar-overlay {
+                display: none !important;
+            }
+            
+            /* Adjust main content to full width */
+            .flex-1.flex.flex-col.overflow-hidden.mosque-bg {
+                margin-left: 0 !important;
             }
         </style>
     </div>

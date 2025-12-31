@@ -7,6 +7,8 @@ use App\Models\PrayerSchedule;
 use App\Models\Mosque;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class IslamicCalendar extends Component
 {
@@ -43,7 +45,7 @@ class IslamicCalendar extends Component
 
     public function mount()
     {
-        $this->mosque = auth()->user()->mosque ?? Mosque::first();
+        $this->mosque = optional(Auth::user())->mosque ?? Mosque::first();
         
         // Get all values directly from mosque table - no changes allowed
         $this->timezone = $this->mosque->timezone ?? 'Asia/Colombo';
@@ -108,7 +110,7 @@ class IslamicCalendar extends Component
         if (!$this->prayerSchedule) {
             $this->loadingPrayers = false;
             $this->apiError = 'Unable to load prayer times. Please check your internet connection and try again.';
-            \Log::error('Failed to load prayer times from API and database', [
+            Log::error('Failed to load prayer times from API and database', [
                 'mosque_id' => $this->mosque->id,
                 'date' => $this->selectedDate,
                 'latitude' => $this->latitude,
@@ -150,7 +152,7 @@ class IslamicCalendar extends Component
             $lat = $this->latitude;
             $lng = $this->longitude;
 
-            \Log::info("Fetching prayer times for {$this->selectedDate}", [
+            Log::info("Fetching prayer times for {$this->selectedDate}", [
                 'date' => $date,
                 'latitude' => $lat,
                 'longitude' => $lng,
@@ -174,7 +176,7 @@ class IslamicCalendar extends Component
                 $timings = $data['data']['timings'];
                 $hijri = $data['data']['date']['hijri']; // Fixed: hijri is nested under date
 
-                \Log::info("Prayer times fetched successfully", [
+                Log::info("Prayer times fetched successfully", [
                     'fajr' => substr($timings['Fajr'], 0, 5),
                     'dhuhr' => substr($timings['Dhuhr'], 0, 5),
                     'hijri' => "{$hijri['day']} {$hijri['month']['en']} {$hijri['year']}"
@@ -208,7 +210,7 @@ class IslamicCalendar extends Component
                 throw new \Exception('API returned status: ' . $response->status());
             }
         } catch (\Exception $e) {
-            \Log::error('Prayer times fetch error: ' . $e->getMessage(), [
+            Log::error('Prayer times fetch error: ' . $e->getMessage(), [
                 'date' => $this->selectedDate,
                 'latitude' => $this->latitude,
                 'longitude' => $this->longitude
@@ -252,7 +254,7 @@ class IslamicCalendar extends Component
                     return;
                 }
             } catch (\Exception $e) {
-                \Log::warning('Prayer time parse error for ' . $prayer['name'] . ': ' . $prayer['time']);
+                Log::warning('Prayer time parse error for ' . $prayer['name'] . ': ' . $prayer['time']);
                 continue;
             }
         }
@@ -343,7 +345,7 @@ class IslamicCalendar extends Component
                 }
             }
         } catch (\Exception $e) {
-            \Log::warning('Could not extract Hijri year: ' . $e->getMessage());
+            Log::warning('Could not extract Hijri year: ' . $e->getMessage());
         }
 
         // Important Islamic dates with Hijri date format (DD-MM-YYYY)
@@ -405,7 +407,7 @@ class IslamicCalendar extends Component
                 usleep(100000); // 0.1 second delay
                 
             } catch (\Exception $e) {
-                \Log::warning('Date conversion error for ' . $event['hijri'] . ': ' . $e->getMessage());
+                Log::warning('Date conversion error for ' . $event['hijri'] . ': ' . $e->getMessage());
                 
                 // Fallback dates
                 $convertedDates[] = [

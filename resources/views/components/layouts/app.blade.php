@@ -58,9 +58,27 @@
             transition: all 0.3s ease;
         }
         
+        /* Hide scrollbar but keep scrolling functionality */
+        #sidebar::-webkit-scrollbar {
+            display: none;
+        }
+        #sidebar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* Hide scrollbar for main content area */
+        main::-webkit-scrollbar {
+            display: none;
+        }
+        main {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
         .mosque-bg {
             background-color: #1a4d7a;
-            background-image: url('{{ asset('images/mosque2.jpg') }}');
+            background-image: url("{{ asset('images/mosque2.jpg') }}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -83,7 +101,7 @@
 <body class="antialiased">
     <div class="flex h-screen bg-white dark:bg-slate-900">
         <!-- Sidebar -->
-        <div id="sidebar" class="sidebar-transition fixed lg:relative inset-y-0 left-0 z-40 w-64 h-screen lg:h-auto bg-gradient-to-b from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 shadow-2xl overflow-y-hidden -translate-x-full lg:translate-x-0">
+        <div id="sidebar" class="sidebar-transition fixed lg:relative inset-y-0 left-0 z-40 w-64 h-screen lg:h-auto bg-gradient-to-b from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 shadow-2xl overflow-y-auto -translate-x-full lg:translate-x-0">
             <!-- Logo Section -->
             <div class="bg-gradient-to-r from-blue-700 to-blue-900 dark:from-blue-900 dark:to-blue-950 px-6 py-8 border-b border-blue-500">
                 <div class="flex items-center gap-3">

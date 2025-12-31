@@ -6,6 +6,7 @@ use App\Models\Mosque;
 use App\Models\MosqueSetting;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
+use Illuminate\Support\Facades\Auth;
 
 #[Layout('components.layouts.app')]
 class Settings extends Component
@@ -17,10 +18,11 @@ class Settings extends Component
     public $porridge_amount;
     public $notes;
     public $editMode = false;
+    public $activeTab = 'santha';
 
     public function mount()
     {
-        $this->mosque = auth()->user()->mosque;
+        $this->mosque = Auth::user()->mosque;
         $this->setting = MosqueSetting::where('mosque_id', $this->mosque->id)->first();
         
         if ($this->setting) {
@@ -89,6 +91,11 @@ class Settings extends Component
             3 => 'rd',
             default => 'th'
         };
+    }
+
+    public function setActiveTab($tab)
+    {
+        $this->activeTab = $tab;
     }
 
     public function render()

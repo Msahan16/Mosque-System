@@ -1,15 +1,18 @@
-<div>
+<div class="py-6 min-h-screen">
+    <div class=" mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="mb-6">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-3xl font-bold text-white">Ramadan Porridge Distribution</h1>
+        <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="w-full sm:w-auto">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white dark:text-white">Ramadan Porridge Distribution</h2>
+                <p class="text-white/80 dark:text-gray-400 mt-1 text-sm sm:text-base">Track daily porridge sponsorship and distribution</p>
+            </div>
             <div class="flex items-center gap-4">
                 <select wire:model.live="ramadanYear" class="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
                     @for($year = 2024; $year <= 2030; $year++)
                         <option value="{{ $year }}">{{ $year }} Ramadan</option>
                     @endfor
                 </select>
-                <button wire:click="openModal" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition shadow-lg">
+                <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-green-700 transition shadow-lg text-sm sm:text-base">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
@@ -19,7 +22,7 @@
         </div>
 
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-blue-100 text-sm font-medium">Total Sponsors</span>
@@ -82,12 +85,12 @@
         <div class="space-y-6">
             <!-- 30-Day Calendar -->
             <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 class="text-xl font-semibold text-white">Ramadan {{ $ramadanYear }} - 30 Days Porridge Distribution</h3>
                     <p class="text-gray-400 text-sm mt-1">Click on any day to add sponsors or view details</p>
                 </div>
 
-                <div class="p-6">
+                <div class="p-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                         @for($day = 1; $day <= 30; $day++)
                             <div class="relative">
@@ -221,7 +224,6 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900 dark:text-white">LKR {{ number_format($sponsor->total_amount, 2) }}</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $sponsor->amount_per_porridge }} per porridge</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
