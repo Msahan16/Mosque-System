@@ -56,7 +56,7 @@
                     <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">↑ 12%</span>
                 </div>
                 <p class="text-slate-600 dark:text-slate-400 text-sm mb-2">Total Donations</p>
-                <p class="text-4xl font-bold text-cyan-600 dark:text-cyan-400">₹{{ number_format($totalDonations, 0) }}</p>
+                <p class="text-4xl font-bold text-cyan-600 dark:text-cyan-400">LKR{{ number_format($totalDonations, 0) }}</p>
             </div>
 
             <!-- Paid This Month Card -->
@@ -114,7 +114,7 @@
                                     <h4 class="font-bold text-slate-900 dark:text-white">{{ $donation->donor_name }}</h4>
                                     <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ $donation->donation_type }}</p>
                                 </div>
-                                <div class="text-cyan-600 dark:text-cyan-400 font-bold">₹{{ number_format($donation->amount, 0) }}</div>
+                                <div class="text-cyan-600 dark:text-cyan-400 font-bold">LKR{{ number_format($donation->amount, 0) }}</div>
                             </div>
                         </div>
                     @empty
@@ -140,7 +140,7 @@
                                 <span class="px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
                                     Unpaid
                                 </span>
-                                <span class="font-bold text-purple-600 dark:text-purple-400">₹{{ number_format($santha->amount, 0) }}</span>
+                                <span class="font-bold text-purple-600 dark:text-purple-400">LKR{{ number_format($santha->amount, 0) }}</span>
                             </div>
                         </div>
                     @empty

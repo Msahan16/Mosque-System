@@ -77,7 +77,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">₹{{ number_format($totalReceivedDonations, 0) }}</p>
+                    <p class="text-3xl font-bold">LKR{{ number_format($totalReceivedDonations, 0) }}</p>
                 </div>
                 <div class="bg-gradient-to-br from-green-400 to-emerald-500 text-white rounded-xl p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
@@ -86,7 +86,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">₹{{ number_format($thisMonthReceivedDonations, 0) }}</p>
+                    <p class="text-3xl font-bold">LKR{{ number_format($thisMonthReceivedDonations, 0) }}</p>
                 </div>
                 <div class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
@@ -104,7 +104,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">₹{{ number_format($averageReceivedDonation, 0) }}</p>
+                    <p class="text-3xl font-bold">LKR{{ number_format($averageReceivedDonation, 0) }}</p>
                 </div>
             </div>
         @else
@@ -116,7 +116,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">₹{{ number_format($totalGivenDonations, 0) }}</p>
+                    <p class="text-3xl font-bold">LKR{{ number_format($totalGivenDonations, 0) }}</p>
                 </div>
                 <div class="bg-gradient-to-br from-blue-400 to-cyan-500 text-white rounded-xl p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
@@ -125,7 +125,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">₹{{ number_format($thisMonthGivenDonations, 0) }}</p>
+                    <p class="text-3xl font-bold">LKR{{ number_format($thisMonthGivenDonations, 0) }}</p>
                 </div>
                 <div class="bg-gradient-to-br from-cyan-500 to-teal-500 text-white rounded-xl p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
@@ -143,7 +143,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">₹{{ number_format($averageGivenDonation, 0) }}</p>
+                    <p class="text-3xl font-bold">LKR{{ number_format($averageGivenDonation, 0) }}</p>
                 </div>
             </div>
         @endif
@@ -208,7 +208,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-lg font-bold text-amber-600 dark:text-amber-400">₹{{ number_format($donation->amount, 2) }}</span>
+                                    <span class="text-lg font-bold text-amber-600 dark:text-amber-400">LKR{{ number_format($donation->amount, 2) }}</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
@@ -476,7 +476,7 @@
 
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
                         <div style="font-weight:600;color:#111827;">Amount</div>
-                        <div style="font-size:18px;font-weight:700;color:#0f172a;">₹{{ number_format($viewingDonation['amount'], 2) }}</div>
+                        <div style="font-size:18px;font-weight:700;color:#0f172a;">LKR{{ number_format($viewingDonation['amount'], 2) }}</div>
                     </div>
                     <div style="color:#6b7280;margin-top:8px;font-size:13px;">Purpose: {{ ucfirst($viewingDonation['purpose'] ?? '') }}</div>
                     <div style="color:#6b7280;margin-top:6px;font-size:13px;">Method: {{ ucfirst($viewingDonation['payment_method']) }}</div>

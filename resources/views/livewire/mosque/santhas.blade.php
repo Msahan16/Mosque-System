@@ -60,7 +60,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <p class="text-3xl font-bold">₹{{ number_format($totalThisMonth, 0) }}</p>
+                <p class="text-3xl font-bold">LKR{{ number_format($totalThisMonth, 0) }}</p>
             </div>
             <div class="bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-6 shadow-lg">
                 <div class="flex items-center justify-between mb-2">
@@ -121,7 +121,7 @@
                                     <div class="text-sm text-gray-900 dark:text-white">{{ $santha->month }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm font-semibold text-gray-900 dark:text-white">₹{{ number_format($santha->amount, 2) }}</span>
+                                    <span class="text-sm font-semibold text-gray-900 dark:text-white">LKR{{ number_format($santha->amount, 2) }}</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900 dark:text-white">{{ $santha->payment_date ? $santha->payment_date->format('d M, Y') : '-' }}</div>
@@ -240,7 +240,7 @@
                                     <option value="">Select a payment</option>
                                     @foreach($unpaidSanthas as $santha)
                                         <option value="{{ $santha['id'] }}">
-                                            {{ $santha['month'] }} - ₹{{ number_format($santha['amount'], 2) }}
+                                            {{ $santha['month'] }} - LKR{{ number_format($santha['amount'], 2) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -276,7 +276,7 @@
                                             class="mt-0.5 text-blue-600 focus:ring-blue-500">
                                         <div class="ml-2 flex-1 text-xs">
                                             <span class="block font-medium text-gray-900 dark:text-white">This Month Only</span>
-                                            <span class="block text-gray-500 dark:text-gray-400">Pay ₹{{ number_format($amount || 0, 0) }} once</span>
+                                            <span class="block text-gray-500 dark:text-gray-400">Pay LKR{{ number_format($amount || 0, 0) }} once</span>
                                         </div>
                                     </label>
                                     
@@ -291,7 +291,7 @@
                                                     {{ floor($amount / $monthly_santha_amount) }} months
                                                 </span>
                                             @else
-                                                <span class="block text-gray-500 dark:text-gray-400">÷ ₹{{ number_format($monthly_santha_amount || 0, 0) }}/mo</span>
+                                                <span class="block text-gray-500 dark:text-gray-400">÷ LKR{{ number_format($monthly_santha_amount || 0, 0) }}/mo</span>
                                             @endif
                                         </div>
                                     </label>
@@ -429,7 +429,7 @@
 
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
                         <div style="font-weight:600;color:#111827;">Amount Paid</div>
-                        <div style="font-size:18px;font-weight:700;color:#0f172a;">₹{{ number_format($viewingSantha['amount'], 2) }}</div>
+                        <div style="font-size:18px;font-weight:700;color:#0f172a;">LKR{{ number_format($viewingSantha['amount'], 2) }}</div>
                     </div>
                     <div style="color:#6b7280;margin-top:8px;font-size:13px;">Method: {{ ucfirst($viewingSantha['payment_method']) }}</div>
                     @if(!empty($viewingSantha['notes']))
