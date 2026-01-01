@@ -7,6 +7,7 @@ use App\Models\Family;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Auth;
 
 #[Layout('components.layouts.app')]
 class Santhas extends Component
@@ -63,7 +64,8 @@ class Santhas extends Component
     public function generateReceiptNumber()
     {
         if (!$this->editMode) {
-            $this->receipt_number = 'SAN-' . now()->format('Ym') . '-' . str_pad(Santha::where('mosque_id', auth()->user()->mosque_id)->count() + 1, 3, '0', STR_PAD_LEFT);
+            $mosqueId = Auth::user()->mosque_id;
+            $this->receipt_number = 'SAN-' . now()->format('Ym') . '-' . str_pad(Santha::where('mosque_id', $mosqueId)->count() + 1, 3, '0', STR_PAD_LEFT);
         }
     }
 
@@ -86,12 +88,13 @@ class Santhas extends Component
     {
         if ($value) {
             // Get mosque settings for monthly santha amount
-            $mosqueSettings = \App\Models\MosqueSetting::where('mosque_id', auth()->user()->mosque_id)->first();
+            $mosqueId = Auth::user()->mosque_id;
+            $mosqueSettings = \App\Models\MosqueSetting::where('mosque_id', $mosqueId)->first();
             $this->monthly_santha_amount = $mosqueSettings ? $mosqueSettings->santha_amount : 500;
             
             // Fetch unpaid santhas for this family
             $this->unpaidSanthas = Santha::where('family_id', $value)
-                ->where('mosque_id', auth()->user()->mosque_id)
+                ->where('mosque_id', $mosqueId)
                 ->where('is_paid', false)
                 ->orderBy('year', 'asc')
                 ->orderBy('month', 'asc')
@@ -163,10 +166,12 @@ class Santhas extends Component
         $this->validate();
 
         try {
+            $mosqueId = Auth::user()->mosque_id;
+
             if ($this->payment_type === 'this_month') {
                 // Pay only the selected month with the entered amount
                 $data = [
-                    'mosque_id' => auth()->user()->mosque_id,
+                    'mosque_id' => $mosqueId,
                     'family_id' => $this->family_id,
                     'amount' => $this->amount,
                     'month' => $this->month,
@@ -206,7 +211,7 @@ class Santhas extends Component
                 
                 // Get unpaid santhas ordered by oldest first
                 $unpaidSanthas = Santha::where('family_id', $this->family_id)
-                    ->where('mosque_id', auth()->user()->mosque_id)
+                    ->where('mosque_id', $mosqueId)
                     ->where('is_paid', false)
                     ->orderBy('year', 'asc')
                     ->orderBy('month', 'asc')
@@ -237,10 +242,10 @@ class Santhas extends Component
                     
                     for ($i = 0; $i < $remainingMonths; $i++) {
                         $monthDate = $startDate->copy()->addMonths($i);
-                        $receiptNumber = 'SAN-' . $monthDate->format('Ym') . '-' . str_pad(Santha::where('mosque_id', auth()->user()->mosque_id)->count() + 1, 3, '0', STR_PAD_LEFT);
+                        $receiptNumber = 'SAN-' . $monthDate->format('Ym') . '-' . str_pad(Santha::where('mosque_id', $mosqueId)->count() + 1, 3, '0', STR_PAD_LEFT);
                         
                         Santha::create([
-                            'mosque_id' => auth()->user()->mosque_id,
+                            'mosque_id' => $mosqueId,
                             'family_id' => $this->family_id,
                             'amount' => $this->monthly_santha_amount,
                             'month' => $monthDate->format('F'),
@@ -334,7 +339,7 @@ class Santhas extends Component
 
     public function render()
     {
-        $mosqueeId = auth()->user()->mosque_id;
+        $mosqueeId = Auth::user()->mosque_id;
         $currentMonth = now()->month;
         $currentYear = now()->year;
 
