@@ -94,6 +94,15 @@
             background: rgba(17, 24, 39, 0.95);
             backdrop-filter: blur(10px);
         }
+        
+        /* Hide scrollbar for modals but keep scrolling functionality */
+        .overflow-y-auto::-webkit-scrollbar {
+            display: none;
+        }
+        .overflow-y-auto {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
     </style>
     
     @livewireStyles

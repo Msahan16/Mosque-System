@@ -3,11 +3,11 @@
     <!-- Header -->
         <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div class="w-full sm:w-auto">
-                <h2 class="text-2xl sm:text-3xl font-bold text-white dark:text-white">Ramadan Porridge Distribution</h2>
-                <p class="text-white/80 dark:text-gray-400 mt-1 text-sm sm:text-base">Track daily porridge sponsorship and distribution</p>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white">Ramadan Porridge Distribution</h2>
+                <p class="text-white/80 mt-1 text-sm sm:text-base">Track daily porridge sponsorship and distribution</p>
             </div>
             <div class="flex items-center gap-4">
-                <select wire:model.live="ramadanYear" class="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
+                <select wire:model.live="ramadanYear" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white">
                     @for($year = 2024; $year <= 2030; $year++)
                         <option value="{{ $year }}">{{ $year }} Ramadan</option>
                     @endfor
@@ -67,17 +67,15 @@
     </div>
 
     <!-- Tabs -->
-    <div class="mb-6">
-        <nav class="flex space-x-1 bg-gray-800 p-1 rounded-lg">
-            <button wire:click="setActiveTab('overview')"
-                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md transition {{ $activeTab === 'overview' ? 'bg-emerald-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                Overview
-            </button>
-            <button wire:click="setActiveTab('sponsors')"
-                    class="flex-1 py-2 px-4 text-sm font-medium rounded-md transition {{ $activeTab === 'sponsors' ? 'bg-emerald-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700' }}">
-                Sponsors
-            </button>
-        </nav>
+    <div class="mb-6 flex gap-2 border-b border-gray-300 dark:border-gray-700">
+        <button wire:click="setActiveTab('overview')" 
+            class="px-4 py-3 font-medium text-sm text-white transition {{ $activeTab === 'overview' ? 'border-b-2 border-emerald-600 dark:border-emerald-400' : 'hover:opacity-80' }}">
+            Overview
+        </button>
+        <button wire:click="setActiveTab('sponsors')" 
+            class="px-4 py-3 font-medium text-sm text-white transition {{ $activeTab === 'sponsors' ? 'border-b-2 border-emerald-600 dark:border-emerald-400' : 'hover:opacity-80' }}">
+            Sponsors
+        </button>
     </div>
 
     <!-- Overview Tab -->
@@ -86,8 +84,8 @@
             <!-- 30-Day Calendar -->
             <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-xl font-semibold text-white">Ramadan {{ $ramadanYear }} - 30 Days Porridge Distribution</h3>
-                    <p class="text-gray-400 text-sm mt-1">Click on any day to add sponsors or view details</p>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Ramadan {{ $ramadanYear }} - 30 Days Porridge Distribution</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Click on any day to add sponsors or view details</p>
                 </div>
 
                 <div class="p-4">
@@ -97,11 +95,11 @@
                                 @if($daySummary[$day]['is_budget_full'])
                                     <div class="w-full p-4 rounded-lg border-2 border-emerald-500 bg-emerald-500/10 {{ $daySummary[$day]['is_distributed'] ? 'ring-2 ring-green-500' : '' }}">
                                         <div class="text-center">
-                                            <div class="text-2xl font-bold text-white mb-1">Day {{ $day }}</div>
+                                            <div class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Day {{ $day }}</div>
                                             <div class="text-sm text-emerald-400 font-medium">
                                                 Budget Full (LKR {{ number_format($daySummary[$day]['daily_budget'], 2) }})
                                             </div>
-                                            <div class="text-xs text-gray-400">
+                                            <div class="text-xs text-gray-600 dark:text-gray-400">
                                                 {{ $daySummary[$day]['sponsors_count'] }} sponsors
                                             </div>
                                             @if($daySummary[$day]['is_distributed'])
@@ -125,12 +123,12 @@
                                                    {{ $daySummary[$day]['total_porridges'] > 0 ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-600 bg-gray-800/50 hover:border-emerald-400' }}
                                                    {{ $daySummary[$day]['is_distributed'] ? 'ring-2 ring-green-500' : '' }}">
                                         <div class="text-center">
-                                            <div class="text-2xl font-bold text-white mb-1">Day {{ $day }}</div>
+                                            <div class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Day {{ $day }}</div>
                                             @if($daySummary[$day]['total_porridges'] > 0)
                                                 <div class="text-sm text-emerald-400 font-medium">
                                                     LKR {{ number_format($daySummary[$day]['total_amount'], 2) }} collected
                                                 </div>
-                                                <div class="text-xs text-gray-400">
+                                                <div class="text-xs text-gray-600 dark:text-gray-400">
                                                     {{ $daySummary[$day]['sponsors_count'] }} sponsors
                                                 </div>
                                                 <div class="text-xs text-blue-400 mt-1">
@@ -147,9 +145,9 @@
                                 @if($daySummary[$day]['sponsors_count'] > 0)
                                     <div class="mt-2 space-y-1">
                                         @foreach($daySummary[$day]['sponsors'] as $sponsor)
-                                            <div class="text-xs bg-gray-700 rounded px-2 py-1">
-                                                <div class="font-medium text-white">{{ $sponsor->sponsor_name }}</div>
-                                                <div class="text-gray-400">{{ $sponsor->porridge_count }} × LKR {{ number_format($sponsor->amount_per_porridge, 2) }}</div>
+                                            <div class="text-xs bg-gray-200 dark:bg-gray-700 rounded px-2 py-1">
+                                                <div class="font-medium text-gray-900 dark:text-white">{{ $sponsor->sponsor_name }}</div>
+                                                <div class="text-gray-600 dark:text-gray-400">{{ $sponsor->porridge_count }} × LKR {{ number_format($sponsor->amount_per_porridge, 2) }}</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -168,10 +166,10 @@
         <div class="mb-6 flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
                 <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search sponsors..."
-                       class="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                       class="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
             </div>
             <div class="flex gap-2">
-                <select wire:model.live="selectedDay" class="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
+                <select wire:model.live="selectedDay" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white">
                     <option value="">All Days</option>
                     @for($day = 1; $day <= 30; $day++)
                         <option value="{{ $day }}">Day {{ $day }}</option>
