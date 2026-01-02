@@ -110,7 +110,7 @@ class Santhas extends Component
 
         try {
             $mosqueId = Auth::user()->mosque_id;
-            $monthName = Carbon::create()->month($this->month)->format('F');
+            $monthName = Carbon::create()->month((int)$this->month)->format('F');
 
             // Check if payment already exists for this family/month/year (unless editing same record)
             $existing = Santha::where('mosque_id', $mosqueId)
@@ -226,7 +226,7 @@ class Santhas extends Component
                 ->orWhere('receipt_number', 'like', '%' . $this->search . '%');
             })
             ->when($this->filterMonth, function ($query) {
-                $monthName = Carbon::create()->month($this->filterMonth)->format('F');
+                $monthName = Carbon::create()->month((int)$this->filterMonth)->format('F');
                 $query->where(function($q) use ($monthName) {
                     $q->where('month', $this->filterMonth)
                       ->orWhere('month', $monthName);
