@@ -249,8 +249,9 @@ class RamadanPorridge extends Component
             ->count();
 
         $totalPorridges = PorridgeSponsor::where('mosque_id', $mosqueId)
-            ->where('ramadan_year', $this->ramadanYear)
-            ->sum('porridge_count');
+        ->where('ramadan_year', $this->ramadanYear)
+        ->distinct('day_number')
+        ->count('day_number');
 
         $totalAmount = PorridgeSponsor::where('mosque_id', $mosqueId)
             ->where('ramadan_year', $this->ramadanYear)
