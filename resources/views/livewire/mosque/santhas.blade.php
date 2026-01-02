@@ -1,14 +1,14 @@
-@section('title', 'Santha Management')
+@section('title', 'Santha Collection')
 
 <div class="py-6 min-h-screen">
-    <div class=" mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div class="w-full sm:w-auto">
-                <h2 class="text-2xl sm:text-3xl font-bold text-white dark:text-white">Santha Management</h2>
-                <p class="text-white/80 dark:text-gray-400 mt-1 text-sm sm:text-base">Track monthly membership payments from families</p>
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white">Santha Collection</h2>
+                <p class="text-white/80 mt-1 text-sm">Monthly membership payments - {{ $currentMonthName }}</p>
             </div>
-            <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-green-700 transition shadow-lg text-sm sm:text-base">
+            <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-green-700 transition shadow-lg">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
@@ -16,11 +16,30 @@
             </button>
         </div>
 
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-4 shadow-lg">
+                <p class="text-blue-100 text-xs font-medium">This Month</p>
+                <p class="text-2xl font-bold mt-1">LKR {{ number_format($totalCollectedThisMonth, 0) }}</p>
+            </div>
+            <div class="bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-4 shadow-lg">
+                <p class="text-green-100 text-xs font-medium">Paid</p>
+                <p class="text-2xl font-bold mt-1">{{ $paidThisMonth }} / {{ $totalFamilies }}</p>
+            </div>
+            <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl p-4 shadow-lg">
+                <p class="text-orange-100 text-xs font-medium">Pending</p>
+                <p class="text-2xl font-bold mt-1">{{ $pendingThisMonth }}</p>
+            </div>
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-4 shadow-lg">
+                <p class="text-purple-100 text-xs font-medium">Rate</p>
+                <p class="text-2xl font-bold mt-1">{{ $collectionRate }}%</p>
+            </div>
+        </div>
+
         <!-- Filters -->
-        <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-                <label class="block text-sm font-medium text-white dark:text-gray-300 mb-2">Month</label>
-                <select wire:model.live="filterMonth" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <select wire:model.live="filterMonth" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm">
                     <option value="">All Months</option>
                     @for($m = 1; $m <= 12; $m++)
                         <option value="{{ $m }}">{{ date('F', mktime(0, 0, 0, $m, 1)) }}</option>
@@ -28,156 +47,61 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-white dark:text-gray-300 mb-2">Year</label>
-                <select wire:model.live="filterYear" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-                    <option value="">All Years</option>
-                    @for($y = date('Y'); $y >= date('Y') - 5; $y--)
+                <select wire:model.live="filterYear" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm">
+                    @for($y = date('Y'); $y >= date('Y') - 3; $y--)
                         <option value="{{ $y }}">{{ $y }}</option>
                     @endfor
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-white dark:text-gray-300 mb-2">Status</label>
-                <select wire:model.live="filterStatus" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-                    <option value="">All Status</option>
-                    <option value="paid">Paid</option>
-                    <option value="unpaid">Unpaid</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-white dark:text-gray-300 mb-2">Search</label>
-                <input wire:model.live="search" type="text" placeholder="Search family..." 
-                    class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500">
+                <input wire:model.live="search" type="text" placeholder="Search family or receipt..." 
+                    class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm">
             </div>
         </div>
 
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-purple-100 text-sm font-medium">This Month Total</span>
-                    <svg class="w-8 h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <p class="text-3xl font-bold">LKR{{ number_format($totalThisMonth, 0) }}</p>
-            </div>
-            <div class="bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-6 shadow-lg">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-green-100 text-sm font-medium">Paid Families</span>
-                    <svg class="w-8 h-8 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <p class="text-3xl font-bold">{{ $paidCount }}</p>
-            </div>
-            <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 shadow-lg">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-orange-100 text-sm font-medium">Pending Families</span>
-                    <svg class="w-8 h-8 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <p class="text-3xl font-bold">{{ $unpaidCount }}</p>
-            </div>
-            <div class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl p-6 shadow-lg">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-blue-100 text-sm font-medium">Collection Rate</span>
-                    <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                </div>
-                <p class="text-3xl font-bold">{{ $collectionRate }}%</p>
-            </div>
-        </div>
-
-        <!-- Santhas Table -->
+        <!-- Payments Table -->
         <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Receipt #</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Family</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Period</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Amount</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Payment Date</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Method</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Receipt</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Family</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Period</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Amount</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Date</th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse($santhas as $santha)
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm font-mono text-purple-600 dark:text-purple-400">{{ $santha->receipt_number }}</span>
+                                <td class="px-4 py-3">
+                                    <span class="text-xs font-mono text-blue-600 dark:text-blue-400">{{ $santha->receipt_number }}</span>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $santha->family->family_head_name }}</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $santha->family->phone }}</div>
+                                <td class="px-4 py-3">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $santha->family->family_head_name ?? 'N/A' }}</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900 dark:text-white">{{ $santha->month }}</div>
+                                <td class="px-4 py-3">
+                                    <span class="text-sm text-gray-900 dark:text-white">{{ $santha->month }} {{ $santha->year }}</span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm font-semibold text-gray-900 dark:text-white">LKR{{ number_format($santha->amount, 2) }}</span>
+                                <td class="px-4 py-3">
+                                    <span class="text-sm font-semibold text-green-600 dark:text-green-400">LKR {{ number_format($santha->amount, 0) }}</span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900 dark:text-white">{{ $santha->payment_date ? $santha->payment_date->format('d M, Y') : '-' }}</div>
+                                <td class="px-4 py-3">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ $santha->payment_date->format('d M Y') }}</span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $santha->payment_method == 'cash' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' }}">
-                                        {{ ucfirst($santha->payment_method) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    @if($santha->is_paid)
-                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            Paid
-                                        </span>
-                                    @else
-                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            Pending
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center space-x-2">
-                                    @if(!$santha->is_paid)
-                                        <button wire:click="markAsPaid({{ $santha->id }})" class="inline-flex items-center px-3 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            Pay
-                                        </button>
-                                    @endif
-                                    <button wire:click="editSantha({{ $santha->id }})" class="inline-flex items-center px-3 py-1 bg-purple-600 text-white text-xs font-medium rounded hover:bg-purple-700 transition">
-                                        Edit
-                                    </button>
-                                    <button wire:click="viewReceipt({{ $santha->id }})" class="inline-flex items-center px-3 py-1 bg-indigo-600 text-white text-xs font-medium rounded hover:bg-indigo-700 transition">
-                                        View
-                                    </button>
-                                    <button 
-                                        onclick="confirmDelete('confirmDeleteSantha', {{ $santha->id }}, 'Delete Payment?', 'This will permanently delete this santha payment record. This action cannot be undone.')"
-                                        class="inline-flex items-center px-3 py-1 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 transition">
-                                        Delete
-                                    </button>
+                                <td class="px-4 py-3 text-center space-x-1">
+                                    <button wire:click="viewReceipt({{ $santha->id }})" class="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">View</button>
+                                    <button wire:click="editSantha({{ $santha->id }})" class="px-2 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700">Edit</button>
+                                    <button onclick="confirmDelete('confirmDeleteSantha', {{ $santha->id }}, 'Delete Payment?', 'This action cannot be undone.')" class="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">Delete</button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-12 text-center">
-                                    <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <p class="text-gray-500 dark:text-gray-400 text-lg">No santha payments recorded yet</p>
-                                    <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">Click "Record Payment" to add a payment</p>
+                                <td colspan="6" class="px-4 py-12 text-center">
+                                    <p class="text-gray-500 dark:text-gray-400">No payments found</p>
+                                    <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Click "Record Payment" to add one</p>
                                 </td>
                             </tr>
                         @endforelse
@@ -185,9 +109,8 @@
                 </table>
             </div>
             
-            <!-- Pagination -->
             @if($santhas->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                     {{ $santhas->links() }}
                 </div>
             @endif
@@ -197,12 +120,12 @@
     <!-- Add/Edit Modal -->
     @if($showModal)
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" wire:click.self="closeModal">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full">
                 <!-- Modal Header -->
-                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-green-600 text-white px-5 py-3 rounded-t-2xl">
+                <div class="bg-gradient-to-r from-blue-600 to-green-600 text-white px-5 py-3 rounded-t-xl">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold">{{ $editMode ? 'Edit Payment' : 'Record Payment' }}</h3>
-                        <button wire:click="closeModal" class="text-white hover:text-gray-200 transition">
+                        <button wire:click="closeModal" class="text-white hover:text-gray-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -211,174 +134,80 @@
                 </div>
 
                 <!-- Modal Body -->
-                <div class="p-4">
-                    <form wire:submit.prevent="saveSantha" class="space-y-3">
+                <div class="p-5">
+                    <form wire:submit.prevent="saveSantha" class="space-y-4">
                         <!-- Family Selection -->
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Family <span class="text-red-500">*</span>
-                            </label>
-                            <select wire:model.live="family_id" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Family *</label>
+                            <select wire:model.live="family_id" required class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
                                 <option value="">Select Family</option>
                                 @foreach($families as $family)
-                                    <option value="{{ $family->id }}">{{ $family->family_head_name }} - {{ $family->phone }}</option>
+                                    <option value="{{ $family->id }}">{{ $family->family_head_name }}</option>
                                 @endforeach
                             </select>
-                            @error('family_id') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                            @error('family_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
-
-                        <!-- Unpaid Santhas Section -->
-                        @if(count($unpaidSanthas) > 0)
-                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    <span class="text-blue-600 dark:text-blue-400">💰 Unpaid</span>
-                                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">{{ count($unpaidSanthas) }} pending</span>
-                                </label>
-                                <select wire:model.live="selectedSanthaId" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
-                                    <option value="">Select a payment</option>
-                                    @foreach($unpaidSanthas as $santha)
-                                        <option value="{{ $santha['id'] }}">
-                                            {{ $santha['month'] }} - LKR{{ number_format($santha['amount'], 2) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        @elseif($family_id)
-                            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
-                                <p class="text-xs text-green-700 dark:text-green-400">
-                                    ✓ No unpaid payments
-                                </p>
-                            </div>
-                        @endif
-
-                        <!-- Amount -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Amount (LKR) <span class="text-red-500">*</span>
-                            </label>
-                            <input wire:model.live="amount" type="number" step="0.01" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
-                            @error('amount') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
-                        </div>
-
-                        <!-- Payment Type Selection -->
-                        @if($family_id)
-                            <div class="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border border-blue-300 dark:border-blue-700 rounded-lg p-3">
-                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    💳 Type <span class="text-red-500">*</span>
-                                </label>
-                                <div class="space-y-2">
-                                    <label class="flex items-start p-2 bg-white dark:bg-gray-800 rounded-lg border-2 cursor-pointer transition
-                                        {{ $payment_type === 'this_month' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : 'border-gray-200 dark:border-gray-700' }}">
-                                        <input type="radio" wire:model.live="payment_type" value="this_month" 
-                                            class="mt-0.5 text-blue-600 focus:ring-blue-500">
-                                        <div class="ml-2 flex-1 text-xs">
-                                            <span class="block font-medium text-gray-900 dark:text-white">This Month Only</span>
-                                            <span class="block text-gray-500 dark:text-gray-400">Pay LKR{{ number_format($amount || 0, 0) }} once</span>
-                                        </div>
-                                    </label>
-                                    
-                                    <label class="flex items-start p-2 bg-white dark:bg-gray-800 rounded-lg border-2 cursor-pointer transition
-                                        {{ $payment_type === 'multiple_months' ? 'border-green-500 bg-green-50 dark:bg-green-900/30' : 'border-gray-200 dark:border-gray-700' }}">
-                                        <input type="radio" wire:model.live="payment_type" value="multiple_months" 
-                                            class="mt-0.5 text-green-600 focus:ring-green-500">
-                                        <div class="ml-2 flex-1 text-xs">
-                                            <span class="block font-medium text-gray-900 dark:text-white">Multiple Months</span>
-                                            @if($amount && $monthly_santha_amount > 0)
-                                                <span class="block text-green-600 dark:text-green-400 font-semibold">
-                                                    {{ floor($amount / $monthly_santha_amount) }} months
-                                                </span>
-                                            @else
-                                                <span class="block text-gray-500 dark:text-gray-400">÷ LKR{{ number_format($monthly_santha_amount || 0, 0) }}/mo</span>
-                                            @endif
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                        @endif
 
                         <!-- Month & Year -->
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Month <span class="text-red-500">*</span>
-                                </label>
-                                <select wire:model="month" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Month *</label>
+                                <select wire:model="month" required class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
                                     @for($m = 1; $m <= 12; $m++)
-                                        <option value="{{ $m }}">{{ date('M', mktime(0, 0, 0, $m, 1)) }}</option>
+                                        <option value="{{ $m }}">{{ date('F', mktime(0, 0, 0, $m, 1)) }}</option>
                                     @endfor
                                 </select>
-                                @error('month') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                                @error('month') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Year <span class="text-red-500">*</span>
-                                </label>
-                                <select wire:model="year" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
-                                    @for($y = date('Y'); $y >= date('Y') - 5; $y--)
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Year *</label>
+                                <select wire:model="year" required class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+                                    @for($y = date('Y'); $y >= date('Y') - 3; $y--)
                                         <option value="{{ $y }}">{{ $y }}</option>
                                     @endfor
                                 </select>
-                                @error('year') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                                @error('year') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
+                        <!-- Amount -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount (LKR) *</label>
+                            <input wire:model="amount" type="number" step="0.01" required class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+                            @error('amount') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
                         <!-- Payment Date & Method -->
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Payment Date <span class="text-red-500">*</span>
-                                </label>
-                                <input wire:model="payment_date" type="date" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
-                                @error('payment_date') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Date *</label>
+                                <input wire:model="payment_date" type="date" required class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+                                @error('payment_date') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Method <span class="text-red-500">*</span>
-                                </label>
-                                <select wire:model="payment_method" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Method *</label>
+                                <select wire:model="payment_method" required class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
                                     <option value="cash">Cash</option>
                                     <option value="online">Online</option>
                                     <option value="check">Check</option>
                                 </select>
-                                @error('payment_method') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                                @error('payment_method') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
-                        </div>
-
-                        <!-- Paid Checkbox & Notes -->
-                        <div class="flex items-center gap-2">
-                            <input wire:model="is_paid" type="checkbox" id="is_paid"
-                                class="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500">
-                            <label for="is_paid" class="text-xs font-medium text-gray-700 dark:text-gray-300">
-                                Mark as Paid
-                            </label>
                         </div>
 
                         <!-- Notes -->
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Notes
-                            </label>
-                            <textarea wire:model="notes" rows="1"
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"></textarea>
-                            @error('notes') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
+                            <textarea wire:model="notes" rows="2" placeholder="Optional notes..." class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"></textarea>
                         </div>
 
-                        <!-- Submit Button -->
-                        <div class="flex gap-2 pt-1">
-                            <button type="button" wire:click="closeModal"
-                                class="flex-1 px-4 py-1.5 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold text-xs transition">
+                        <!-- Buttons -->
+                        <div class="flex gap-3 pt-2">
+                            <button type="button" wire:click="closeModal" class="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 font-medium">
                                 Cancel
                             </button>
-                            <button type="submit"
-                                class="flex-1 px-4 py-1.5 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 font-semibold text-xs transition shadow-lg">
-                                {{ $editMode ? 'Update' : 'Record' }}
+                            <button type="submit" class="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 font-medium shadow-lg">
+                                {{ $editMode ? 'Update' : 'Save Payment' }}
                             </button>
                         </div>
                     </form>
@@ -390,132 +219,61 @@
     <!-- Receipt Modal -->
     @if($showReceiptModal && $viewingSantha)
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-4">
-                <div class="flex items-center justify-between mb-3">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-5">
+                <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white">Receipt</h3>
                     <div class="space-x-2">
-                        <button onclick="printReceipt()" class="px-3 py-1 bg-blue-600 text-white rounded text-xs">Print</button>
-                        <button onclick="downloadReceipt()" class="px-3 py-1 bg-green-600 text-white rounded text-xs">Download</button>
-                        <button wire:click="closeReceiptModal" class="px-3 py-1 bg-gray-300 text-gray-800 rounded text-xs">Close</button>
+                        <button onclick="printReceipt()" class="px-3 py-1.5 bg-blue-600 text-white rounded text-sm">Print</button>
+                        <button wire:click="closeReceiptModal" class="px-3 py-1.5 bg-gray-300 text-gray-800 rounded text-sm">Close</button>
                     </div>
                 </div>
 
-                <div id="receipt-content" style="background:#ffffff;padding:22px;color:#111827;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;max-width:640px;margin:0 auto;">
-                    <div style="text-align:center;margin-bottom:8px;">
-                        <h2 style="font-size:20px;margin:0 0 4px 0;font-weight:700;color:#0f172a;">{{ $viewingSantha['mosque_name'] }}</h2>
-                        <p style="margin:0;color:#6b7280;font-size:13px;">Santha Receipt</p>
+                <div id="receipt-content" class="bg-white p-5 border rounded-lg">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">{{ $viewingSantha['mosque_name'] }}</h2>
+                        <p class="text-gray-500 text-sm">Santha Receipt</p>
                     </div>
 
-                    <table style="width:100%;border-collapse:collapse;margin-top:12px;">
-                        <tr>
-                            <td style="padding:8px 0;color:#374151;width:60%;"><strong>Receipt #</strong></td>
-                            <td style="padding:8px 0;text-align:right;color:#111827;">{{ $viewingSantha['receipt_number'] }}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:8px 0;color:#374151;width:60%;"><strong>Date</strong></td>
-                            <td style="padding:8px 0;text-align:right;color:#111827;">{{ $viewingSantha['payment_date'] }}</td>
-                        </tr>
-                    </table>
-
-                    <hr style="border:none;border-top:1px solid #e6e9ee;margin:12px 0;">
-
-                    <div style="color:#374151;font-size:14px;line-height:1.5;margin-bottom:10px;">
-                        <div><strong>Family:</strong> {{ $viewingSantha['family_head_name'] }}</div>
-                        <div><strong>Phone:</strong> {{ $viewingSantha['family_phone'] }}</div>
-                        <div><strong>Period:</strong> {{ $viewingSantha['month'] }} {{ $viewingSantha['year'] }}</div>
+                    <div class="border-t border-b py-3 my-3 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Receipt #</span>
+                            <span class="font-mono">{{ $viewingSantha['receipt_number'] }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Date</span>
+                            <span>{{ $viewingSantha['payment_date'] }}</span>
+                        </div>
                     </div>
 
-                    <hr style="border:none;border-top:1px solid #e6e9ee;margin:12px 0;">
-
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
-                        <div style="font-weight:600;color:#111827;">Amount Paid</div>
-                        <div style="font-size:18px;font-weight:700;color:#0f172a;">LKR{{ number_format($viewingSantha['amount'], 2) }}</div>
+                    <div class="space-y-1 text-sm mb-4">
+                        <p><span class="text-gray-600">Family:</span> {{ $viewingSantha['family_name'] }}</p>
+                        <p><span class="text-gray-600">Phone:</span> {{ $viewingSantha['family_phone'] }}</p>
+                        <p><span class="text-gray-600">Period:</span> {{ $viewingSantha['month'] }} {{ $viewingSantha['year'] }}</p>
                     </div>
-                    <div style="color:#6b7280;margin-top:8px;font-size:13px;">Method: {{ ucfirst($viewingSantha['payment_method']) }}</div>
+
+                    <div class="border-t pt-3 flex justify-between items-center">
+                        <span class="font-medium text-gray-700">Amount Paid</span>
+                        <span class="text-xl font-bold text-green-600">LKR {{ number_format($viewingSantha['amount'], 2) }}</span>
+                    </div>
+                    <p class="text-gray-500 text-xs mt-2">Method: {{ ucfirst($viewingSantha['payment_method']) }}</p>
                     @if(!empty($viewingSantha['notes']))
-                        <div style="margin-top:8px;font-size:13px;color:#374151;">Notes: {{ $viewingSantha['notes'] }}</div>
+                        <p class="text-gray-500 text-xs mt-1">Notes: {{ $viewingSantha['notes'] }}</p>
                     @endif
-
-                    <div style="text-align:left;color:#9ca3af;margin-top:16px;font-size:12px;">This receipt is generated by {{ config('app.name') }}.</div>
                 </div>
             </div>
         </div>
     @endif
 
     <script>
-        function _getPrintableHtml() {
-            const content = document.getElementById('receipt-content');
-            if (!content) return '';
-
-            // Clone and sanitize for light/white print (remove dark/background classes)
-            const clone = content.cloneNode(true);
-
-            // Remove Tailwind dark: classes and any background utility classes to ensure white background
-            function sanitize(node) {
-                if (node.className) {
-                    node.className = node.className
-                        .replace(/\bdark:[^\s]+\b/g, '')
-                        .replace(/\bbg-[^\s]+\b/g, '')
-                        .replace(/\btext-[^\s]+\b/g, '')
-                        .replace(/\bfrom-[^\s]+\b/g, '')
-                        .replace(/\bto-[^\s]+\b/g, '')
-                        .replace(/\bborder-[^\s]+\b/g, '');
-                }
-                Array.from(node.children || []).forEach(child => sanitize(child));
-            }
-            sanitize(clone);
-
-            const wrapperStyle = [
-                'width:640px',
-                'margin:0 auto',
-                'padding:20px',
-                'background:#ffffff',
-                'color:#111827',
-                "font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-            ].join(';');
-
-            return `<!doctype html><html><head><meta charset="utf-8"><title>Receipt</title>` +
-                '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">' +
-                `<style>body{margin:0;padding:20px;background:#f3f4f6} .receipt-container{${wrapperStyle}} .text-center{text-align:center} .font-bold{font-weight:700}</style>` +
-                '</head><body><div class="receipt-container">' + clone.innerHTML + '</div></body></html>';
-        }
-
         function printReceipt() {
-            const html = _getPrintableHtml();
-            if (!html) return;
+            const content = document.getElementById('receipt-content');
+            if (!content) return;
             const w = window.open('', '_blank');
-            w.document.open();
-            w.document.write(html);
+            w.document.write('<html><head><title>Receipt</title><style>body{font-family:sans-serif;padding:20px;}</style></head><body>');
+            w.document.write(content.innerHTML);
+            w.document.write('</body></html>');
             w.document.close();
-            w.focus();
-            // wait a bit for resources to load
-            setTimeout(() => { w.print(); }, 600);
-        }
-
-        function downloadReceipt() {
-            const printableHtml = _getPrintableHtml();
-            if (!printableHtml) return;
-
-            // Create a temporary element for html2pdf to render
-            const temp = document.createElement('div');
-            temp.style.position = 'fixed';
-            temp.style.left = '-9999px';
-            temp.innerHTML = printableHtml;
-            document.body.appendChild(temp);
-
-            const render = () => {
-                if (window.html2pdf) {
-                    html2pdf().from(temp).set({margin:10, filename: 'receipt_'+Date.now()+'.pdf', jsPDF:{unit:'pt', format:'a4', orientation:'portrait'}}).save().then(() => temp.remove());
-                } else {
-                    const s = document.createElement('script');
-                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js';
-                    s.onload = () => { html2pdf().from(temp).set({margin:10, filename: 'receipt_'+Date.now()+'.pdf', jsPDF:{unit:'pt', format:'a4', orientation:'portrait'}}).save().then(() => temp.remove()); };
-                    document.head.appendChild(s);
-                }
-            };
-
-            // give the browser a tick to parse the temp node
-            setTimeout(render, 200);
+            w.print();
         }
     </script>
 </div>
