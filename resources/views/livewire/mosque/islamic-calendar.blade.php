@@ -6,11 +6,11 @@
                 <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Islamic Calendar</h2>
                 <p class="text-gray-600 dark:text-gray-400 mt-2">Prayer times, Azan schedule & Islamic dates for {{ $mosque->name }}</p>
             </div>
-            <a href="{{ route('mosque.dashboard') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition shadow-lg">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{{ route('mosque.dashboard') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition shadow-lg text-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
-                Back to Dashboard
+                Back
             </a>
         </div>
 
