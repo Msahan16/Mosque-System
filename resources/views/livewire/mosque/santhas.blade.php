@@ -219,61 +219,119 @@
     <!-- Receipt Modal -->
     @if($showReceiptModal && $viewingSantha)
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Receipt</h3>
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-bold text-gray-900">Receipt</h3>
                     <div class="space-x-2">
-                        <button onclick="printReceipt()" class="px-3 py-1.5 bg-blue-600 text-white rounded text-sm">Print</button>
-                        <button wire:click="closeReceiptModal" class="px-3 py-1.5 bg-gray-300 text-gray-800 rounded text-sm">Close</button>
+                        <button onclick="printSanthaReceipt()" class="px-3 py-1 bg-blue-600 text-white rounded text-xs">Print</button>
+                        <button onclick="downloadSanthaReceipt()" class="px-3 py-1 bg-green-600 text-white rounded text-xs">Download</button>
+                        <button wire:click="closeReceiptModal" class="px-3 py-1 bg-gray-300 text-gray-800 rounded text-xs">Close</button>
                     </div>
                 </div>
 
-                <div id="receipt-content" class="bg-white p-5 border rounded-lg">
-                    <div class="text-center mb-4">
-                        <h2 class="text-xl font-bold text-gray-900">{{ $viewingSantha['mosque_name'] }}</h2>
-                        <p class="text-gray-500 text-sm">Santha Receipt</p>
+                <div id="santha-receipt-content" style="background:#ffffff;padding:22px;color:#111827;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;max-width:640px;margin:0 auto;">
+                    <div style="text-align:center;margin-bottom:8px;">
+                        <h2 style="font-size:20px;margin:0 0 4px 0;font-weight:700;color:#0f172a;">{{ $viewingSantha['mosque_name'] }}</h2>
+                        <p style="margin:0;color:#6b7280;font-size:13px;">Santha Payment Receipt</p>
                     </div>
 
-                    <div class="border-t border-b py-3 my-3 space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Receipt #</span>
-                            <span class="font-mono">{{ $viewingSantha['receipt_number'] }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Date</span>
-                            <span>{{ $viewingSantha['payment_date'] }}</span>
-                        </div>
+                    <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+                        <tr>
+                            <td style="padding:8px 0;color:#374151;width:60%;"><strong>Receipt #</strong></td>
+                            <td style="padding:8px 0;text-align:right;color:#111827;">{{ $viewingSantha['receipt_number'] }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px 0;color:#374151;width:60%;"><strong>Date</strong></td>
+                            <td style="padding:8px 0;text-align:right;color:#111827;">{{ $viewingSantha['payment_date'] }}</td>
+                        </tr>
+                    </table>
+
+                    <hr style="border:none;border-top:1px solid #e6e9ee;margin:12px 0;">
+
+                    <div style="color:#374151;font-size:14px;line-height:1.5;margin-bottom:10px;">
+                        <div><strong>Family:</strong> {{ $viewingSantha['family_name'] }}</div>
+                        <div><strong>Phone:</strong> {{ $viewingSantha['family_phone'] }}</div>
+                        <div><strong>Period:</strong> {{ $viewingSantha['month'] }} {{ $viewingSantha['year'] }}</div>
                     </div>
 
-                    <div class="space-y-1 text-sm mb-4">
-                        <p><span class="text-gray-600">Family:</span> {{ $viewingSantha['family_name'] }}</p>
-                        <p><span class="text-gray-600">Phone:</span> {{ $viewingSantha['family_phone'] }}</p>
-                        <p><span class="text-gray-600">Period:</span> {{ $viewingSantha['month'] }} {{ $viewingSantha['year'] }}</p>
-                    </div>
+                    <hr style="border:none;border-top:1px solid #e6e9ee;margin:12px 0;">
 
-                    <div class="border-t pt-3 flex justify-between items-center">
-                        <span class="font-medium text-gray-700">Amount Paid</span>
-                        <span class="text-xl font-bold text-green-600">LKR {{ number_format($viewingSantha['amount'], 2) }}</span>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                        <div style="font-weight:600;color:#111827;">Amount Paid</div>
+                        <div style="font-size:18px;font-weight:700;color:#0f172a;">LKR {{ number_format($viewingSantha['amount'], 2) }}</div>
                     </div>
-                    <p class="text-gray-500 text-xs mt-2">Method: {{ ucfirst($viewingSantha['payment_method']) }}</p>
+                    <div style="color:#6b7280;margin-top:8px;font-size:13px;">Method: {{ ucfirst($viewingSantha['payment_method']) }}</div>
                     @if(!empty($viewingSantha['notes']))
-                        <p class="text-gray-500 text-xs mt-1">Notes: {{ $viewingSantha['notes'] }}</p>
+                        <div style="margin-top:8px;font-size:13px;color:#374151;">Notes: {{ $viewingSantha['notes'] }}</div>
                     @endif
+
+                    <div style="text-align:left;color:#9ca3af;margin-top:16px;font-size:12px;">This receipt is generated by {{ config('app.name') }}.</div>
                 </div>
             </div>
         </div>
     @endif
 
     <script>
-        function printReceipt() {
-            const content = document.getElementById('receipt-content');
-            if (!content) return;
+        function _getSanthaPrintableHtml() {
+            const content = document.getElementById('santha-receipt-content');
+            if (!content) return '';
+
+            const clone = content.cloneNode(true);
+            function sanitize(node) {
+                if (node.className) {
+                    node.className = node.className.replace(/\bdark:[^\s]+\b/g, '').replace(/\bbg-[^\s]+\b/g, '').replace(/\btext-[^\s]+\b/g, '');
+                }
+                Array.from(node.children || []).forEach(child => sanitize(child));
+            }
+            sanitize(clone);
+
+            const wrapperStyle = [
+                'width:640px',
+                'margin:0 auto',
+                'padding:20px',
+                'background:#ffffff',
+                'color:#111827',
+                "font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+            ].join(';');
+
+            return `<!doctype html><html><head><meta charset="utf-8"><title>Santha Receipt</title>` +
+                '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">' +
+                `<style>body{margin:0;padding:20px;background:#f3f4f6} .receipt-container{${wrapperStyle}} .text-center{text-align:center} .font-bold{font-weight:700}</style>` +
+                '</head><body><div class="receipt-container">' + clone.innerHTML + '</div></body></html>';
+        }
+
+        function printSanthaReceipt() {
+            const html = _getSanthaPrintableHtml();
+            if (!html) return;
             const w = window.open('', '_blank');
-            w.document.write('<html><head><title>Receipt</title><style>body{font-family:sans-serif;padding:20px;}</style></head><body>');
-            w.document.write(content.innerHTML);
-            w.document.write('</body></html>');
+            w.document.open();
+            w.document.write(html);
             w.document.close();
-            w.print();
+            w.focus();
+            setTimeout(() => { w.print(); }, 600);
+        }
+
+        function downloadSanthaReceipt() {
+            const printableHtml = _getSanthaPrintableHtml();
+            if (!printableHtml) return;
+            const temp = document.createElement('div');
+            temp.style.position = 'fixed';
+            temp.style.left = '-9999px';
+            temp.innerHTML = printableHtml;
+            document.body.appendChild(temp);
+
+            const render = () => {
+                if (window.html2pdf) {
+                    html2pdf().from(temp).set({margin:10, filename: 'santha_receipt_'+Date.now()+'.pdf', jsPDF:{unit:'pt', format:'a4', orientation:'portrait'}}).save().then(() => temp.remove());
+                } else {
+                    const s = document.createElement('script');
+                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js';
+                    s.onload = () => { html2pdf().from(temp).set({margin:10, filename: 'santha_receipt_'+Date.now()+'.pdf', jsPDF:{unit:'pt', format:'a4', orientation:'portrait'}}).save().then(() => temp.remove()); };
+                    document.head.appendChild(s);
+                }
+            };
+
+            setTimeout(render, 200);
         }
     </script>
 </div>

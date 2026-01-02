@@ -15,15 +15,15 @@
             <div class="border-b border-gray-200 dark:border-gray-700">
                 <nav class="-mb-px flex space-x-8">
                     <button wire:click="setActiveTab('ustads')"
-                            class="py-2 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'ustads' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300' }}">
+                            class="py-2 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'ustads' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-white hover:opacity-80' }}">
                         Ustads (Teachers)
                     </button>
                     <button wire:click="setActiveTab('students')"
-                            class="py-2 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'students' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300' }}">
+                            class="py-2 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'students' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-white hover:opacity-80' }}">
                         Students
                     </button>
                     <button wire:click="setActiveTab('payments')"
-                            class="py-2 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'payments' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300' }}">
+                            class="py-2 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'payments' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-white hover:opacity-80' }}">
                         Payments
                     </button>
                 </nav>
