@@ -116,13 +116,27 @@
                                 <td class="px-4 py-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400">{{ $santha->payment_date->format('d M Y') }}</span>
                                 </td>
-                                <td class="px-4 py-3 text-center space-x-1">
-                                    <button wire:click="viewReceipt({{ $santha->id }})" class="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">View</button>
-                                    @if($santha->status === 'partial' && $santha->balance_due > 0)
-                                        <button wire:click="payBalance({{ $santha->id }})" class="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">Pay Balance</button>
-                                    @endif
-                                    <button wire:click="editSantha({{ $santha->id }})" class="px-2 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700">Edit</button>
-                                    <button onclick="confirmDelete('confirmDeleteSantha', {{ $santha->id }}, 'Delete Payment?', 'This action cannot be undone.')" class="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">Delete</button>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col sm:flex-row gap-1 sm:justify-center sm:space-x-1">
+                                        <button wire:click="viewReceipt({{ $santha->id }})" title="View Receipt" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                            <span class="hidden sm:inline">View</span>
+                                        </button>
+                                        @if($santha->status === 'partial' && $santha->balance_due > 0)
+                                            <button wire:click="payBalance({{ $santha->id }})" title="Pay Balance" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                <span class="hidden sm:inline">Pay</span>
+                                            </button>
+                                        @endif
+                                        <button wire:click="editSantha({{ $santha->id }})" title="Edit Payment" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-purple-600 text-white text-xs rounded hover:bg-purple-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            <span class="hidden sm:inline">Edit</span>
+                                        </button>
+                                        <button onclick="confirmDelete('confirmDeleteSantha', {{ $santha->id }}, 'Delete Payment?', 'This action cannot be undone.')" title="Delete Payment" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            <span class="hidden sm:inline">Delete</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

@@ -240,19 +240,22 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                    <div class="space-x-2">
+                                    <div class="flex flex-col sm:flex-row gap-1 sm:justify-center sm:space-x-1">
                                         @if($sponsor->payment_status !== 'paid')
-                                            <button wire:click="markAsPaid({{ $sponsor->id }})" class="inline-flex items-center px-2 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition">
-                                                Mark Paid
+                                            <button wire:click="markAsPaid({{ $sponsor->id }})" title="Mark as Paid" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                <span class="hidden sm:inline">Paid</span>
                                             </button>
                                         @endif
                                         @if($sponsor->distribution_status !== 'distributed')
-                                            <button wire:click="markAsDistributed({{ $sponsor->id }})" class="inline-flex items-center px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition">
-                                                Mark Distributed
+                                            <button wire:click="markAsDistributed({{ $sponsor->id }})" title="Mark as Distributed" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                <span class="hidden sm:inline">Dist</span>
                                             </button>
                                         @endif
-                                        <button wire:click="editSponsor({{ $sponsor->id }})" class="inline-flex items-center px-2 py-1 bg-emerald-600 text-white text-xs font-medium rounded hover:bg-emerald-700 transition">
-                                            Edit
+                                        <button wire:click="editSponsor({{ $sponsor->id }})" title="Edit" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-emerald-600 text-white text-xs rounded hover:bg-emerald-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            <span class="hidden sm:inline">Edit</span>
                                         </button>
                                         <button wire:click="$dispatch('swal:confirm', {
                                             title: 'Delete Sponsor?',
@@ -262,8 +265,9 @@
                                             cancelButtonText: 'Cancel',
                                             eventName: 'deleteSponsor',
                                             eventParams: [{{ $sponsor->id }}]
-                                        })" class="inline-flex items-center px-2 py-1 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 transition">
-                                            Delete
+                                        })" title="Delete" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            <span class="hidden sm:inline">Delete</span>
                                         </button>
                                     </div>
                                 </td>
