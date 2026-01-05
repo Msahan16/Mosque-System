@@ -24,7 +24,10 @@
                             class="flex-1 py-3 px-4 text-sm font-medium rounded-t-lg transition {{ $activeTab === 'porridge' ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700' }}">
                         Ramadan Porridge
                     </button>
-                    
+                    <button wire:click="setActiveTab('iqamah')"
+                            class="flex-1 py-3 px-4 text-sm font-medium rounded-t-lg transition {{ $activeTab === 'iqamah' ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700' }}">
+                        Iqamah Times
+                    </button>
                 </nav>
             </div>
 
@@ -118,6 +121,96 @@
                                         <h4 class="font-medium text-amber-900 dark:text-amber-200">Ramadan Porridge</h4>
                                         <p class="text-sm text-amber-800 dark:text-amber-300 mt-1">
                                             Sponsors can pay custom amounts per porridge (up to the setting amount). Existing sponsors will keep their original amounts.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Iqamah Times Tab -->
+                    @if($activeTab === 'iqamah')
+                        <div>
+                            <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-4">Iqamah Time Settings</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">Configure the time delay (in minutes) between Azan and Iqamah for each prayer.</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <!-- Fajr Offset -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Fajr Iqamah Delay <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input wire:model="fajr_iqamah_offset" type="number" min="0" max="60" required
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                                        <span class="absolute right-4 top-3 text-gray-500 dark:text-gray-400 text-sm">minutes</span>
+                                    </div>
+                                    @error('fajr_iqamah_offset') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+
+                                <!-- Dhuhr Offset -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Dhuhr Iqamah Delay <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input wire:model="dhuhr_iqamah_offset" type="number" min="0" max="60" required
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                                        <span class="absolute right-4 top-3 text-gray-500 dark:text-gray-400 text-sm">minutes</span>
+                                    </div>
+                                    @error('dhuhr_iqamah_offset') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+
+                                <!-- Asr Offset -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Asr Iqamah Delay <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input wire:model="asr_iqamah_offset" type="number" min="0" max="60" required
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                                        <span class="absolute right-4 top-3 text-gray-500 dark:text-gray-400 text-sm">minutes</span>
+                                    </div>
+                                    @error('asr_iqamah_offset') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+
+                                <!-- Maghrib Offset -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Maghrib Iqamah Delay <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input wire:model="maghrib_iqamah_offset" type="number" min="0" max="60" required
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                                        <span class="absolute right-4 top-3 text-gray-500 dark:text-gray-400 text-sm">minutes</span>
+                                    </div>
+                                    @error('maghrib_iqamah_offset') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+
+                                <!-- Isha Offset -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Isha Iqamah Delay <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input wire:model="isha_iqamah_offset" type="number" min="0" max="60" required
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                                        <span class="absolute right-4 top-3 text-gray-500 dark:text-gray-400 text-sm">minutes</span>
+                                    </div>
+                                    @error('isha_iqamah_offset') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+
+                            <!-- Info Box -->
+                            <div class="mt-6 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4">
+                                <div class="flex">
+                                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <div>
+                                        <h4 class="font-medium text-indigo-900 dark:text-indigo-200">About Iqamah Times</h4>
+                                        <p class="text-sm text-indigo-800 dark:text-indigo-300 mt-1">
+                                            Iqamah is the second call to prayer, signaling the start of congregation prayer. These settings determine how many minutes after the Azan the Iqamah will be called. Common values: Fajr (15-20 min), Maghrib (5-7 min), others (10-15 min).
                                         </p>
                                     </div>
                                 </div>

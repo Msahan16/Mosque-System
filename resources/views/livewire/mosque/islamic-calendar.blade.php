@@ -40,27 +40,86 @@
             </div>
         </div>
 
-        <!-- Next Prayer Card -->
+        <!-- Next Prayer Card - Modern Design -->
         @if($nextPrayer)
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mb-8 border-t-4 border-blue-600">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Next Prayer -->
-                    <div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Next Prayer</p>
-                        <p class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ $nextPrayer['name'] }}</p>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">{{ $nextPrayer['emoji'] }}</p>
+            <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 dark:from-slate-950 dark:via-blue-950 dark:to-slate-950 rounded-3xl shadow-2xl p-8 mb-8 border border-blue-500/20">
+                <!-- Decorative gradient overlay -->
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 pointer-events-none"></div>
+                
+                <!-- Content -->
+                <div class="relative z-10">
+                    <!-- Header -->
+                    <div class="flex items-center gap-4 mb-8 pb-6 border-b border-white/10">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-4xl shadow-lg shadow-blue-500/50">
+                            {{ $nextPrayer['emoji'] }}
+                        </div>
+                        <div>
+                            <p class="text-blue-200 dark:text-blue-300 text-sm font-medium uppercase tracking-wider mb-1">Next Prayer</p>
+                            <h2 class="text-4xl font-bold text-white">{{ $nextPrayer['name'] }}</h2>
+                        </div>
                     </div>
+                    
+                    <!-- Time Cards Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Azan Time Card -->
+                        <div class="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-blue-400/50 transition-all duration-300">
+                            <!-- Glow effect on hover -->
+                            <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-300"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <div class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div>
+                                    <p class="text-blue-200 dark:text-blue-300 text-lg font-bold uppercase tracking-wide">Azan</p>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <p class="text-6xl font-bold text-white font-mono tracking-tight">{{ $nextPrayer['time'] }}</p>
+                                </div>
+                                
+                                <div class="flex items-start gap-3 bg-black/20 rounded-xl p-4 border border-white/5">
+                                    <div class="mt-1">
+                                        <svg class="w-6 h-6 text-blue-300 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-5xl font-bold text-blue-50 dark:text-blue-100 font-mono mb-1" wire:poll="updateRemainingTime">{{ $remainingTime }}</p>
+                                        <p class="text-xs text-blue-200/70 dark:text-blue-300/70 uppercase tracking-wide">Remaining</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                    <!-- Prayer Time -->
-                    <div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Prayer Time</p>
-                        <p class="text-4xl font-bold text-gray-900 dark:text-white font-mono">{{ $nextPrayer['time'] }}</p>
-                    </div>
-
-                    <!-- Time Remaining -->
-                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4">
-                        <p class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-2">Time Remaining</p>
-                        <p class="text-4xl font-bold text-blue-600 dark:text-blue-400 font-mono" wire:poll="updateRemainingTime">{{ $remainingTime }}</p>
+                        <!-- Iqamah Time Card -->
+                        @if($nextPrayer['iqamah_time'])
+                        <div class="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/50 transition-all duration-300">
+                            <!-- Glow effect on hover -->
+                            <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/0 to-emerald-500/0 group-hover:from-emerald-500/10 group-hover:to-teal-500/10 transition-all duration-300"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                                    <p class="text-emerald-200 dark:text-emerald-300 text-lg font-bold uppercase tracking-wide">Iqamah</p>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <p class="text-6xl font-bold text-white font-mono tracking-tight">{{ $nextPrayer['iqamah_time'] }}</p>
+                                </div>
+                                
+                                <div class="flex items-start gap-3 bg-black/20 rounded-xl p-4 border border-white/5">
+                                    <div class="mt-1">
+                                        <svg class="w-6 h-6 text-emerald-300 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-5xl font-bold text-emerald-50 dark:text-emerald-100 font-mono mb-1" wire:poll="updateRemainingTime">{{ $iqamahRemainingTime }}</p>
+                                        <p class="text-xs text-emerald-200/70 dark:text-emerald-300/70 uppercase tracking-wide">Remaining</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -124,8 +183,19 @@
                                 <h4 class="text-lg font-bold text-gray-900 dark:text-white">Fajr (Dawn)</h4>
                                 <span class="text-3xl">🌙</span>
                             </div>
-                            <p class="text-4xl font-bold text-purple-600 dark:text-purple-400 font-mono">{{ $prayerSchedule->fajr }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Pre-dawn prayer</p>
+                            <div class="space-y-2">
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Azan</p>
+                                    <p class="text-3xl font-bold text-purple-600 dark:text-purple-400 font-mono">{{ $prayerSchedule->fajr }}</p>
+                                </div>
+                                @if($prayerSchedule->fajr_iqamah)
+                                <div class="pt-2 border-t border-purple-200 dark:border-purple-700">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Iqamah</p>
+                                    <p class="text-2xl font-semibold text-purple-700 dark:text-purple-300 font-mono">{{ $prayerSchedule->fajr_iqamah }}</p>
+                                </div>
+                                @endif
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">Pre-dawn prayer</p>
                         </div>
 
                         <!-- Sunrise -->
@@ -144,8 +214,19 @@
                                 <h4 class="text-lg font-bold text-gray-900 dark:text-white">Dhuhr (Noon)</h4>
                                 <span class="text-3xl">☀️</span>
                             </div>
-                            <p class="text-4xl font-bold text-yellow-600 dark:text-yellow-400 font-mono">{{ $prayerSchedule->dhuhr }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Midday prayer</p>
+                            <div class="space-y-2">
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Azan</p>
+                                    <p class="text-3xl font-bold text-yellow-600 dark:text-yellow-400 font-mono">{{ $prayerSchedule->dhuhr }}</p>
+                                </div>
+                                @if($prayerSchedule->dhuhr_iqamah)
+                                <div class="pt-2 border-t border-yellow-200 dark:border-yellow-700">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Iqamah</p>
+                                    <p class="text-2xl font-semibold text-yellow-700 dark:text-yellow-300 font-mono">{{ $prayerSchedule->dhuhr_iqamah }}</p>
+                                </div>
+                                @endif
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">Midday prayer</p>
                         </div>
 
                         <!-- Asr -->
@@ -154,8 +235,19 @@
                                 <h4 class="text-lg font-bold text-gray-900 dark:text-white">Asr (Afternoon)</h4>
                                 <span class="text-3xl">🌤️</span>
                             </div>
-                            <p class="text-4xl font-bold text-amber-600 dark:text-amber-400 font-mono">{{ $prayerSchedule->asr }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Afternoon prayer</p>
+                            <div class="space-y-2">
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Azan</p>
+                                    <p class="text-3xl font-bold text-amber-600 dark:text-amber-400 font-mono">{{ $prayerSchedule->asr }}</p>
+                                </div>
+                                @if($prayerSchedule->asr_iqamah)
+                                <div class="pt-2 border-t border-amber-200 dark:border-amber-700">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Iqamah</p>
+                                    <p class="text-2xl font-semibold text-amber-700 dark:text-amber-300 font-mono">{{ $prayerSchedule->asr_iqamah }}</p>
+                                </div>
+                                @endif
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">Afternoon prayer</p>
                         </div>
 
                         <!-- Maghrib -->
@@ -164,8 +256,19 @@
                                 <h4 class="text-lg font-bold text-gray-900 dark:text-white">Maghrib (Sunset)</h4>
                                 <span class="text-3xl">🌆</span>
                             </div>
-                            <p class="text-4xl font-bold text-orange-600 dark:text-orange-400 font-mono">{{ $prayerSchedule->maghrib }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Sunset prayer (Azan time)</p>
+                            <div class="space-y-2">
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Azan</p>
+                                    <p class="text-3xl font-bold text-orange-600 dark:text-orange-400 font-mono">{{ $prayerSchedule->maghrib }}</p>
+                                </div>
+                                @if($prayerSchedule->maghrib_iqamah)
+                                <div class="pt-2 border-t border-orange-200 dark:border-orange-700">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Iqamah</p>
+                                    <p class="text-2xl font-semibold text-orange-700 dark:text-orange-300 font-mono">{{ $prayerSchedule->maghrib_iqamah }}</p>
+                                </div>
+                                @endif
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">Sunset prayer</p>
                         </div>
 
                         <!-- Isha -->
@@ -174,8 +277,19 @@
                                 <h4 class="text-lg font-bold text-gray-900 dark:text-white">Isha (Night)</h4>
                                 <span class="text-3xl">🌃</span>
                             </div>
-                            <p class="text-4xl font-bold text-indigo-600 dark:text-indigo-400 font-mono">{{ $prayerSchedule->isha }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Evening prayer</p>
+                            <div class="space-y-2">
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Azan</p>
+                                    <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400 font-mono">{{ $prayerSchedule->isha }}</p>
+                                </div>
+                                @if($prayerSchedule->isha_iqamah)
+                                <div class="pt-2 border-t border-indigo-200 dark:border-indigo-700">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Iqamah</p>
+                                    <p class="text-2xl font-semibold text-indigo-700 dark:text-indigo-300 font-mono">{{ $prayerSchedule->isha_iqamah }}</p>
+                                </div>
+                                @endif
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">Evening prayer</p>
                         </div>
                     </div>
                 @else

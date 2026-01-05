@@ -5,6 +5,7 @@ namespace App\Livewire\Mosque;
 use Livewire\Component;
 use App\Models\PrayerSchedule;
 use App\Models\Mosque;
+use App\Models\MosqueSetting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -20,6 +21,7 @@ class IslamicCalendar extends Component
     public $hijriDate;
     public $nextPrayer;
     public $remainingTime;
+    public $iqamahRemainingTime;
     public $currentTime;
     public $prayerTimes = [];
     public $country = 'Sri Lanka';
@@ -42,6 +44,13 @@ class IslamicCalendar extends Component
         'Anuradhapura' => ['lat' => 8.3154, 'lng' => 80.7691, 'name' => 'Anuradhapura (North Central)'],
         'Ratnapura' => ['lat' => 6.6828, 'lng' => 80.7992, 'name' => 'Ratnapura (Sabaragamuwa)'],
     ];
+    
+    // Iqamah time offsets (loaded from settings)
+    private $fajrOffset = 20;
+    private $dhuhrOffset = 10;
+    private $asrOffset = 10;
+    private $maghribOffset = 5;
+    private $ishaOffset = 10;
 
     public function mount()
     {
@@ -74,6 +83,32 @@ class IslamicCalendar extends Component
         
         // Load important dates asynchronously to avoid blocking page load
         $this->loadImportantDates();
+        
+        // Load Iqamah offsets from mosque settings
+        $this->loadIqamahOffsets();
+    }
+
+    /**
+     * Load Iqamah time offsets from mosque settings
+     */
+    private function loadIqamahOffsets()
+    {
+        $settings = MosqueSetting::where('mosque_id', $this->mosque->id)->first();
+        
+        if ($settings) {
+            $this->fajrOffset = $settings->fajr_iqamah_offset ?? 20;
+            $this->dhuhrOffset = $settings->dhuhr_iqamah_offset ?? 10;
+            $this->asrOffset = $settings->asr_iqamah_offset ?? 10;
+            $this->maghribOffset = $settings->maghrib_iqamah_offset ?? 5;
+            $this->ishaOffset = $settings->isha_iqamah_offset ?? 10;
+        } else {
+            // Default values if no settings found
+            $this->fajrOffset = 20;
+            $this->dhuhrOffset = 10;
+            $this->asrOffset = 10;
+            $this->maghribOffset = 5;
+            $this->ishaOffset = 10;
+        }
     }
 
     public function updateProvinceLocation()
@@ -248,7 +283,16 @@ class IslamicCalendar extends Component
                 $prayerTime = Carbon::createFromFormat('H:i', $timeStr, $this->timezone)->setDate($now->year, $now->month, $now->day);
                 
                 if ($prayerTime->greaterThan($now)) {
-                    $this->nextPrayer = $prayer;
+                    // Get Iqamah time for this prayer (skip Sunrise as it has no Iqamah)
+                    $iqamahTime = null;
+                    if ($prayer['name'] !== 'Sunrise') {
+                        $iqamahField = strtolower($prayer['name']) . '_iqamah';
+                        $iqamahTime = $this->prayerSchedule->$iqamahField ?? null;
+                    }
+                    
+                    $this->nextPrayer = array_merge($prayer, [
+                        'iqamah_time' => $iqamahTime
+                    ]);
                     $this->nextPrayerTime = $prayerTime;
                     $this->updateRemainingTime();
                     return;
@@ -261,7 +305,14 @@ class IslamicCalendar extends Component
 
         // If no prayer found today, next is Fajr tomorrow
         if (!empty($this->prayerSchedule->fajr)) {
-            $this->nextPrayer = ['name' => 'Fajr (Tomorrow)', 'time' => trim($this->prayerSchedule->fajr), 'emoji' => '🌙'];
+            $fajrIqamah = $this->prayerSchedule->fajr_iqamah ?? null;
+            
+            $this->nextPrayer = [
+                'name' => 'Fajr (Tomorrow)', 
+                'time' => trim($this->prayerSchedule->fajr), 
+                'emoji' => '🌙',
+                'iqamah_time' => $fajrIqamah
+            ];
             $tomorrow = now($this->timezone)->addDay();
             
             try {
@@ -272,6 +323,7 @@ class IslamicCalendar extends Component
                 $this->updateRemainingTime();
             } catch (\Exception $e) {
                 $this->remainingTime = '00:00:00';
+                $this->iqamahRemainingTime = '00:00:00';
             }
         }
     }
@@ -280,15 +332,40 @@ class IslamicCalendar extends Component
     {
         if (!$this->nextPrayerTime) {
             $this->remainingTime = '00:00:00';
+            $this->iqamahRemainingTime = '00:00:00';
             return;
         }
         
         try {
             $now = now($this->timezone);
+            
+            // Calculate remaining time until Azan
             $diff = $this->nextPrayerTime->diff($now);
             $this->remainingTime = sprintf('%02d:%02d:%02d', $diff->h, $diff->i, $diff->s);
+            
+            // Calculate remaining time until Iqamah (if exists)
+            if (isset($this->nextPrayer['iqamah_time']) && $this->nextPrayer['iqamah_time']) {
+                try {
+                    $iqamahTimeStr = substr($this->nextPrayer['iqamah_time'], 0, 5);
+                    $iqamahTime = Carbon::createFromFormat('H:i', $iqamahTimeStr, $this->timezone)
+                        ->setDate($now->year, $now->month, $now->day);
+                    
+                    // If Iqamah time has passed today, it must be tomorrow
+                    if ($iqamahTime->lessThan($now)) {
+                        $iqamahTime->addDay();
+                    }
+                    
+                    $iqamahDiff = $iqamahTime->diff($now);
+                    $this->iqamahRemainingTime = sprintf('%02d:%02d:%02d', $iqamahDiff->h, $iqamahDiff->i, $iqamahDiff->s);
+                } catch (\Exception $e) {
+                    $this->iqamahRemainingTime = '00:00:00';
+                }
+            } else {
+                $this->iqamahRemainingTime = '00:00:00';
+            }
         } catch (\Exception $e) {
             $this->remainingTime = '00:00:00';
+            $this->iqamahRemainingTime = '00:00:00';
         }
     }
 
@@ -421,5 +498,24 @@ class IslamicCalendar extends Component
         }
 
         return $convertedDates;
+    }
+
+    /**
+     * Calculate Iqamah time by adding minutes to Azan time
+     * 
+     * @param string $azanTime Time in HH:MM format
+     * @param int $minutesToAdd Minutes to add for Iqamah
+     * @return string Iqamah time in HH:MM format
+     */
+    private function calculateIqamahTime($azanTime, $minutesToAdd)
+    {
+        try {
+            $time = Carbon::createFromFormat('H:i', $azanTime, $this->timezone);
+            $time->addMinutes($minutesToAdd);
+            return $time->format('H:i');
+        } catch (\Exception $e) {
+            Log::warning('Iqamah time calculation error: ' . $e->getMessage());
+            return $azanTime; // Fallback to Azan time if calculation fails
+        }
     }
 }

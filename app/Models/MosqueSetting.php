@@ -17,6 +17,11 @@ class MosqueSetting extends Model
         'santha_collection_date',
         'porridge_amount',
         'notes',
+        'fajr_iqamah_offset',
+        'dhuhr_iqamah_offset',
+        'asr_iqamah_offset',
+        'maghrib_iqamah_offset',
+        'isha_iqamah_offset',
     ];
 
     protected $casts = [
