@@ -112,17 +112,12 @@
         <!-- Sidebar -->
         <div id="sidebar" class="sidebar-transition fixed lg:relative inset-y-0 left-0 z-40 w-64 h-screen lg:h-auto bg-gradient-to-b from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 shadow-2xl overflow-y-auto -translate-x-full lg:translate-x-0">
             <!-- Logo Section -->
-            <div class="bg-gradient-to-r from-blue-700 to-blue-900 dark:from-blue-900 dark:to-blue-950 px-6 py-8 border-b border-blue-500">
-                <div class="flex items-center gap-3">
-                    <div class="w-14 h-14 bg-white rounded-lg flex items-center justify-center shadow-lg">
-                        <img src="{{ asset('images/mosque.png') }}" alt="Logo" class="w-10 h-10 object-contain">
-                    </div>
-                    <div class="text-white">
-                        <h1 class="text-lg font-bold">Mosque</h1>
-                        <p class="text-xs text-blue-200">Management System</p>
-                    </div>
+            <div class="bg-gradient-to-r from-blue-700 to-blue-900 dark:from-blue-900 dark:to-blue-950 px-6 py-3 border-b border-blue-500">
+                <div class="flex items-center justify-center">
+                    <img src="{{ asset('images/masjid-logo.png') }}" alt="Logo" class="h-24 object-contain filter brightness-0 invert">
                 </div>
             </div>
+            
 
             <!-- Navigation Menu -->
             <nav class="px-4 py-6 space-y-2">
