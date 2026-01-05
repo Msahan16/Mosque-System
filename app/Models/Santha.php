@@ -54,11 +54,22 @@ class Santha extends Model
             return $this->month . ' ' . $this->year;
         }
 
-        $months = collect($this->months_data)->map(function ($item) {
+        $monthlyAmount = $this->mosque?->settings?->santha_amount ?? 500;
+        $fullyPaidMonths = floor($this->amount / $monthlyAmount);
+        
+        $months = collect($this->months_data)->map(function ($item, $index) use ($fullyPaidMonths) {
             $monthName = is_numeric($item['month']) 
                 ? date('M', mktime(0, 0, 0, $item['month'], 1))
                 : substr($item['month'], 0, 3);
-            return $monthName . ' ' . $item['year'];
+            
+            $display = $monthName . ' ' . $item['year'];
+            
+            // Mark partial months (last month if there's a balance)
+            if ($index >= $fullyPaidMonths && $this->balance_due > 0) {
+                $display .= ' (Partial)';
+            }
+            
+            return $display;
         })->join(', ');
 
         return $months;

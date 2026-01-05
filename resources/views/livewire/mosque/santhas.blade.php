@@ -85,7 +85,12 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     @if($santha->months_covered > 1)
-                                        <div class="text-sm text-gray-900 dark:text-white font-medium">{{ $santha->months_covered }} Months</div>
+                                        <div class="text-sm text-gray-900 dark:text-white font-medium">
+                                            {{ $santha->months_covered }} Month{{ $santha->months_covered > 1 ? 's' : '' }}
+                                            @if($santha->status === 'partial')
+                                                <span class="text-xs text-orange-600">({{ floor($santha->amount / 500) }} full, 1 partial)</span>
+                                            @endif
+                                        </div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400">{{ $santha->getMonthsCoveredDisplay() }}</div>
                                     @else
                                         <span class="text-sm text-gray-900 dark:text-white">{{ $santha->month }} {{ $santha->year }}</span>
@@ -93,18 +98,18 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="text-sm font-semibold text-green-600 dark:text-green-400">LKR {{ number_format($santha->amount, 0) }}</div>
-                                    @if($santha->balance_due > 0)
-                                        <div class="text-xs text-orange-600 dark:text-orange-400">Due: {{ number_format($santha->balance_due, 0) }}</div>
+                                    @if($santha->status === 'partial' && $santha->balance_due > 0)
+                                        <div class="text-xs text-orange-600 dark:text-orange-400">Balance: {{ number_format($santha->balance_due, 0) }}</div>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
-                                    @if($santha->balance_due > 0)
+                                    @if($santha->status === 'partial')
                                         <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">
                                             Partial
                                         </span>
                                     @else
                                         <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                            {{ ucfirst($santha->status) }}
+                                            {{ ucfirst($santha->status ?? 'paid') }}
                                         </span>
                                     @endif
                                 </td>
@@ -113,6 +118,9 @@
                                 </td>
                                 <td class="px-4 py-3 text-center space-x-1">
                                     <button wire:click="viewReceipt({{ $santha->id }})" class="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">View</button>
+                                    @if($santha->status === 'partial' && $santha->balance_due > 0)
+                                        <button wire:click="payBalance({{ $santha->id }})" class="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">Pay Balance</button>
+                                    @endif
                                     <button wire:click="editSantha({{ $santha->id }})" class="px-2 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700">Edit</button>
                                     <button onclick="confirmDelete('confirmDeleteSantha', {{ $santha->id }}, 'Delete Payment?', 'This action cannot be undone.')" class="px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">Delete</button>
                                 </td>
@@ -247,65 +255,108 @@
                             @endif
                         </div>
 
+                        <!-- Partial Payment Alert -->
+                        @if(!empty($familyPartialPayments))
+                            <div class="p-3 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded">
+                                <div class="flex items-start gap-2">
+                                    <svg class="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-semibold text-red-800 dark:text-red-300">Outstanding Balance Found!</p>
+                                        <p class="text-xs text-red-700 dark:text-red-400 mt-1">This family has unpaid balances:</p>
+                                        @foreach($familyPartialPayments as $partial)
+                                            <div class="mt-2 p-2 bg-white dark:bg-gray-900 rounded border border-red-200 dark:border-red-800">
+                                                <div class="flex justify-between items-center text-xs">
+                                                    <span class="text-gray-700 dark:text-gray-300">{{ $partial['months'] }}</span>
+                                                    <span class="font-bold text-red-600">LKR {{ number_format($partial['balance'], 0) }} due</span>
+                                                </div>
+                                                <button type="button" wire:click="payBalance({{ $partial['id'] }})" class="mt-1 w-full px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
+                                                    Pay This Balance
+                                                </button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Family Credit Display -->
+                        @if($family_id && $familyCredit > 0)
+                            <div class="p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                <div class="flex items-start gap-2">
+                                    <svg class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-semibold text-green-800 dark:text-green-300">Credit Available: LKR {{ number_format($familyCredit, 2) }}</p>
+                                        <p class="text-xs text-green-700 dark:text-green-400 mt-0.5">From previous overpayment</p>
+                                        @if($amountNeeded > 0)
+                                            <p class="text-xs text-green-600 dark:text-green-500 mt-1 font-medium">
+                                                💰 Pay only LKR {{ number_format($amountNeeded, 0) }} more for this month
+                                            </p>
+                                        @else
+                                            <p class="text-xs text-green-600 dark:text-green-500 mt-1 font-medium">
+                                                ✅ This month is already covered by credit!
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Amount -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Amount (LKR) * 
-                                <span class="text-xs text-gray-500">(Monthly: LKR {{ number_format($monthlyAmount, 0) }})</span>
+                                Amount (LKR) * <span class="text-xs text-gray-500">(Monthly: {{ number_format($monthlyAmount, 0) }})</span>
                             </label>
                             <input wire:model.live="amount" type="number" step="0.01" required class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
                             @error('amount') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                             
-                            <!-- Auto-calculated info -->
                             @if($amount && $monthlyAmount > 0)
-                                <div class="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs">
-                                    @if($calculatedMonths > 0)
-                                        <p class="text-blue-700 dark:text-blue-300">
-                                            💡 Auto: <strong>{{ $calculatedMonths }} month(s)</strong>
-                                            @if($balanceDue > 0)
-                                                + LKR {{ number_format($balanceDue, 0) }} balance
-                                            @endif
-                                        </p>
-                                    @elseif($balanceDue > 0)
-                                        <p class="text-orange-600 dark:text-orange-400">
-                                            ⚠️ Partial: <strong>LKR {{ number_format($balanceDue, 0) }} due</strong> for full month
-                                        </p>
+                                <div class="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300">
+                                    @if($familyCredit > 0)
+                                        <div class="font-medium">Previous Credit: {{ number_format($familyCredit, 0) }} + Payment: {{ number_format($amount, 0) }} = {{ number_format($amount + $familyCredit, 0) }}</div>
                                     @endif
-                                </div>
-                            @endif
-                        </div>
-
-                        <!-- Manual Month Override -->
-                        <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-gray-900/50">
-                            <div class="flex items-center justify-between mb-2">
-                                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Months to Pay</label>
-                                <button type="button" wire:click="toggleManualOverride" class="text-xs px-2 py-1 rounded {{ $manualMonthsOverride ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-700' }}">
-                                    {{ $manualMonthsOverride ? 'Manual' : 'Auto' }}
-                                </button>
-                            </div>
-                            
-                            <input wire:model.live="monthsToPay" type="number" min="0" max="24" 
-                                {{ !$manualMonthsOverride ? 'disabled' : '' }}
-                                class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white {{ !$manualMonthsOverride ? 'opacity-60' : '' }}">
-                            
-                            @if($monthsToPay == 0)
-                                <p class="text-xs text-orange-600 dark:text-orange-400 mt-1">⚠️ Partial payment - {{ number_format($balanceDue, 0) }} due</p>
-                            @endif
-                            
-                            <!-- Show covered months -->
-                            @if(!empty($selectedMonths) && $monthsToPay > 0)
-                                <div class="mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded">
-                                    <p class="text-xs font-medium text-green-700 dark:text-green-300 mb-1">Covers:</p>
-                                    <div class="flex flex-wrap gap-1">
-                                        @foreach($selectedMonths as $sm)
-                                            <span class="px-2 py-0.5 bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 rounded text-xs">
-                                                {{ $sm['monthName'] }} {{ $sm['year'] }}
-                                            </span>
-                                        @endforeach
+                                    <div class="{{ $familyCredit > 0 ? 'mt-1' : '' }}">Covers <strong>{{ $monthsToPay }} month(s)</strong>
+                                    @if($overpaymentMode === 'credit' && $newCredit > 0)
+                                        + {{ number_format($newCredit, 0) }} credit
+                                    @endif
                                     </div>
                                 </div>
                             @endif
                         </div>
+
+                        <!-- Overpayment Handling Option -->
+                        @if($amount > $monthlyAmount)
+                            <div class="border border-purple-200 dark:border-purple-800 rounded-lg p-3 bg-purple-50 dark:bg-purple-900/20">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Overpayment Mode</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" wire:model.live="overpaymentMode" value="credit" class="text-purple-600">
+                                        <span class="text-sm text-gray-900 dark:text-white">Credit for Future (Carry forward extra)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" wire:model.live="overpaymentMode" value="single_month" class="text-purple-600">
+                                        <span class="text-sm text-gray-900 dark:text-white">Single Month (Treat extra as donation)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Months Covered -->
+                        @if(!empty($selectedMonths))
+                            <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
+                                <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Covers: {{ $monthsToPay }} month(s)</div>
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($selectedMonths as $sm)
+                                        <span class="px-2 py-1 bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 rounded text-xs">
+                                            {{ $sm['monthName'] }} {{ $sm['year'] }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
                         <!-- Payment Date & Method -->
                         <div class="grid grid-cols-2 gap-3">
@@ -349,74 +400,149 @@
     <!-- Receipt Modal -->
     @if($showReceiptModal && $viewingSantha)
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Receipt</h3>
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-bold text-gray-900">Receipt</h3>
                     <div class="space-x-2">
-                        <button onclick="printReceipt()" class="px-3 py-1.5 bg-blue-600 text-white rounded text-sm">Print</button>
-                        <button wire:click="closeReceiptModal" class="px-3 py-1.5 bg-gray-300 text-gray-800 rounded text-sm">Close</button>
+                        <button onclick="printSanthaReceipt()" class="px-3 py-1 bg-blue-600 text-white rounded text-xs">Print</button>
+                        <button onclick="downloadSanthaReceipt()" class="px-3 py-1 bg-green-600 text-white rounded text-xs">Download</button>
+                        <button wire:click="closeReceiptModal" class="px-3 py-1 bg-gray-300 text-gray-800 rounded text-xs">Close</button>
                     </div>
                 </div>
 
-                <div id="receipt-content" class="bg-white p-5 border rounded-lg">
-                    <div class="text-center mb-4">
-                        <h2 class="text-xl font-bold text-gray-900">{{ $viewingSantha['mosque_name'] }}</h2>
-                        <p class="text-gray-500 text-sm">Santha Receipt</p>
+                <div id="santha-receipt-content" style="background:#ffffff;padding:22px;color:#111827;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;max-width:640px;margin:0 auto;">
+                    <div style="text-align:center;margin-bottom:8px;">
+                        <h2 style="font-size:20px;margin:0 0 4px 0;font-weight:700;color:#0f172a;">{{ $viewingSantha['mosque_name'] }}</h2>
+                        <p style="margin:0;color:#6b7280;font-size:13px;">Santha Receipt</p>
                     </div>
 
-                    <div class="border-t border-b py-3 my-3 space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Receipt #</span>
-                            <span class="font-mono">{{ $viewingSantha['receipt_number'] }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Date</span>
-                            <span>{{ $viewingSantha['payment_date'] }}</span>
-                        </div>
-                    </div>
+                    <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+                        <tr>
+                            <td style="padding:8px 0;color:#374151;width:60%;"><strong>Receipt #</strong></td>
+                            <td style="padding:8px 0;text-align:right;color:#111827;">{{ $viewingSantha['receipt_number'] }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px 0;color:#374151;width:60%;"><strong>Date</strong></td>
+                            <td style="padding:8px 0;text-align:right;color:#111827;">{{ $viewingSantha['payment_date'] }}</td>
+                        </tr>
+                    </table>
 
-                    <div class="space-y-1 text-sm mb-4">
-                        <p><span class="text-gray-600">Family:</span> {{ $viewingSantha['family_name'] }}</p>
-                        <p><span class="text-gray-600">Phone:</span> {{ $viewingSantha['family_phone'] }}</p>
+                    <hr style="border:none;border-top:1px solid #e6e9ee;margin:12px 0;">
+
+                    <div style="color:#374151;font-size:14px;line-height:1.5;margin-bottom:10px;">
+                        <div><strong>Family:</strong> {{ $viewingSantha['family_name'] }}</div>
+                        <div><strong>Phone:</strong> {{ $viewingSantha['family_phone'] }}</div>
                         @if($viewingSantha['months_covered'] > 1)
-                            <p><span class="text-gray-600">Months Covered:</span> <strong>{{ $viewingSantha['months_covered'] }} months</strong></p>
-                            <p class="text-xs text-gray-500">{{ $viewingSantha['months_display'] }}</p>
+                            <div><strong>Months Covered:</strong> {{ $viewingSantha['months_covered'] }} months</div>
+                            <div style="font-size:13px;color:#6b7280;">{{ $viewingSantha['months_display'] }}</div>
                         @else
-                            <p><span class="text-gray-600">Period:</span> {{ $viewingSantha['month'] }} {{ $viewingSantha['year'] }}</p>
+                            <div><strong>Period:</strong> {{ $viewingSantha['month'] }} {{ $viewingSantha['year'] }}</div>
                         @endif
                     </div>
 
-                    <div class="border-t pt-3">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-medium text-gray-700">Amount Paid</span>
-                            <span class="text-xl font-bold text-green-600">LKR {{ number_format($viewingSantha['amount'], 2) }}</span>
-                        </div>
-                        @if($viewingSantha['balance_due'] > 0)
-                            <div class="flex justify-between items-center text-sm text-orange-600">
-                                <span>Balance Due</span>
-                                <span class="font-semibold">LKR {{ number_format($viewingSantha['balance_due'], 2) }}</span>
+                    <hr style="border:none;border-top:1px solid #e6e9ee;margin:12px 0;">
+
+                    @if($viewingSantha['previous_credit_used'] > 0)
+                        <div style="background:#f0fdf4;padding:10px;border-radius:4px;margin-bottom:10px;font-size:13px;">
+                            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                                <span>Previous Credit Used</span>
+                                <span style="font-weight:600;color:#059669;">LKR{{ number_format($viewingSantha['previous_credit_used'], 0) }}</span>
                             </div>
-                        @endif
-                    </div>
-                    <p class="text-gray-500 text-xs mt-2">Method: {{ ucfirst($viewingSantha['payment_method']) }}</p>
-                    @if(!empty($viewingSantha['notes']))
-                        <p class="text-gray-500 text-xs mt-1">Notes: {{ $viewingSantha['notes'] }}</p>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                                <span>New Payment</span>
+                                <span style="font-weight:600;color:#2563eb;">LKR{{ number_format($viewingSantha['amount'], 0) }}</span>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;padding-top:4px;border-top:1px solid #dcfce7;margin-top:4px;">
+                                <span style="font-weight:600;">Total Applied</span>
+                                <span style="font-weight:700;color:#047857;">LKR{{ number_format($viewingSantha['total_applied'], 0) }}</span>
+                            </div>
+                        </div>
                     @endif
+
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                        <div style="font-weight:600;color:#111827;">Amount Paid</div>
+                        <div style="font-size:18px;font-weight:700;color:#0f172a;">LKR{{ number_format($viewingSantha['amount'], 0) }}</div>
+                    </div>
+
+                    @if($viewingSantha['new_credit'] > 0)
+                        <div style="background:#fef3c7;padding:10px;border-radius:4px;margin-top:10px;font-size:13px;">
+                            <div style="color:#92400e;">⚠️ Balance Remaining ({{ $viewingSantha['balance_month'] }}): <strong>LKR{{ number_format($viewingSantha['new_credit'], 0) }}</strong></div>
+                        </div>
+                    @endif
+
+                    <div style="color:#6b7280;margin-top:8px;font-size:13px;">Method: {{ ucfirst($viewingSantha['payment_method']) }}</div>
+                    @if(!empty($viewingSantha['notes']))
+                        <div style="margin-top:8px;font-size:13px;color:#374151;">Notes: {{ $viewingSantha['notes'] }}</div>
+                    @endif
+
+                    <div style="text-align:left;color:#9ca3af;margin-top:16px;font-size:12px;">This receipt is generated by {{ config('app.name') }}.</div>
                 </div>
             </div>
         </div>
     @endif
 
     <script>
-        function printReceipt() {
-            const content = document.getElementById('receipt-content');
-            if (!content) return;
+        function _getSanthaPrintableHtml() {
+            const content = document.getElementById('santha-receipt-content');
+            if (!content) return '';
+
+            const clone = content.cloneNode(true);
+            function sanitize(node) {
+                if (node.className) {
+                    node.className = node.className.replace(/\bdark:[^\s]+\b/g, '').replace(/\bbg-[^\s]+\b/g, '').replace(/\btext-[^\s]+\b/g, '');
+                }
+                Array.from(node.children || []).forEach(child => sanitize(child));
+            }
+            sanitize(clone);
+
+            const wrapperStyle = [
+                'width:640px',
+                'margin:0 auto',
+                'padding:20px',
+                'background:#ffffff',
+                'color:#111827',
+                "font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+            ].join(';');
+
+            return `<!doctype html><html><head><meta charset="utf-8"><title>Receipt</title>` +
+                '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">' +
+                `<style>body{margin:0;padding:20px;background:#f3f4f6} .receipt-container{${wrapperStyle}} .text-center{text-align:center} .font-bold{font-weight:700}</style>` +
+                '</head><body><div class="receipt-container">' + clone.innerHTML + '</div></body></html>';
+        }
+
+        function printSanthaReceipt() {
+            const html = _getSanthaPrintableHtml();
+            if (!html) return;
+
             const w = window.open('', '_blank');
-            w.document.write('<html><head><title>Receipt</title><style>body{font-family:sans-serif;padding:20px;}</style></head><body>');
-            w.document.write(content.innerHTML);
-            w.document.write('</body></html>');
+            w.document.open();
+            w.document.write(html);
             w.document.close();
-            w.print();
+            w.focus();
+            setTimeout(() => { w.print(); }, 600);
+        }
+
+        function downloadSanthaReceipt() {
+            const printableHtml = _getSanthaPrintableHtml();
+            if (!printableHtml) return;
+            const temp = document.createElement('div');
+            temp.style.position = 'fixed';
+            temp.style.left = '-9999px';
+            temp.innerHTML = printableHtml;
+            document.body.appendChild(temp);
+
+            const render = () => {
+                if (window.html2pdf) {
+                    html2pdf().from(temp).set({margin:10, filename: 'santha_receipt_'+Date.now()+'.pdf', jsPDF:{unit:'pt', format:'a4', orientation:'portrait'}}).save().then(() => temp.remove());
+                } else {
+                    const s = document.createElement('script');
+                    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js';
+                    s.onload = () => { html2pdf().from(temp).set({margin:10, filename: 'santha_receipt_'+Date.now()+'.pdf', jsPDF:{unit:'pt', format:'a4', orientation:'portrait'}}).save().then(() => temp.remove()); };
+                    document.head.appendChild(s);
+                }
+            };
+
+            setTimeout(render, 200);
         }
     </script>
 </div>

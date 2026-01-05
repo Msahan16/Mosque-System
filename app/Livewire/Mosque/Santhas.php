@@ -38,11 +38,14 @@ class Santhas extends Component
     public $notes;
     
     // Multi-month payment fields
-    public $calculatedMonths = 0;
-    public $manualMonthsOverride = false;
     public $monthsToPay = 1;
     public $selectedMonths = [];
-    public $balanceDue = 0;
+    public $familyCredit = 0;      // Existing credit from overpayments
+    public $newCredit = 0;         // Credit generated from this payment
+    public $amountNeeded = 0;      // Amount needed for next month after credit
+    public $overpaymentMode = 'credit'; // 'credit' = carry forward, 'single_month' = donation mode
+    public $completingPartialId = null; // ID of partial payment being completed
+    public $familyPartialPayments = []; // Store partial payments for selected family
 
     // Receipt Modal
     public $showReceiptModal = false;
@@ -59,7 +62,6 @@ class Santhas extends Component
             'payment_date' => 'required|date',
             'payment_method' => 'required|string',
             'notes' => 'nullable|string|max:500',
-            'monthsToPay' => 'required|integer|min:1|max:24',
         ];
     }
 
@@ -73,7 +75,7 @@ class Santhas extends Component
 
     public function updatedFamilySearch()
     {
-        $this->showFamilyDropdown = !empty($this->familySearch);
+        $this->showFamilyDropdown = strlen($this->familySearch) >= 1;
     }
 
     public function selectFamily($familyId, $familyName)
@@ -81,8 +83,26 @@ class Santhas extends Component
         $this->family_id = $familyId;
         $this->familySearch = $familyName;
         $this->showFamilyDropdown = false;
-        $this->amount = $this->monthlyAmount;
-        $this->calculateMonths();
+        
+        // Check if family has partial payments
+        $mosqueId = Auth::user()->mosque_id;
+        $this->familyPartialPayments = Santha::where('mosque_id', $mosqueId)
+            ->where('family_id', $familyId)
+            ->where('status', 'partial')
+            ->where('balance_due', '>', 0)
+            ->orderBy('payment_date', 'desc')
+            ->get()
+            ->map(fn($s) => [
+                'id' => $s->id,
+                'months' => $this->getPartialMonthsDisplay($s),
+                'balance' => $s->balance_due,
+                'amount_paid' => $s->amount
+            ])
+            ->toArray();
+        
+        // Set default amount and recalculate
+        $this->calculateFamilyCredit();
+        $this->calculatePayment();
     }
 
     public function clearFamily()
@@ -90,15 +110,46 @@ class Santhas extends Component
         $this->family_id = null;
         $this->familySearch = '';
         $this->showFamilyDropdown = false;
+        $this->familyCredit = 0;
+        $this->newCredit = 0;
+        $this->amountNeeded = $this->monthlyAmount;
+        $this->selectedMonths = [];
+        $this->monthsToPay = 1;
+        $this->familyPartialPayments = [];
+    }
+
+    public function calculateFamilyCredit()
+    {
+        if (!$this->family_id) {
+            $this->familyCredit = 0;
+            $this->amountNeeded = $this->monthlyAmount;
+            return;
+        }
+
+        $mosqueId = Auth::user()->mosque_id;
+        
+        // Get latest payment with credit (balance_due stores the credit)
+        $lastPaymentWithCredit = Santha::where('mosque_id', $mosqueId)
+            ->where('family_id', $this->family_id)
+            ->where('payment_applies_to', 'credit')
+            ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
+            ->orderBy('payment_date', 'desc')
+            ->first();
+        
+        // Credit is stored in balance_due field of the last credit-mode payment
+        $this->familyCredit = $lastPaymentWithCredit ? ($lastPaymentWithCredit->balance_due ?? 0) : 0;
+        
+        // How much needed for next month (considering credit)
+        $this->amountNeeded = max(0, $this->monthlyAmount - $this->familyCredit);
     }
 
     public function getFilteredFamiliesProperty()
     {
-        $mosqueId = Auth::user()->mosque_id;
-        
         if (empty($this->familySearch)) {
             return collect();
         }
+        
+        $mosqueId = Auth::user()->mosque_id;
         
         return Family::where('mosque_id', $mosqueId)
             ->where('is_active', true)
@@ -117,12 +168,40 @@ class Santhas extends Component
         $this->resetForm();
         $this->amount = $this->monthlyAmount;
         $this->payment_date = now()->format('Y-m-d');
-        $this->payment_date = now()->format('Y-m-d');
         $this->payment_method = 'cash';
+        $this->overpaymentMode = 'credit';
         $this->monthsToPay = 1;
-        $this->manualMonthsOverride = false;
-        $this->calculateMonths();
+        $this->newCredit = 0;
+        $this->generateMonthsArray();
         $this->showModal = true;
+    }
+
+    /**
+     * Get only the partial/balance months from a payment
+     */
+    private function getPartialMonthsDisplay($santha)
+    {
+        $fullyPaidMonths = floor($santha->amount / $this->monthlyAmount);
+        $allMonths = $santha->months_data ?? [[
+            'month' => $santha->month,
+            'year' => $santha->year,
+            'monthName' => $santha->month
+        ]];
+        
+        // Get only the partial months (skip fully paid ones)
+        $partialMonths = array_slice($allMonths, $fullyPaidMonths);
+        
+        if (empty($partialMonths)) {
+            return $santha->getMonthsCoveredDisplay();
+        }
+        
+        // Format the partial months
+        $formatted = [];
+        foreach ($partialMonths as $month) {
+            $formatted[] = $month['monthName'] . ' ' . $month['year'];
+        }
+        
+        return implode(', ', $formatted);
     }
 
     public function closeModal()
@@ -131,161 +210,143 @@ class Santhas extends Component
         $this->resetForm();
     }
 
-    public function updatedFamilyId($value)
+    public function updatedAmount()
     {
-        if ($value) {
-            $this->amount = $this->monthlyAmount;
-            $this->calculateMonths();
+        $this->calculatePayment();
+    }
+
+    public function updatedOverpaymentMode()
+    {
+        $this->calculatePayment();
+    }
+
+    /**
+     * Calculate how many months this payment covers based on amount + credit
+     */
+    public function calculatePayment()
+    {
+        if (!$this->amount || $this->monthlyAmount <= 0) {
+            $this->monthsToPay = 1;
+            $this->newCredit = 0;
+            $this->generateMonthsArray();
+            return;
         }
-    }
 
-    public function updatedAmount($value)
-    {
-        $this->calculateMonths();
-    }
-
-    public function calculateMonths()
-    {
-        if (!$this->manualMonthsOverride && $this->amount && $this->monthlyAmount > 0) {
-            $fullMonths = floor($this->amount / $this->monthlyAmount);
-            $remainder = $this->amount - ($fullMonths * $this->monthlyAmount);
+        // Total effective amount = new payment + any existing family credit
+        $effectiveAmount = floatval($this->amount) + floatval($this->familyCredit);
+        
+        if ($this->overpaymentMode === 'single_month') {
+            // SINGLE MONTH MODE: Pay only 1 month, excess is a donation (no credit)
+            $this->monthsToPay = 1;
+            $this->newCredit = 0;
+        } else {
+            // CREDIT MODE: Calculate full months + apply remainder to next month as partial
+            $fullMonths = floor($effectiveAmount / $this->monthlyAmount);
+            $remainder = $effectiveAmount - ($fullMonths * $this->monthlyAmount);
             
-            $this->calculatedMonths = $fullMonths;
-            $this->balanceDue = $remainder;
-            
-            if (!$this->manualMonthsOverride) {
+            if ($remainder > 0) {
+                // If there's a remainder, it goes to the next month as partial payment
+                $this->monthsToPay = $fullMonths + 1; // Include the partial month
+                $this->newCredit = $remainder; // This will be balance for the partial month
+            } else {
+                // Exact amount for full months
                 $this->monthsToPay = max(1, $fullMonths);
+                $this->newCredit = 0;
             }
             
-            // If paying less than one full month, show as partial
-            if ($fullMonths == 0 && $remainder > 0) {
-                $this->monthsToPay = 0;
-                $this->balanceDue = $this->monthlyAmount - $remainder;
+            // If amount is less than monthly amount (partial payment for 1 month)
+            if ($effectiveAmount < $this->monthlyAmount) {
+                $this->monthsToPay = 1;
+                $this->newCredit = $effectiveAmount; // Partial payment amount
             }
-            
-            $this->generateMonthsArray();
         }
+        
+        $this->generateMonthsArray();
     }
 
-    public function toggleManualOverride()
-    {
-        $this->manualMonthsOverride = !$this->manualMonthsOverride;
-        if (!$this->manualMonthsOverride) {
-            $this->calculateMonths();
-        }
-    }
-
-    public function updatedMonthsToPay($value)
-    {
-        if ($this->manualMonthsOverride) {
-            $this->generateMonthsArray();
-            // Recalculate balance based on manual months
-            $expectedAmount = $value * $this->monthlyAmount;
-            $this->balanceDue = max(0, $expectedAmount - $this->amount);
-        }
-    }
-
+    /**
+     * Generate array of months to be covered by this payment
+     * Auto-skips already paid months
+     */
     public function generateMonthsArray()
     {
         $this->selectedMonths = [];
         
-        // Start from current month by default
-        $startMonth = now()->month;
-        $startYear = now()->year;
-        
-        // Always check and skip already paid months
-        if ($this->family_id) {
-            $mosqueId = Auth::user()->mosque_id;
-            $tempMonth = $startMonth;
-            $tempYear = $startYear;
-            
-            // Find the first unpaid month starting from selected month
-            $maxChecks = 24; // Check up to 24 months ahead
-            $checksCount = 0;
-            
-            while ($checksCount < $maxChecks) {
-                $monthName = Carbon::create()->month($tempMonth)->format('F');
-                
-                $isPaid = Santha::where('mosque_id', $mosqueId)
-                    ->where('family_id', $this->family_id)
-                    ->where('year', $tempYear)
-                    ->where(function($q) use ($tempMonth, $monthName) {
-                        $q->where('month', $tempMonth)
-                          ->orWhere('month', $monthName);
-                    })
-                    ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
-                    ->exists();
-                
-                if (!$isPaid) {
-                    // Found first unpaid month
-                    $startMonth = $tempMonth;
-                    $startYear = $tempYear;
-                    break;
-                }
-                
-                // Move to next month
-                $tempMonth++;
-                if ($tempMonth > 12) {
-                    $tempMonth = 1;
-                    $tempYear++;
-                }
-                $checksCount++;
-            }
+        // Default to current month if no family selected
+        if (!$this->family_id) {
+            $this->selectedMonths[] = [
+                'month' => now()->month,
+                'year' => now()->year,
+                'monthName' => now()->format('F')
+            ];
+            return;
         }
+
+        $mosqueId = Auth::user()->mosque_id;
+        $monthsNeeded = max(1, intval($this->monthsToPay));
+        $monthsFound = 0;
         
-        $monthsToGenerate = $this->monthsToPay > 0 ? $this->monthsToPay : 1;
-        $generatedCount = 0;
-        $currentMonth = $startMonth;
-        $currentYear = $startYear;
+        // Start from current month
+        $checkMonth = now()->month;
+        $checkYear = now()->year;
+        $maxIterations = 36; // Check up to 3 years ahead
+        $iterations = 0;
         
-        // Generate months, skipping any that are already paid
-        while ($generatedCount < $monthsToGenerate) {
-            if ($this->family_id) {
-                $mosqueId = Auth::user()->mosque_id;
-                $monthName = Carbon::create()->month($currentMonth)->format('F');
-                
-                $isPaid = Santha::where('mosque_id', $mosqueId)
-                    ->where('family_id', $this->family_id)
-                    ->where('year', $currentYear)
-                    ->where(function($q) use ($currentMonth, $monthName) {
-                        $q->where('month', $currentMonth)
-                          ->orWhere('month', $monthName);
+        while ($monthsFound < $monthsNeeded && $iterations < $maxIterations) {
+            $monthName = Carbon::create($checkYear, $checkMonth, 1)->format('F');
+            
+            // Check if this month is already paid (including months_data)
+            $isPaid = Santha::where('mosque_id', $mosqueId)
+                ->where('family_id', $this->family_id)
+                ->where(function($q) use ($checkMonth, $monthName, $checkYear) {
+                    // Check main month field
+                    $q->where(function($sq) use ($checkMonth, $monthName, $checkYear) {
+                        $sq->where('year', $checkYear)
+                           ->where(function($mq) use ($checkMonth, $monthName) {
+                               $mq->where('month', $checkMonth)
+                                  ->orWhere('month', $monthName);
+                           });
                     })
-                    ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
-                    ->exists();
-                
-                if (!$isPaid) {
-                    // Add this unpaid month
-                    $this->selectedMonths[] = [
-                        'month' => $currentMonth,
-                        'year' => $currentYear,
-                        'monthName' => Carbon::create()->month($currentMonth)->format('F')
-                    ];
-                    $generatedCount++;
-                }
-            } else {
-                // No family selected yet, just generate sequentially
+                    // Also check months_data JSON for multi-month payments
+                    ->orWhereJsonContains('months_data', [
+                        'month' => $checkMonth,
+                        'year' => $checkYear,
+                        'monthName' => $monthName
+                    ]);
+                })
+                ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
+                ->exists();
+            
+            if (!$isPaid) {
                 $this->selectedMonths[] = [
-                    'month' => $currentMonth,
-                    'year' => $currentYear,
-                    'monthName' => Carbon::create()->month($currentMonth)->format('F')
+                    'month' => $checkMonth,
+                    'year' => $checkYear,
+                    'monthName' => $monthName
                 ];
-                $generatedCount++;
+                $monthsFound++;
             }
             
             // Move to next month
-            $currentMonth++;
-            if ($currentMonth > 12) {
-                $currentMonth = 1;
-                $currentYear++;
+            $checkMonth++;
+            if ($checkMonth > 12) {
+                $checkMonth = 1;
+                $checkYear++;
             }
+            $iterations++;
+        }
+        
+        // Adjust monthsToPay if we couldn't find enough unpaid months
+        if (count($this->selectedMonths) < $this->monthsToPay) {
+            $this->monthsToPay = count($this->selectedMonths);
         }
     }
 
     public function editSantha($id)
     {
         $santha = Santha::findOrFail($id);
+        
         $this->santhaId = $santha->id;
+        $this->editMode = true;
         $this->family_id = $santha->family_id;
         $this->familySearch = $santha->family?->family_head_name ?? '';
         $this->amount = $santha->amount;
@@ -293,10 +354,44 @@ class Santhas extends Component
         $this->payment_method = $santha->payment_method;
         $this->notes = $santha->notes;
         $this->monthsToPay = $santha->months_covered ?? 1;
-        $this->balanceDue = $santha->balance_due ?? 0;
         $this->selectedMonths = $santha->months_data ?? [];
-        $this->manualMonthsOverride = $santha->months_covered != floor($santha->amount / $this->monthlyAmount);
-        $this->editMode = true;
+        $this->overpaymentMode = $santha->payment_applies_to ?? 'credit';
+        $this->newCredit = $santha->balance_due ?? 0;
+        
+        $this->calculateFamilyCredit();
+        $this->showModal = true;
+    }
+
+    public function payBalance($id)
+    {
+        $santha = Santha::findOrFail($id);
+        
+        // Open modal with pre-filled balance amount
+        $this->resetForm();
+        $this->completingPartialId = $id; // Track which partial payment we're completing
+        $this->family_id = $santha->family_id;
+        $this->familySearch = $santha->family?->family_head_name ?? '';
+        $this->amount = $santha->balance_due; // Pre-fill with remaining balance
+        $this->payment_date = now()->format('Y-m-d');
+        $this->payment_method = 'cash';
+        $this->overpaymentMode = 'credit';
+        
+        // Calculate which months are fully paid and which are partial
+        $fullyPaidMonths = floor($santha->amount / $this->monthlyAmount);
+        $allMonths = $santha->months_data ?? [[
+            'month' => $santha->month,
+            'year' => $santha->year,
+            'monthName' => $santha->month
+        ]];
+        
+        // Only show the partial/unpaid months (skip fully paid ones)
+        $partialMonths = array_slice($allMonths, $fullyPaidMonths);
+        
+        $this->monthsToPay = count($partialMonths);
+        $this->selectedMonths = $partialMonths;
+        
+        $this->calculateFamilyCredit();
+        // Don't call calculatePayment() - we're completing existing months
         $this->showModal = true;
     }
 
@@ -307,111 +402,131 @@ class Santhas extends Component
         try {
             $mosqueId = Auth::user()->mosque_id;
             
-            // Regenerate months array to ensure it's up to date
-            $this->generateMonthsArray();
+            // If completing a partial payment, update the existing record
+            if ($this->completingPartialId) {
+                $partialPayment = Santha::findOrFail($this->completingPartialId);
+                
+                // Add new payment to existing amount
+                $totalPaid = $partialPayment->amount + $this->amount;
+                $totalCost = $partialPayment->months_covered * $this->monthlyAmount;
+                $newBalance = max(0, $totalCost - $totalPaid);
+                
+                $partialPayment->update([
+                    'amount' => $totalPaid,
+                    'balance_due' => $newBalance,
+                    'is_paid' => $newBalance <= 0,
+                    'status' => $newBalance > 0 ? 'partial' : 'paid',
+                    'notes' => ($partialPayment->notes ? $partialPayment->notes . "\n" : '') . 
+                               "Balance payment: {$this->amount} on " . now()->format('Y-m-d')
+                ]);
+                
+                $this->dispatch('swal:success', title: 'Success', text: 'Balance payment recorded successfully');
+                $this->closeModal();
+                return;
+            }
+            
+            // Make sure months array is up to date
+            if (empty($this->selectedMonths)) {
+                $this->generateMonthsArray();
+            }
             
             if (empty($this->selectedMonths)) {
                 throw new \Exception("No unpaid months available for this family.");
             }
             
-            // For multi-month payments, create separate records or update primary with months_data
-            if ($this->monthsToPay > 1 && !empty($this->selectedMonths)) {
-                // Save as single record with months_data
-                $firstMonth = $this->selectedMonths[0];
-                $monthName = $firstMonth['monthName'];
+            $firstMonth = $this->selectedMonths[0];
+            $monthName = $firstMonth['monthName'];
+            $year = $firstMonth['year'];
+            
+            // Check for duplicate payment (only for new records)
+            if (!$this->editMode) {
+                // Check if ANY of the selected months are already paid
+                foreach ($this->selectedMonths as $checkMonth) {
+                    $monthName = $checkMonth['monthName'];
+                    $month = $checkMonth['month'];
+                    $year = $checkMonth['year'];
+                    
+                    $existing = Santha::where('mosque_id', $mosqueId)
+                        ->where('family_id', $this->family_id)
+                        ->where(function($q) use ($month, $monthName, $year) {
+                            // Check main month field
+                            $q->where(function($sq) use ($month, $monthName, $year) {
+                                $sq->where('year', $year)
+                                   ->where(function($mq) use ($month, $monthName) {
+                                       $mq->where('month', $month)
+                                          ->orWhere('month', $monthName);
+                                   });
+                            })
+                            // Also check months_data JSON
+                            ->orWhereJsonContains('months_data', [
+                                'month' => $month,
+                                'year' => $year,
+                                'monthName' => $monthName
+                            ]);
+                        })
+                        ->exists();
+
+                    if ($existing) {
+                        throw new \Exception("Payment already exists for {$monthName} {$year}");
+                    }
+                }
+            }
+
+            // If using family credit, update the previous payment's balance_due
+            if ($this->familyCredit > 0 && !$this->editMode) {
+                $creditUsed = min($this->familyCredit, $this->monthlyAmount * count($this->selectedMonths) - $this->amount);
                 
-                // Check if payment already exists for first month
-                $existing = Santha::where('mosque_id', $mosqueId)
-                    ->where('family_id', $this->family_id)
-                    ->where('year', $firstMonth['year'])
-                    ->where(function($q) use ($monthName, $firstMonth) {
-                        $q->where('month', $firstMonth['month'])
-                          ->orWhere('month', $monthName);
-                    })
-                    ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
-                    ->first();
-
-                if ($existing && !$this->editMode) {
-                    throw new \Exception("Payment already exists for {$monthName} {$firstMonth['year']}");
+                if ($creditUsed > 0) {
+                    $lastPaymentWithCredit = Santha::where('mosque_id', $mosqueId)
+                        ->where('family_id', $this->family_id)
+                        ->where('payment_applies_to', 'credit')
+                        ->where('balance_due', '>', 0)
+                        ->orderBy('payment_date', 'desc')
+                        ->first();
+                    
+                    if ($lastPaymentWithCredit) {
+                        // Deduct the used credit
+                        $remainingCredit = max(0, $lastPaymentWithCredit->balance_due - $creditUsed);
+                        $lastPaymentWithCredit->update(['balance_due' => $remainingCredit]);
+                    }
                 }
+            }
 
-                $receiptNumber = $this->editMode 
-                    ? Santha::find($this->santhaId)->receipt_number 
-                    : $this->generateReceiptNumber($mosqueId);
+            // Generate receipt number
+            $receiptNumber = $this->editMode 
+                ? Santha::find($this->santhaId)->receipt_number 
+                : $this->generateReceiptNumber($mosqueId);
 
-                $data = [
-                    'mosque_id' => $mosqueId,
-                    'family_id' => $this->family_id,
-                    'month' => $monthName,
-                    'year' => $firstMonth['year'],
-                    'amount' => $this->amount,
-                    'months_covered' => $this->monthsToPay,
-                    'months_data' => $this->selectedMonths,
-                    'balance_due' => $this->balanceDue,
-                    'payment_applies_to' => 'auto_skip_paid',
-                    'payment_date' => $this->payment_date,
-                    'payment_method' => $this->payment_method,
-                    'receipt_number' => $receiptNumber,
-                    'is_paid' => true,
-                    'status' => $this->balanceDue > 0 ? 'partial' : 'paid',
-                    'notes' => $this->notes,
-                ];
+            // Check if last month is partial (has remaining balance)
+            $totalCost = count($this->selectedMonths) * $this->monthlyAmount;
+            $totalPaid = $this->amount + ($this->familyCredit > 0 ? $this->familyCredit : 0);
+            $balanceRemaining = $totalCost - $totalPaid;
+            
+            // Prepare data - unified for both single and multi-month
+            $data = [
+                'mosque_id' => $mosqueId,
+                'family_id' => $this->family_id,
+                'month' => $monthName,
+                'year' => $year,
+                'amount' => $this->amount,
+                'months_covered' => count($this->selectedMonths),
+                'months_data' => count($this->selectedMonths) > 1 ? $this->selectedMonths : null,
+                'balance_due' => $balanceRemaining > 0 ? $balanceRemaining : 0, // Remaining balance for partial month
+                'payment_applies_to' => $this->overpaymentMode,
+                'payment_date' => $this->payment_date,
+                'payment_method' => $this->payment_method,
+                'receipt_number' => $receiptNumber,
+                'is_paid' => $balanceRemaining <= 0,
+                'status' => $balanceRemaining > 0 ? 'partial' : 'paid',
+                'notes' => $this->notes,
+            ];
 
-                if ($this->editMode) {
-                    Santha::findOrFail($this->santhaId)->update($data);
-                    $message = 'Payment updated successfully';
-                } else {
-                    Santha::create($data);
-                    $message = 'Payment recorded successfully';
-                }
+            if ($this->editMode) {
+                Santha::findOrFail($this->santhaId)->update($data);
+                $message = 'Payment updated successfully';
             } else {
-                // Single month or partial payment
-                $monthName = Carbon::create()->month($this->month)->format('F');
-
-                // Check if payment already exists
-                $existing = Santha::where('mosque_id', $mosqueId)
-                    ->where('family_id', $this->family_id)
-                    ->where('year', $this->year)
-                    ->where(function($q) use ($monthName) {
-                        $q->where('month', $this->month)
-                          ->orWhere('month', $monthName);
-                    })
-                    ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
-                    ->first();
-
-                if ($existing && !$this->editMode) {
-                    throw new \Exception("Payment already exists for {$monthName} {$this->year}");
-                }
-
-                $receiptNumber = $this->editMode 
-                    ? Santha::find($this->santhaId)->receipt_number 
-                    : $this->generateReceiptNumber($mosqueId);
-
-                $data = [
-                    'mosque_id' => $mosqueId,
-                    'family_id' => $this->family_id,
-                    'month' => $monthName,
-                    'year' => $this->year,
-                    'amount' => $this->amount,
-                    'months_covered' => $this->monthsToPay > 0 ? $this->monthsToPay : 0,
-                    'months_data' => !empty($this->selectedMonths) ? $this->selectedMonths : null,
-                    'balance_due' => $this->balanceDue,
-                    'payment_applies_to' => 'auto_skip_paid',
-                    'payment_date' => $this->payment_date,
-                    'payment_method' => $this->payment_method,
-                    'receipt_number' => $receiptNumber,
-                    'is_paid' => $this->balanceDue <= 0,
-                    'status' => $this->balanceDue > 0 ? 'partial' : 'paid',
-                    'notes' => $this->notes,
-                ];
-
-                if ($this->editMode) {
-                    Santha::findOrFail($this->santhaId)->update($data);
-                    $message = 'Payment updated successfully';
-                } else {
-                    Santha::create($data);
-                    $message = 'Payment recorded successfully';
-                }
+                Santha::create($data);
+                $message = 'Payment recorded successfully';
             }
 
             $this->dispatch('swal:success', title: 'Success', text: $message);
@@ -442,17 +557,53 @@ class Santhas extends Component
     {
         $santha = Santha::with(['family', 'mosque'])->findOrFail($id);
 
+        // Calculate if credit was used (by checking previous payments)
+        $mosqueId = Auth::user()->mosque_id;
+        $previousCredit = 0;
+        
+        // Get the previous payment with credit before this one
+        $previousPayment = Santha::where('mosque_id', $mosqueId)
+            ->where('family_id', $santha->family_id)
+            ->where('payment_date', '<', $santha->payment_date)
+            ->where('balance_due', '>', 0)
+            ->where('payment_applies_to', 'credit')
+            ->orderBy('payment_date', 'desc')
+            ->first();
+        
+        if ($previousPayment && $previousPayment->balance_due > 0) {
+            // This payment might have used credit
+            $expectedForMonths = $santha->months_covered * $this->monthlyAmount;
+            if ($santha->amount < $expectedForMonths) {
+                $previousCredit = min($previousPayment->balance_due, $expectedForMonths - $santha->amount);
+            }
+        }
+
+        // Determine which month has the balance (last month in the list)
+        $balanceMonth = '';
+        if ($santha->balance_due > 0 && $santha->status === 'partial') {
+            $monthsData = $santha->months_data; // Assign to variable first
+            if (!empty($monthsData)) {
+                $lastMonth = end($monthsData);
+                $balanceMonth = $lastMonth['monthName'] . ' ' . $lastMonth['year'];
+            } else {
+                $balanceMonth = $santha->month . ' ' . $santha->year;
+            }
+        }
+
         $this->viewingSantha = [
             'id' => $santha->id,
             'receipt_number' => $santha->receipt_number,
             'family_name' => $santha->family?->family_head_name ?? 'N/A',
             'family_phone' => $santha->family?->phone ?? 'N/A',
             'amount' => $santha->amount,
+            'previous_credit_used' => $previousCredit,
+            'total_applied' => $santha->amount + $previousCredit,
             'month' => $santha->month,
             'year' => $santha->year,
             'months_covered' => $santha->months_covered ?? 1,
             'months_display' => $santha->getMonthsCoveredDisplay(),
-            'balance_due' => $santha->balance_due ?? 0,
+            'new_credit' => $santha->balance_due ?? 0,
+            'balance_month' => $balanceMonth,
             'payment_date' => $santha->payment_date->format('d M, Y'),
             'payment_method' => $santha->payment_method,
             'notes' => $santha->notes,
@@ -471,9 +622,10 @@ class Santhas extends Component
     private function resetForm()
     {
         $this->reset([
-            'santhaId', 'family_id', 'familySearch', 'showFamilyDropdown', 'amount', 'payment_date', 
-            'payment_method', 'notes', 'editMode', 'monthsToPay', 'selectedMonths',
-            'balanceDue', 'manualMonthsOverride', 'calculatedMonths'
+            'santhaId', 'family_id', 'familySearch', 'showFamilyDropdown', 
+            'amount', 'payment_date', 'payment_method', 'notes', 'editMode', 
+            'monthsToPay', 'selectedMonths', 'familyCredit', 'newCredit',
+            'amountNeeded', 'overpaymentMode', 'completingPartialId', 'familyPartialPayments'
         ]);
     }
 
