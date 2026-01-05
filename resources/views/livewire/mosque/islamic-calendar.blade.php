@@ -42,80 +42,59 @@
 
         <!-- Next Prayer Card - Modern Design -->
         @if($nextPrayer)
-            <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 dark:from-slate-950 dark:via-blue-950 dark:to-slate-950 rounded-3xl shadow-2xl p-8 mb-8 border border-blue-500/20">
-                <!-- Decorative gradient overlay -->
-                <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 pointer-events-none"></div>
-                
+            <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 dark:from-slate-950 dark:via-blue-950 dark:to-slate-950 rounded-2xl shadow-lg p-4 mb-4 border border-blue-500/20">
                 <!-- Content -->
                 <div class="relative z-10">
                     <!-- Header -->
-                    <div class="flex items-center gap-4 mb-8 pb-6 border-b border-white/10">
-                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-4xl shadow-lg shadow-blue-500/50">
+                    <div class="flex items-center gap-3 mb-3 pb-3 border-b border-white/10">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg">
                             {{ $nextPrayer['emoji'] }}
                         </div>
                         <div>
-                            <p class="text-blue-200 dark:text-blue-300 text-sm font-medium uppercase tracking-wider mb-1">Next Prayer</p>
-                            <h2 class="text-4xl font-bold text-white">{{ $nextPrayer['name'] }}</h2>
+                            <p class="text-blue-200 text-xs font-medium uppercase tracking-wide mb-0.5">Next Prayer</p>
+                            <h2 class="text-2xl font-bold text-white">{{ $nextPrayer['name'] }}</h2>
                         </div>
                     </div>
                     
                     <!-- Time Cards Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <!-- Azan Time Card -->
-                        <div class="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-blue-400/50 transition-all duration-300">
-                            <!-- Glow effect on hover -->
-                            <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-300"></div>
+                        <div class="relative bg-white/5 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div>
+                                <p class="text-blue-200 text-sm font-bold uppercase tracking-wide">Azan</p>
+                            </div>
                             
-                            <div class="relative z-10">
-                                <div class="flex items-center gap-2 mb-4">
-                                    <div class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div>
-                                    <p class="text-blue-200 dark:text-blue-300 text-lg font-bold uppercase tracking-wide">Azan</p>
-                                </div>
-                                
-                                <div class="mb-6">
-                                    <p class="text-6xl font-bold text-white font-mono tracking-tight">{{ $nextPrayer['time'] }}</p>
-                                </div>
-                                
-                                <div class="flex items-start gap-3 bg-black/20 rounded-xl p-4 border border-white/5">
-                                    <div class="mt-1">
-                                        <svg class="w-6 h-6 text-blue-300 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-5xl font-bold text-blue-50 dark:text-blue-100 font-mono mb-1" wire:poll="updateRemainingTime">{{ $remainingTime }}</p>
-                                        <p class="text-xs text-blue-200/70 dark:text-blue-300/70 uppercase tracking-wide">Remaining</p>
-                                    </div>
+                            <p class="text-4xl font-bold text-white font-mono mb-3">{{ $nextPrayer['time'] }}</p>
+                            
+                            <div class="flex items-start gap-2 bg-black/20 rounded-lg p-2 border border-white/5">
+                                <svg class="w-4 h-4 text-blue-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <p class="text-3xl font-bold text-blue-50 font-mono" wire:poll="updateRemainingTime">{{ $remainingTime }}</p>
+                                    <p class="text-xs text-blue-200/70 uppercase tracking-wide">Remaining</p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Iqamah Time Card -->
                         @if($nextPrayer['iqamah_time'])
-                        <div class="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/50 transition-all duration-300">
-                            <!-- Glow effect on hover -->
-                            <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/0 to-emerald-500/0 group-hover:from-emerald-500/10 group-hover:to-teal-500/10 transition-all duration-300"></div>
+                        <div class="relative bg-white/5 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                                <p class="text-emerald-200 text-sm font-bold uppercase tracking-wide">Iqamah</p>
+                            </div>
                             
-                            <div class="relative z-10">
-                                <div class="flex items-center gap-2 mb-4">
-                                    <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-                                    <p class="text-emerald-200 dark:text-emerald-300 text-lg font-bold uppercase tracking-wide">Iqamah</p>
-                                </div>
-                                
-                                <div class="mb-6">
-                                    <p class="text-6xl font-bold text-white font-mono tracking-tight">{{ $nextPrayer['iqamah_time'] }}</p>
-                                </div>
-                                
-                                <div class="flex items-start gap-3 bg-black/20 rounded-xl p-4 border border-white/5">
-                                    <div class="mt-1">
-                                        <svg class="w-6 h-6 text-emerald-300 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-5xl font-bold text-emerald-50 dark:text-emerald-100 font-mono mb-1" wire:poll="updateRemainingTime">{{ $iqamahRemainingTime }}</p>
-                                        <p class="text-xs text-emerald-200/70 dark:text-emerald-300/70 uppercase tracking-wide">Remaining</p>
-                                    </div>
+                            <p class="text-4xl font-bold text-white font-mono mb-3">{{ $nextPrayer['iqamah_time'] }}</p>
+                            
+                            <div class="flex items-start gap-2 bg-black/20 rounded-lg p-2 border border-white/5">
+                                <svg class="w-4 h-4 text-emerald-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <p class="text-3xl font-bold text-emerald-50 font-mono" wire:poll="updateRemainingTime">{{ $iqamahRemainingTime }}</p>
+                                    <p class="text-xs text-emerald-200/70 uppercase tracking-wide">Remaining</p>
                                 </div>
                             </div>
                         </div>
