@@ -15,6 +15,42 @@ class Donations extends Component
 
     protected $listeners = ['confirmDeleteDonation' => 'deleteDonation'];
 
+    #[Livewire\Attributes\Computed]
+    public function filteredFamilies()
+    {
+        if (empty($this->familySearch)) {
+            return [];
+        }
+
+        return Family::where('mosque_id', auth()->user()->mosque_id)
+            ->where(function ($query) {
+                $query->where('family_head_name', 'like', '%' . $this->familySearch . '%')
+                      ->orWhere('phone', 'like', '%' . $this->familySearch . '%')
+                      ->orWhere('id', 'like', '%' . $this->familySearch . '%');
+            })
+            ->limit(10)
+            ->get();
+    }
+
+    public function selectFamily($familyId, $familyName)
+    {
+        $this->family_id = $familyId;
+        $this->familySearch = $familyName;
+        $this->showFamilyDropdown = false;
+        
+        // Check if family has partial Santha payments
+        $mosqueId = auth()->user()->mosque_id;
+        $this->familyPartialPayments = [];
+    }
+
+    public function clearFamily()
+    {
+        $this->family_id = null;
+        $this->familySearch = '';
+        $this->showFamilyDropdown = false;
+        $this->familyPartialPayments = [];
+    }
+
     public $search = '';
     public $filterPurpose = '';
     public $filterMethod = '';
@@ -26,6 +62,12 @@ class Donations extends Component
     public $family_id, $donor_name, $donor_phone, $donor_email, $amount;
     public $donation_type, $payment_method, $receipt_number, $donation_date;
     public $purpose, $notes, $is_anonymous = false, $transaction_type = 'received';
+    
+    // Family search properties
+    public $familySearch = '';
+    public $showFamilyDropdown = false;
+    public $familyPartialPayments = [];
+    
     // Receipt viewing
     public $showReceiptModal = false;
     public $viewingDonation = null;
@@ -185,7 +227,8 @@ class Donations extends Component
         $this->reset([
             'donationId', 'family_id', 'donor_name', 'donor_phone', 'donor_email',
             'amount', 'donation_type', 'payment_method', 'receipt_number',
-            'donation_date', 'purpose', 'notes', 'is_anonymous', 'editMode', 'transaction_type'
+            'donation_date', 'purpose', 'notes', 'is_anonymous', 'editMode', 'transaction_type',
+            'familySearch', 'showFamilyDropdown', 'familyPartialPayments'
         ]);
         $this->is_anonymous = false;
         $this->transaction_type = 'received';
