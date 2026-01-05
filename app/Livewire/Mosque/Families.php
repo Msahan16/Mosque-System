@@ -23,7 +23,7 @@ class Families extends Component
     public $selectedFamily;
 
     // Family fields
-    public $family_head_name, $family_head_profession, $phone, $email;
+    public $family_id, $family_head_name, $family_head_profession, $phone, $email;
     public $address;
     public $total_members, $registration_date, $notes, $is_active = true, $family_income;
 
@@ -36,6 +36,7 @@ class Families extends Component
     protected function familyRules()
     {
         return [
+            'family_id' => 'required|string|max:50|unique:families,family_id,' . ($this->familyId ?? 'NULL'),
             'family_head_name' => 'required|string|max:255',
             'family_head_profession' => 'nullable|string|max:255',
             'phone' => 'required|string|max:20',
@@ -119,6 +120,7 @@ class Families extends Component
     {
         $family = Family::with('members')->findOrFail($id);
         $this->familyId = $family->id;
+        $this->family_id = $family->family_id;
         $this->family_head_name = $family->family_head_name;
         $this->family_head_profession = $family->family_head_profession;
         $this->phone = $family->phone;
@@ -157,6 +159,7 @@ class Families extends Component
         try {
             $data = [
                 'mosque_id' => auth()->user()->mosque_id,
+                'family_id' => $this->family_id,
                 'family_head_name' => $this->family_head_name,
                 'family_head_profession' => $this->family_head_profession,
                 'phone' => $this->phone,
@@ -247,7 +250,7 @@ class Families extends Component
     private function resetForm()
     {
         $this->reset([
-            'familyId', 'family_head_name', 'family_head_profession', 'phone', 'email',
+            'familyId', 'family_id', 'family_head_name', 'family_head_profession', 'phone', 'email',
             'address', 'total_members',
             'registration_date', 'notes', 'is_active', 'editMode', 'members',
             'memberName', 'memberRelation', 'memberDob', 'memberGender',

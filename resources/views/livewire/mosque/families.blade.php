@@ -121,6 +121,17 @@
                 <!-- Modal Body -->
                 <div class="p-4">
                     <form wire:submit.prevent="saveFamily" class="space-y-3">
+                        <!-- Family ID (Required) -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Family ID <span class="text-red-500">*</span>
+                            </label>
+                            <input wire:model="family_id" type="text" required placeholder="e.g., FAM001, F-2024-001"
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                            @error('family_id') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                            <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Unique identifier for this family</p>
+                        </div>
+
                         <!-- Family Head Name & Profession -->
                         <div class="grid grid-cols-2 gap-2">
                             <div>

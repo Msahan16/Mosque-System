@@ -139,12 +139,19 @@
                         <!-- Family Selection -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Family *</label>
-                            <select wire:model.live="family_id" required class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-                                <option value="">Select Family</option>
+                            <input wire:model.live="family_id" 
+                                   list="families-list" 
+                                   type="text" 
+                                   required 
+                                   placeholder="Search by Family ID or Name..."
+                                   class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+                            <datalist id="families-list">
                                 @foreach($families as $family)
-                                    <option value="{{ $family->id }}">{{ $family->family_head_name }}</option>
+                                    <option value="{{ $family->id }}">
+                                        {{ $family->family_id ? $family->family_id . ' - ' : '' }}{{ $family->family_head_name }}
+                                    </option>
                                 @endforeach
-                            </select>
+                            </datalist>
                             @error('family_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
