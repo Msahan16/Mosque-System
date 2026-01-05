@@ -13,23 +13,16 @@
         <!-- Content Container -->
         <div class="relative z-10 w-full max-w-sm sm:max-w-md mx-auto px-2 sm:px-0">
             <!-- Mosque Logo and Title -->
-            <div class="text-center mb-4 sm:mb-6">
-                <div class="flex justify-center mb-3 sm:mb-4">
-                    <div class="w-14 sm:w-16 h-14 sm:h-16 flex items-center justify-center">
-                        <img src="{{ asset('images/mosque.png') }}" alt="Mosque Logo" class="w-full h-full object-contain drop-shadow-lg filter brightness-0 invert">
+            <div class="text-center mb-0">
+                <div class="flex justify-center mb-0">
+                    <div class="w-82 sm:w-64 h-82 sm:h-64 flex items-center justify-center">
+                        <img src="{{ asset('images/masjid-logo.png') }}" alt="Mosque Logo" class="w-full h-full object-contain drop-shadow-lg filter brightness-0 invert">
                     </div>
                 </div>
-                
-                <h1 class="text-2xl sm:text-3xl font-bold text-white mb-1 drop-shadow-lg">
-                    Mosque System
-                </h1>
-                <p class="text-blue-100 text-xs drop-shadow">
-                    Service • Faith • Community
-                </p>
             </div>
 
             <!-- Login Card - Glassmorphism Style -->
-            <div class="bg-white/5 backdrop-blur-[10px] rounded-3xl shadow-2xl border border-white/20 p-5 sm:p-6">
+            <div class="bg-white/5 backdrop-blur-[10px] rounded-3xl shadow-2xl border border-white/20 p-5 sm:p-6 -mt-12 sm:-mt-16">
                 <!-- Welcome Text -->
                 <div class="text-center mb-4 sm:mb-6">
                     <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Login</h3>
