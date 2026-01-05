@@ -30,12 +30,19 @@ class Santhas extends Component
 
     // Form fields
     public $family_id;
-    public $month;
-    public $year;
+    public $familySearch = '';
+    public $showFamilyDropdown = false;
     public $amount;
     public $payment_date;
     public $payment_method = 'cash';
     public $notes;
+    
+    // Multi-month payment fields
+    public $calculatedMonths = 0;
+    public $manualMonthsOverride = false;
+    public $monthsToPay = 1;
+    public $selectedMonths = [];
+    public $balanceDue = 0;
 
     // Receipt Modal
     public $showReceiptModal = false;
@@ -48,12 +55,11 @@ class Santhas extends Component
     {
         return [
             'family_id' => 'required|exists:families,id',
-            'month' => 'required|integer|min:1|max:12',
-            'year' => 'required|integer|min:2020|max:2050',
             'amount' => 'required|numeric|min:1',
             'payment_date' => 'required|date',
             'payment_method' => 'required|string',
             'notes' => 'nullable|string|max:500',
+            'monthsToPay' => 'required|integer|min:1|max:24',
         ];
     }
 
@@ -65,14 +71,57 @@ class Santhas extends Component
         $this->filterYear = now()->year;
     }
 
+    public function updatedFamilySearch()
+    {
+        $this->showFamilyDropdown = !empty($this->familySearch);
+    }
+
+    public function selectFamily($familyId, $familyName)
+    {
+        $this->family_id = $familyId;
+        $this->familySearch = $familyName;
+        $this->showFamilyDropdown = false;
+        $this->amount = $this->monthlyAmount;
+        $this->calculateMonths();
+    }
+
+    public function clearFamily()
+    {
+        $this->family_id = null;
+        $this->familySearch = '';
+        $this->showFamilyDropdown = false;
+    }
+
+    public function getFilteredFamiliesProperty()
+    {
+        $mosqueId = Auth::user()->mosque_id;
+        
+        if (empty($this->familySearch)) {
+            return collect();
+        }
+        
+        return Family::where('mosque_id', $mosqueId)
+            ->where('is_active', true)
+            ->where(function($query) {
+                $query->where('family_head_name', 'like', '%' . $this->familySearch . '%')
+                      ->orWhere('id', 'like', '%' . $this->familySearch . '%')
+                      ->orWhere('phone', 'like', '%' . $this->familySearch . '%');
+            })
+            ->orderBy('family_head_name')
+            ->limit(10)
+            ->get();
+    }
+
     public function openModal()
     {
         $this->resetForm();
-        $this->month = now()->month;
-        $this->year = now()->year;
         $this->amount = $this->monthlyAmount;
         $this->payment_date = now()->format('Y-m-d');
+        $this->payment_date = now()->format('Y-m-d');
         $this->payment_method = 'cash';
+        $this->monthsToPay = 1;
+        $this->manualMonthsOverride = false;
+        $this->calculateMonths();
         $this->showModal = true;
     }
 
@@ -86,6 +135,150 @@ class Santhas extends Component
     {
         if ($value) {
             $this->amount = $this->monthlyAmount;
+            $this->calculateMonths();
+        }
+    }
+
+    public function updatedAmount($value)
+    {
+        $this->calculateMonths();
+    }
+
+    public function calculateMonths()
+    {
+        if (!$this->manualMonthsOverride && $this->amount && $this->monthlyAmount > 0) {
+            $fullMonths = floor($this->amount / $this->monthlyAmount);
+            $remainder = $this->amount - ($fullMonths * $this->monthlyAmount);
+            
+            $this->calculatedMonths = $fullMonths;
+            $this->balanceDue = $remainder;
+            
+            if (!$this->manualMonthsOverride) {
+                $this->monthsToPay = max(1, $fullMonths);
+            }
+            
+            // If paying less than one full month, show as partial
+            if ($fullMonths == 0 && $remainder > 0) {
+                $this->monthsToPay = 0;
+                $this->balanceDue = $this->monthlyAmount - $remainder;
+            }
+            
+            $this->generateMonthsArray();
+        }
+    }
+
+    public function toggleManualOverride()
+    {
+        $this->manualMonthsOverride = !$this->manualMonthsOverride;
+        if (!$this->manualMonthsOverride) {
+            $this->calculateMonths();
+        }
+    }
+
+    public function updatedMonthsToPay($value)
+    {
+        if ($this->manualMonthsOverride) {
+            $this->generateMonthsArray();
+            // Recalculate balance based on manual months
+            $expectedAmount = $value * $this->monthlyAmount;
+            $this->balanceDue = max(0, $expectedAmount - $this->amount);
+        }
+    }
+
+    public function generateMonthsArray()
+    {
+        $this->selectedMonths = [];
+        
+        // Start from current month by default
+        $startMonth = now()->month;
+        $startYear = now()->year;
+        
+        // Always check and skip already paid months
+        if ($this->family_id) {
+            $mosqueId = Auth::user()->mosque_id;
+            $tempMonth = $startMonth;
+            $tempYear = $startYear;
+            
+            // Find the first unpaid month starting from selected month
+            $maxChecks = 24; // Check up to 24 months ahead
+            $checksCount = 0;
+            
+            while ($checksCount < $maxChecks) {
+                $monthName = Carbon::create()->month($tempMonth)->format('F');
+                
+                $isPaid = Santha::where('mosque_id', $mosqueId)
+                    ->where('family_id', $this->family_id)
+                    ->where('year', $tempYear)
+                    ->where(function($q) use ($tempMonth, $monthName) {
+                        $q->where('month', $tempMonth)
+                          ->orWhere('month', $monthName);
+                    })
+                    ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
+                    ->exists();
+                
+                if (!$isPaid) {
+                    // Found first unpaid month
+                    $startMonth = $tempMonth;
+                    $startYear = $tempYear;
+                    break;
+                }
+                
+                // Move to next month
+                $tempMonth++;
+                if ($tempMonth > 12) {
+                    $tempMonth = 1;
+                    $tempYear++;
+                }
+                $checksCount++;
+            }
+        }
+        
+        $monthsToGenerate = $this->monthsToPay > 0 ? $this->monthsToPay : 1;
+        $generatedCount = 0;
+        $currentMonth = $startMonth;
+        $currentYear = $startYear;
+        
+        // Generate months, skipping any that are already paid
+        while ($generatedCount < $monthsToGenerate) {
+            if ($this->family_id) {
+                $mosqueId = Auth::user()->mosque_id;
+                $monthName = Carbon::create()->month($currentMonth)->format('F');
+                
+                $isPaid = Santha::where('mosque_id', $mosqueId)
+                    ->where('family_id', $this->family_id)
+                    ->where('year', $currentYear)
+                    ->where(function($q) use ($currentMonth, $monthName) {
+                        $q->where('month', $currentMonth)
+                          ->orWhere('month', $monthName);
+                    })
+                    ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
+                    ->exists();
+                
+                if (!$isPaid) {
+                    // Add this unpaid month
+                    $this->selectedMonths[] = [
+                        'month' => $currentMonth,
+                        'year' => $currentYear,
+                        'monthName' => Carbon::create()->month($currentMonth)->format('F')
+                    ];
+                    $generatedCount++;
+                }
+            } else {
+                // No family selected yet, just generate sequentially
+                $this->selectedMonths[] = [
+                    'month' => $currentMonth,
+                    'year' => $currentYear,
+                    'monthName' => Carbon::create()->month($currentMonth)->format('F')
+                ];
+                $generatedCount++;
+            }
+            
+            // Move to next month
+            $currentMonth++;
+            if ($currentMonth > 12) {
+                $currentMonth = 1;
+                $currentYear++;
+            }
         }
     }
 
@@ -94,12 +287,15 @@ class Santhas extends Component
         $santha = Santha::findOrFail($id);
         $this->santhaId = $santha->id;
         $this->family_id = $santha->family_id;
-        $this->month = is_numeric($santha->month) ? $santha->month : Carbon::parse($santha->month)->month;
-        $this->year = $santha->year;
+        $this->familySearch = $santha->family?->family_head_name ?? '';
         $this->amount = $santha->amount;
         $this->payment_date = $santha->payment_date->format('Y-m-d');
         $this->payment_method = $santha->payment_method;
         $this->notes = $santha->notes;
+        $this->monthsToPay = $santha->months_covered ?? 1;
+        $this->balanceDue = $santha->balance_due ?? 0;
+        $this->selectedMonths = $santha->months_data ?? [];
+        $this->manualMonthsOverride = $santha->months_covered != floor($santha->amount / $this->monthlyAmount);
         $this->editMode = true;
         $this->showModal = true;
     }
@@ -110,48 +306,112 @@ class Santhas extends Component
 
         try {
             $mosqueId = Auth::user()->mosque_id;
-            $monthName = Carbon::create()->month((int)$this->month)->format('F');
-
-            // Check if payment already exists for this family/month/year (unless editing same record)
-            $existing = Santha::where('mosque_id', $mosqueId)
-                ->where('family_id', $this->family_id)
-                ->where('year', $this->year)
-                ->where(function($q) use ($monthName) {
-                    $q->where('month', $this->month)
-                      ->orWhere('month', $monthName);
-                })
-                ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
-                ->first();
-
-            if ($existing) {
-                throw new \Exception("Payment already exists for {$monthName} {$this->year}");
+            
+            // Regenerate months array to ensure it's up to date
+            $this->generateMonthsArray();
+            
+            if (empty($this->selectedMonths)) {
+                throw new \Exception("No unpaid months available for this family.");
             }
+            
+            // For multi-month payments, create separate records or update primary with months_data
+            if ($this->monthsToPay > 1 && !empty($this->selectedMonths)) {
+                // Save as single record with months_data
+                $firstMonth = $this->selectedMonths[0];
+                $monthName = $firstMonth['monthName'];
+                
+                // Check if payment already exists for first month
+                $existing = Santha::where('mosque_id', $mosqueId)
+                    ->where('family_id', $this->family_id)
+                    ->where('year', $firstMonth['year'])
+                    ->where(function($q) use ($monthName, $firstMonth) {
+                        $q->where('month', $firstMonth['month'])
+                          ->orWhere('month', $monthName);
+                    })
+                    ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
+                    ->first();
 
-            // Generate receipt number for new records
-            $receiptNumber = $this->editMode 
-                ? Santha::find($this->santhaId)->receipt_number 
-                : $this->generateReceiptNumber($mosqueId);
+                if ($existing && !$this->editMode) {
+                    throw new \Exception("Payment already exists for {$monthName} {$firstMonth['year']}");
+                }
 
-            $data = [
-                'mosque_id' => $mosqueId,
-                'family_id' => $this->family_id,
-                'month' => $monthName,
-                'year' => $this->year,
-                'amount' => $this->amount,
-                'payment_date' => $this->payment_date,
-                'payment_method' => $this->payment_method,
-                'receipt_number' => $receiptNumber,
-                'is_paid' => true,
-                'status' => 'paid',
-                'notes' => $this->notes,
-            ];
+                $receiptNumber = $this->editMode 
+                    ? Santha::find($this->santhaId)->receipt_number 
+                    : $this->generateReceiptNumber($mosqueId);
 
-            if ($this->editMode) {
-                Santha::findOrFail($this->santhaId)->update($data);
-                $message = 'Payment updated successfully';
+                $data = [
+                    'mosque_id' => $mosqueId,
+                    'family_id' => $this->family_id,
+                    'month' => $monthName,
+                    'year' => $firstMonth['year'],
+                    'amount' => $this->amount,
+                    'months_covered' => $this->monthsToPay,
+                    'months_data' => $this->selectedMonths,
+                    'balance_due' => $this->balanceDue,
+                    'payment_applies_to' => 'auto_skip_paid',
+                    'payment_date' => $this->payment_date,
+                    'payment_method' => $this->payment_method,
+                    'receipt_number' => $receiptNumber,
+                    'is_paid' => true,
+                    'status' => $this->balanceDue > 0 ? 'partial' : 'paid',
+                    'notes' => $this->notes,
+                ];
+
+                if ($this->editMode) {
+                    Santha::findOrFail($this->santhaId)->update($data);
+                    $message = 'Payment updated successfully';
+                } else {
+                    Santha::create($data);
+                    $message = 'Payment recorded successfully';
+                }
             } else {
-                Santha::create($data);
-                $message = 'Payment recorded successfully';
+                // Single month or partial payment
+                $monthName = Carbon::create()->month($this->month)->format('F');
+
+                // Check if payment already exists
+                $existing = Santha::where('mosque_id', $mosqueId)
+                    ->where('family_id', $this->family_id)
+                    ->where('year', $this->year)
+                    ->where(function($q) use ($monthName) {
+                        $q->where('month', $this->month)
+                          ->orWhere('month', $monthName);
+                    })
+                    ->when($this->editMode, fn($q) => $q->where('id', '!=', $this->santhaId))
+                    ->first();
+
+                if ($existing && !$this->editMode) {
+                    throw new \Exception("Payment already exists for {$monthName} {$this->year}");
+                }
+
+                $receiptNumber = $this->editMode 
+                    ? Santha::find($this->santhaId)->receipt_number 
+                    : $this->generateReceiptNumber($mosqueId);
+
+                $data = [
+                    'mosque_id' => $mosqueId,
+                    'family_id' => $this->family_id,
+                    'month' => $monthName,
+                    'year' => $this->year,
+                    'amount' => $this->amount,
+                    'months_covered' => $this->monthsToPay > 0 ? $this->monthsToPay : 0,
+                    'months_data' => !empty($this->selectedMonths) ? $this->selectedMonths : null,
+                    'balance_due' => $this->balanceDue,
+                    'payment_applies_to' => 'auto_skip_paid',
+                    'payment_date' => $this->payment_date,
+                    'payment_method' => $this->payment_method,
+                    'receipt_number' => $receiptNumber,
+                    'is_paid' => $this->balanceDue <= 0,
+                    'status' => $this->balanceDue > 0 ? 'partial' : 'paid',
+                    'notes' => $this->notes,
+                ];
+
+                if ($this->editMode) {
+                    Santha::findOrFail($this->santhaId)->update($data);
+                    $message = 'Payment updated successfully';
+                } else {
+                    Santha::create($data);
+                    $message = 'Payment recorded successfully';
+                }
             }
 
             $this->dispatch('swal:success', title: 'Success', text: $message);
@@ -190,6 +450,9 @@ class Santhas extends Component
             'amount' => $santha->amount,
             'month' => $santha->month,
             'year' => $santha->year,
+            'months_covered' => $santha->months_covered ?? 1,
+            'months_display' => $santha->getMonthsCoveredDisplay(),
+            'balance_due' => $santha->balance_due ?? 0,
             'payment_date' => $santha->payment_date->format('d M, Y'),
             'payment_method' => $santha->payment_method,
             'notes' => $santha->notes,
@@ -207,7 +470,11 @@ class Santhas extends Component
 
     private function resetForm()
     {
-        $this->reset(['santhaId', 'family_id', 'month', 'year', 'amount', 'payment_date', 'payment_method', 'notes', 'editMode']);
+        $this->reset([
+            'santhaId', 'family_id', 'familySearch', 'showFamilyDropdown', 'amount', 'payment_date', 
+            'payment_method', 'notes', 'editMode', 'monthsToPay', 'selectedMonths',
+            'balanceDue', 'manualMonthsOverride', 'calculatedMonths'
+        ]);
     }
 
     public function render()
@@ -226,7 +493,7 @@ class Santhas extends Component
                 ->orWhere('receipt_number', 'like', '%' . $this->search . '%');
             })
             ->when($this->filterMonth, function ($query) {
-                $monthName = Carbon::create()->month((int)$this->filterMonth)->format('F');
+                $monthName = Carbon::create()->month($this->filterMonth)->format('F');
                 $query->where(function($q) use ($monthName) {
                     $q->where('month', $this->filterMonth)
                       ->orWhere('month', $monthName);
