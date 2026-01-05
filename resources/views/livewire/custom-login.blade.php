@@ -1,5 +1,5 @@
 <div>
-    <div class="relative flex h-auto min-h-screen w-full flex-col items-center justify-center px-4 py-8 overflow-hidden">
+    <div class="relative flex h-auto min-h-screen w-full flex-col items-center justify-center px-3 sm:px-4 py-6 sm:py-8 overflow-hidden">
         <!-- Beautiful Islamic Mosque Background -->
         <div class="absolute inset-0 z-0">
             <img src="{{ asset('images/mosque55.jpg') }}" 
@@ -13,16 +13,16 @@
         <!-- Content Container -->
         <div class="relative z-10 w-full max-w-sm sm:max-w-md mx-auto px-2 sm:px-0">
             <!-- Mosque Logo and Title -->
-            <div class="text-center mb-0">
+            <div class="text-center mb-4 sm:mb-6">
                 <div class="flex justify-center mb-0">
-                    <div class="w-82 sm:w-64 h-82 sm:h-64 flex items-center justify-center">
+                    <div class="w-24 sm:w-40 h-24 sm:h-40 flex items-center justify-center">
                         <img src="{{ asset('images/masjid-logo.png') }}" alt="Mosque Logo" class="w-full h-full object-contain drop-shadow-lg filter brightness-0 invert">
                     </div>
                 </div>
             </div>
 
             <!-- Login Card - Glassmorphism Style -->
-            <div class="bg-white/5 backdrop-blur-[10px] rounded-3xl shadow-2xl border border-white/20 p-5 sm:p-6 -mt-12 sm:-mt-16">
+            <div class="bg-white/5 backdrop-blur-[10px] rounded-3xl shadow-2xl border border-white/20 p-5 sm:p-6 -mt-4 sm:-mt-8">
                 <!-- Welcome Text -->
                 <div class="text-center mb-4 sm:mb-6">
                     <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Login</h3>
