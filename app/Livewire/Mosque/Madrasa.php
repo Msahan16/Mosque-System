@@ -15,6 +15,7 @@ class Madrasa extends Component
 {
     use WithPagination;
 
+    // Event listeners for delete confirmations
     protected $listeners = [
         'deleteUstad' => 'deleteUstad',
         'deleteStudent' => 'deleteStudent',

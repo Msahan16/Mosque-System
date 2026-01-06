@@ -14,6 +14,11 @@ class RamadanPorridge extends Component
 {
     use WithPagination;
 
+    // Event listeners for delete confirmations
+    protected $listeners = [
+        'deleteSponsor' => 'deleteSponsor'
+    ];
+
     // Properties
     public $activeTab = 'overview';
     public $search = '';
