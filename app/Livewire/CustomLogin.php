@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 
@@ -28,6 +27,8 @@ class CustomLogin extends Component
                 return redirect()->route('admin.dashboard');
             } elseif ($user->role === 'mosque') {
                 return redirect()->route('mosque.dashboard');
+            } elseif ($user->role === 'staff') {
+                return redirect()->route('mosque.dashboard');
             }
             return redirect()->route('dashboard');
         }
@@ -37,15 +38,23 @@ class CustomLogin extends Component
     {
         $this->validate();
 
+        // Authenticate using email and password
         if (Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             session()->regenerate();
             
             $user = Auth::user();
             
+            // Check if user is active
+            if (!$user->is_active) {
+                Auth::logout();
+                $this->addError('email', 'Your account has been deactivated. Please contact your administrator.');
+                return;
+            }
+            
             // Redirect based on user role
             if ($user->role === 'admin') {
                 return redirect()->intended(route('admin.dashboard'));
-            } elseif ($user->role === 'mosque') {
+            } elseif ($user->role === 'mosque' || $user->role === 'staff') {
                 return redirect()->intended(route('mosque.dashboard'));
             }
             

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'staff.permission' => \App\Http\Middleware\CheckStaffPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

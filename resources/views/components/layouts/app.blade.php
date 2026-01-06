@@ -138,53 +138,99 @@
                         </a>
                     @else
                         <!-- Mosque User Navigation -->
+                        @php
+                            $user = Auth::user();
+                            $canAccess = function($permission) use ($user) {
+                                // Mosque admins have all access
+                                if ($user->role === 'mosque') {
+                                    return true;
+                                }
+                                // Staff members can only access pages they have permission for
+                                if ($user->role === 'staff') {
+                                    return $user->hasPermission($permission);
+                                }
+                                return false;
+                            };
+                        @endphp
+                        
+                        @if($canAccess('dashboard'))
                         <a href="{{ route('mosque.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-blue-500 {{ request()->routeIs('mosque.dashboard') ? 'bg-blue-500 shadow-lg' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-4m0 0l4 4m-4-4v4"></path>
                             </svg>
                             <span class="font-medium">Dashboard</span>
                         </a>
+                        @endif
+                        
+                        @if($canAccess('families'))
                         <a href="{{ route('mosque.families') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white {{ request()->routeIs('mosque.families') ? 'bg-blue-500 text-white shadow-lg' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
                             <span class="font-medium">Families</span>
                         </a>
+                        @endif
+                        
+                        @if($canAccess('santha'))
                         <a href="{{ route('mosque.santhas') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white {{ request()->routeIs('mosque.santhas') ? 'bg-blue-500 text-white shadow-lg' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                             <span class="font-medium">Santha Collection</span>
                         </a>
+                        @endif
+                        
+                        @if($canAccess('donations'))
                         <a href="{{ route('mosque.donations') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white {{ request()->routeIs('mosque.donations') ? 'bg-blue-500 text-white shadow-lg' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                             <span class="font-medium">Donations</span>
                         </a>
+                        @endif
+                        
+                        @if($canAccess('prayer_schedule'))
                         <a href="{{ route('mosque.islamic-calendar') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white {{ request()->routeIs('mosque.islamic-calendar') ? 'bg-blue-500 text-white shadow-lg' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                             <span class="font-medium">Islamic Calendar</span>
                         </a>
+                        @endif
+                        
+                        @if($canAccess('students'))
                         <a href="{{ route('mosque.madrasa') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white {{ request()->routeIs('mosque.madrasa') ? 'bg-blue-500 text-white shadow-lg' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                             </svg>
                             <span class="font-medium">Madrasa</span>
                         </a>
+                        @endif
+                        
+                        @if($canAccess('porridge'))
                         <a href="{{ route('mosque.ramadan-porridge') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white {{ request()->routeIs('mosque.ramadan-porridge') ? 'bg-blue-500 text-white shadow-lg' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                             </svg>
                             <span class="font-medium">Ramadan Porridge</span>
                         </a>
+                        @endif
+                        
+                        @if($canAccess('imam'))
                         <a href="{{ route('mosque.imam-management') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white {{ request()->routeIs('mosque.imam-management') ? 'bg-blue-500 text-white shadow-lg' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                             <span class="font-medium">Imam Management</span>
+                        </a>
+                        @endif
+                        
+                        @if($canAccess('settings'))
+                        <a href="{{ route('mosque.staff-management') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white {{ request()->routeIs('mosque.staff-management') ? 'bg-blue-500 text-white shadow-lg' : '' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <span class="font-medium">Staff Management</span>
                         </a>
                      
                         <a href="{{ route('mosque.settings') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white {{ request()->routeIs('mosque.settings') ? 'bg-blue-500 text-white shadow-lg' : '' }}">
@@ -194,6 +240,7 @@
                             </svg>
                             <span class="font-medium">Settings</span>
                         </a>
+                        @endif
                     @endif
                 @endauth
             </nav>
@@ -207,6 +254,35 @@
                     <div class="px-4 py-3 bg-blue-500 rounded-lg text-white mb-4">
                         <p class="text-xs text-blue-100">Logged in as</p>
                         <p class="font-semibold truncate">{{ auth()->user()->name }}</p>
+                        @if(auth()->user()->role)
+                            <p class="text-xs text-blue-100 mt-1">{{ ucfirst(auth()->user()->role) }}</p>
+                        @endif
+                    </div>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white">
+                        <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                        <span class="font-medium">Dark Mode</span>
+                    </button>
+                    
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-red-600 hover:text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            <span class="font-medium">Logout</span>
+                        </button>
+                    </form>
+                @endauth
+                
+                @auth('staff')
+                    <div class="px-4 py-3 bg-blue-500 rounded-lg text-white mb-4">
+                        <p class="text-xs text-blue-100">Logged in as Staff</p>
+                        <p class="font-semibold truncate">{{ auth('staff')->user()->name }}</p>
+                        <p class="text-xs text-blue-100 mt-1">{{ ucfirst(auth('staff')->user()->role) }}</p>
                     </div>
                     
                     <!-- Dark Mode Toggle -->

@@ -31,8 +31,10 @@ class User extends Authenticatable
         'password',
         'role',
         'mosque_id',
+        'phone',
         'is_active',
         'status',
+        'permissions',
     ];
 
     /**
@@ -67,6 +69,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'permissions' => 'array',
         ];
     }
 
@@ -83,5 +86,69 @@ class User extends Authenticatable
     public function isMosque()
     {
         return $this->role === 'mosque';
+    }
+
+    /**
+     * Check if user is staff
+     */
+    public function isStaff()
+    {
+        return $this->role === 'staff';
+    }
+
+    /**
+     * Check if user has a specific permission
+     */
+    public function hasPermission($permission)
+    {
+        // Mosque admin users have all permissions
+        if ($this->role === 'mosque') {
+            return true;
+        }
+
+        // Check if staff has the permission
+        if ($this->isStaff() && $this->permissions) {
+            return in_array($permission, $this->permissions);
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if user has any of the given permissions
+     */
+    public function hasAnyPermission(array $permissions)
+    {
+        // Mosque admin users have all permissions
+        if ($this->role === 'mosque') {
+            return true;
+        }
+
+        // Check if staff has any of the permissions
+        if ($this->isStaff() && $this->permissions) {
+            foreach ($permissions as $permission) {
+                if (in_array($permission, $this->permissions)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Sync permissions for this staff member
+     */
+    public function syncPermissions(array $permissions)
+    {
+        $this->update(['permissions' => $permissions]);
+    }
+
+    /**
+     * Get all permission keys as array
+     */
+    public function getPermissionKeys()
+    {
+        return $this->permissions ?? [];
     }
 }

@@ -48,7 +48,7 @@
                         required
                         autofocus
                         class="w-full px-3 sm:px-4 py-2 rounded-2xl border border-white/40 bg-white/10 backdrop-blur-[30px] text-xs sm:text-sm text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/60 transition font-medium"
-                        placeholder="Email ID"
+                        placeholder="Email Address"
                     />
                     @error('email')
                         <p class="mt-1 text-sm text-red-200">{{ $message }}</p>
