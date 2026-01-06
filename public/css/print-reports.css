@@ -1,0 +1,291 @@
+/* Print Styles for Mosque Reports */
+@media print {
+
+    /* Hide unnecessary elements */
+    nav,
+    aside,
+    .no-print,
+    button,
+    .sidebar,
+    header,
+    footer,
+    [wire\:loading],
+    .print-hide {
+        display: none !important;
+    }
+
+    /* Page setup */
+    @page {
+        size: A4;
+        margin: 1.5cm 1cm;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: white !important;
+        color: #000 !important;
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        font-size: 11pt;
+        line-height: 1.4;
+    }
+
+    /* Report container */
+    .print-container {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Report header */
+    .print-header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #333;
+    }
+
+    .print-header h1 {
+        font-size: 20pt;
+        font-weight: bold;
+        margin: 0 0 5px 0;
+        color: #000;
+    }
+
+    .print-header .mosque-name {
+        font-size: 14pt;
+        font-weight: bold;
+        margin: 5px 0;
+        color: #333;
+    }
+
+    .print-header .report-period {
+        font-size: 10pt;
+        color: #666;
+        margin: 5px 0;
+    }
+
+    .print-header .print-date {
+        font-size: 9pt;
+        color: #999;
+        margin-top: 5px;
+    }
+
+    /* Summary boxes */
+    .print-summary {
+        display: flex;
+        justify-content: space-between;
+        margin: 15px 0;
+        padding: 10px;
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+    }
+
+    .print-summary-item {
+        text-align: center;
+        flex: 1;
+    }
+
+    .print-summary-item .label {
+        font-size: 9pt;
+        color: #666;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+    }
+
+    .print-summary-item .value {
+        font-size: 14pt;
+        font-weight: bold;
+        color: #000;
+    }
+
+    /* Tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        page-break-inside: auto;
+        font-size: 10pt;
+    }
+
+    table thead {
+        display: table-header-group;
+    }
+
+    table tfoot {
+        display: table-footer-group;
+    }
+
+    table tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    table th {
+        background: #e0e0e0 !important;
+        color: #000 !important;
+        font-weight: bold;
+        text-align: left;
+        padding: 8px 6px;
+        border: 1px solid #999 !important;
+        font-size: 9pt;
+        text-transform: uppercase;
+    }
+
+    table td {
+        padding: 6px;
+        border: 1px solid #ccc !important;
+        color: #000 !important;
+        background: white !important;
+    }
+
+    table tbody tr:nth-child(even) {
+        background: #f9f9f9 !important;
+    }
+
+    table tfoot tr {
+        background: #e8e8e8 !important;
+        font-weight: bold;
+    }
+
+    table tfoot td {
+        border-top: 2px solid #666 !important;
+        padding: 8px 6px;
+    }
+
+    /* Remove background colors and gradients */
+    * {
+        background-image: none !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    /* Status badges */
+    .status-badge,
+    span[class*="bg-"],
+    span[class*="rounded-full"] {
+        background: transparent !important;
+        border: 1px solid #666 !important;
+        color: #000 !important;
+        padding: 2px 6px;
+        font-size: 8pt;
+        font-weight: bold;
+    }
+
+    /* Section titles */
+    .section-title {
+        font-size: 14pt;
+        font-weight: bold;
+        margin: 20px 0 10px 0;
+        padding: 5px 0;
+        border-bottom: 2px solid #333;
+        page-break-after: avoid;
+    }
+
+    /* Footer */
+    .print-footer {
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 2px solid #333;
+        font-size: 9pt;
+        color: #666;
+        text-align: center;
+    }
+
+    /* Page breaks */
+    .page-break {
+        page-break-after: always;
+    }
+
+    .avoid-break {
+        page-break-inside: avoid;
+    }
+
+    /* Hide dark mode specific elements */
+    .dark\:bg-slate-800,
+    .dark\:bg-slate-700,
+    .dark\:text-white,
+    .dark\:text-slate-400 {
+        background: white !important;
+        color: #000 !important;
+    }
+
+    /* Ensure text is black */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    span,
+    td,
+    th,
+    div {
+        color: #000 !important;
+    }
+
+    /* Links */
+    a {
+        color: #000 !important;
+        text-decoration: none !important;
+    }
+
+    /* Remove rounded corners */
+    * {
+        border-radius: 0 !important;
+    }
+
+    /* Logo/Header area */
+    .print-logo {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .print-logo img {
+        max-width: 80px;
+        max-height: 80px;
+    }
+
+    /* Signature area */
+    .signature-area {
+        margin-top: 40px;
+        display: flex;
+        justify-content: space-between;
+        page-break-inside: avoid;
+    }
+
+    .signature-box {
+        width: 45%;
+        text-align: center;
+    }
+
+    .signature-line {
+        border-top: 1px solid #000;
+        margin-top: 40px;
+        padding-top: 5px;
+        font-size: 9pt;
+    }
+
+    /* Notes section */
+    .notes-section {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+    }
+
+    .notes-section h3 {
+        font-size: 11pt;
+        margin: 0 0 10px 0;
+        font-weight: bold;
+    }
+
+    .notes-section p {
+        font-size: 9pt;
+        margin: 5px 0;
+        line-height: 1.5;
+    }
+}

@@ -1,58 +1,75 @@
-{{-- Imam Management Report --}}
+{{-- Imam Management Report - Professional Format --}}
 <div class="space-y-6">
-    {{-- Summary Cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-xl p-6 text-white">
-            <p class="text-blue-100 text-sm mb-2">Total Records</p>
-            <p class="text-4xl font-bold">{{ number_format(count($reportData['financials_list'] ?? [])) }}</p>
+    {{-- Financial Records Table --}}
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden border border-slate-300 dark:border-slate-600">
+        {{-- Table Header --}}
+        <div class="bg-gradient-to-r from-purple-700 to-purple-800 px-6 py-4 border-b-2 border-purple-900">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Imam Financial Records</h2>
+                    <p class="text-purple-100 text-sm mt-1">Salary and advance payment records</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-purple-100 text-xs uppercase tracking-wide">Total Payments</p>
+                    <p class="text-3xl font-bold text-white">LKR {{ number_format($reportData['total_payments'] ?? 0) }}</p>
+                    <p class="text-purple-200 text-sm">{{ number_format(count($reportData['financials_list'] ?? [])) }} Records</p>
+                </div>
+            </div>
         </div>
-        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl shadow-xl p-6 text-white">
-            <p class="text-emerald-100 text-sm mb-2">Total Salaries</p>
-            <p class="text-4xl font-bold">LKR {{ number_format($reportData['total_payments'] ?? 0) }}</p>
-        </div>
-        <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-xl p-6 text-white">
-            <p class="text-orange-100 text-sm mb-2">Total Advances</p>
-            <p class="text-4xl font-bold">LKR {{ number_format($reportData['total_advances'] ?? 0) }}</p>
-        </div>
-    </div>
 
-    {{-- Financial Records --}}
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
-        <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4">
-            <h3 class="text-xl font-bold text-white">Financial Records</h3>
-        </div>
+        {{-- Table Content --}}
         <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-slate-50 dark:bg-slate-700/50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Description</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Amount</th>
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-slate-200 dark:bg-slate-700 border-b-2 border-slate-400 dark:border-slate-500">
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600">#</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600">Imam Name</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600">Type</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600">Amount (LKR)</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600">Record Date</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600">Payment Method</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">Status</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                    @forelse($reportData['financials_list'] ?? [] as $record)
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">{{ \Carbon\Carbon::parse($record->date)->format('d M Y') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold {{ $record->type === 'salary' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' }}">
-                                    {{ ucfirst($record->type) }}
-                                </span>
+                <tbody class="bg-white dark:bg-slate-800">
+                    @forelse($reportData['financials_list'] ?? [] as $index => $record)
+                        <tr class="border-b border-slate-200 dark:border-slate-700 hover:bg-purple-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700">{{ $index + 1 }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700">{{ $record->imam->name ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700">
+                                <span class="px-2 py-1 rounded-md {{ $record->type === 'salary' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300' }} text-xs font-semibold uppercase">{{ $record->type }}</span>
                             </td>
-                            <td class="px-6 py-4 text-sm text-slate-900 dark:text-white">{{ $record->description }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold {{ $record->type === 'salary' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">
-                                LKR {{ number_format($record->amount) }}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-purple-700 dark:text-purple-400 text-right border-r border-slate-200 dark:border-slate-700">{{ number_format($record->amount, 2) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700">{{ \Carbon\Carbon::parse($record->record_date)->format('d M Y') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700">{{ $record->payment_method ?? '-' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                @if($record->status === 'paid')
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">PAID</span>
+                                @else
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">{{ strtoupper($record->status) }}</span>
+                                @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
-                                No financial records in this period
+                            <td colspan="7" class="px-6 py-20 text-center bg-slate-50 dark:bg-slate-800/50">
+                                <svg class="w-20 h-20 mx-auto mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-lg font-semibold text-slate-500 dark:text-slate-400">No financial records in this period</p>
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
+                @if(count($reportData['financials_list'] ?? []) > 0)
+                <tfoot>
+                    <tr class="bg-slate-100 dark:bg-slate-700 border-t-2 border-slate-400 dark:border-slate-500">
+                        <td colspan="3" class="px-6 py-4 text-right text-sm font-bold text-slate-800 dark:text-slate-200 uppercase">Total Payments:</td>
+                        <td class="px-6 py-4 text-right text-lg font-bold text-purple-700 dark:text-purple-400 border-r border-slate-300 dark:border-slate-600">{{ number_format(collect($reportData['financials_list'])->sum('amount'), 2) }}</td>
+                        <td colspan="3" class="px-6 py-4 text-sm font-semibold text-slate-600 dark:text-slate-400">{{ number_format(count($reportData['financials_list'])) }} Records</td>
+                    </tr>
+                </tfoot>
+                @endif
             </table>
         </div>
     </div>
