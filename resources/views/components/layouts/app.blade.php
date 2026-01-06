@@ -20,6 +20,12 @@
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     
+    <!-- Print Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/print-reports.css') }}">
+    
+    <!-- Stack for additional styles -->
+    @stack('styles')
+    
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -110,7 +116,7 @@
 <body class="antialiased">
     <div class="flex h-screen bg-white dark:bg-slate-900">
         <!-- Sidebar -->
-        <div id="sidebar" class="sidebar-transition fixed lg:relative inset-y-0 left-0 z-40 w-64 h-screen lg:h-auto bg-gradient-to-b from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 shadow-2xl overflow-y-auto -translate-x-full lg:translate-x-0">
+        <div id="sidebar" class="sidebar-transition fixed lg:relative inset-y-0 left-0 z-40 w-64 h-screen lg:h-auto bg-gradient-to-b from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 shadow-2xl overflow-y-auto -translate-x-full lg:translate-x-0 no-print print-hide">
             <!-- Logo Section -->
             <div class="bg-gradient-to-r from-blue-700 to-blue-900 dark:from-blue-900 dark:to-blue-950 px-6 py-3 border-b border-blue-500">
                 <div class="flex items-center justify-center">
@@ -316,12 +322,12 @@
         </div>
 
         <!-- Overlay for Mobile -->
-        <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden" onclick="toggleSidebar()"></div>
+        <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/50 z-30 lg:hidden no-print print-hide" onclick="toggleSidebar()"></div>
 
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col overflow-hidden mosque-bg">
             <!-- Mobile Menu Toggle -->
-            <div class="lg:hidden bg-blue-600 text-white p-4 flex items-center justify-between shadow-lg">
+            <div class="lg:hidden bg-blue-600 text-white p-4 flex items-center justify-between shadow-lg no-print print-hide">
                 <button onclick="toggleSidebar()" class="p-2 hover:bg-blue-500 rounded-lg">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>

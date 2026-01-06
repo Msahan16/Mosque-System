@@ -1,44 +1,7 @@
-{{-- Include Print Stylesheet --}}
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/print-reports.css') }}">
-@endpush
-
 <div>
-    {{-- Print Header (Hidden on screen, visible when printing) --}}
-    <div class="print-header" style="display: none;">
-        <h1>{{ $mosqueName }}</h1>
-        <div class="mosque-name">
-            @if($reportType === 'overview')
-                Overview Summary Report
-            @elseif($reportType === 'families')
-                Families Report
-            @elseif($reportType === 'donations-received')
-                Donations Received Report
-            @elseif($reportType === 'donations-given')
-                Donations Given Report
-            @elseif($reportType === 'santhas')
-                Santha Payments Report
-            @elseif($reportType === 'madrasa')
-                Madrasa Report
-            @elseif($reportType === 'imam')
-                Imam Management Report
-            @elseif($reportType === 'porridge')
-                Ramadan Porridge Report
-            @elseif($reportType === 'financial')
-                Financial Summary Report
-            @endif
-        </div>
-        <div class="report-period">
-            Report Period: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} to {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}
-        </div>
-        <div class="print-date">
-            Generated on: {{ now()->format('d M Y, h:i A') }}
-        </div>
-    </div>
-
     <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-slate-900">
         {{-- Header Section (Hidden when printing) --}}
-        <div class="relative h-72 overflow-hidden print-hide" style="background-image: url('{{ asset('images/mosq1.jpg') }}'); background-size: cover; background-position: center;">
+        <div class="relative h-72 overflow-hidden print-hide no-print" style="background-image: url('{{ asset('images/mosq1.jpg') }}'); background-size: cover; background-position: center;">
             <div class="absolute inset-0 bg-gradient-to-b from-blue-900/70 via-blue-800/80 to-blue-900/90"></div>
             <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center text-white z-10 px-4">
@@ -54,9 +17,9 @@
             </div>
         </div>
 
-        <div class="px-4 md:px-6 lg:px-8 py-8 -mt-16 relative z-10 print-container">
+        <div class="px-4 md:px-6 lg:px-8 py-8 -mt-16 relative z-10">
             {{-- Report Controls Card (Hidden when printing) --}}
-            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 mb-8 border border-slate-200 dark:border-slate-700 print-hide">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 mb-8 border border-slate-200 dark:border-slate-700 print-hide no-print">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {{-- Report Type Selection --}}
                     <div>
@@ -119,24 +82,78 @@
                 </div>
             </div>
 
-            {{-- Report Content --}}
-            @if($reportType === 'overview')
-                @include('livewire.mosque.reports.overview')
-            @elseif($reportType === 'families')
-                @include('livewire.mosque.reports.families')
-            @elseif($reportType === 'donations-received' || $reportType === 'donations-given')
-                @include('livewire.mosque.reports.donations')
-            @elseif($reportType === 'santhas')
-                @include('livewire.mosque.reports.santhas')
-            @elseif($reportType === 'madrasa')
-                @include('livewire.mosque.reports.madrasa')
-            @elseif($reportType === 'imam')
-                @include('livewire.mosque.reports.imam')
-            @elseif($reportType === 'porridge')
-                @include('livewire.mosque.reports.porridge')
-            @elseif($reportType === 'financial')
-                @include('livewire.mosque.reports.financial')
-            @endif
+            {{-- PRINT CONTENT AREA --}}
+            <div class="print-content">
+                {{-- Print Header (Only visible when printing) --}}
+                <div class="print-header">
+                    <h1>{{ $mosqueName }}</h1>
+                    <div class="report-title">
+                        @if($reportType === 'overview')
+                            Overview Summary Report
+                        @elseif($reportType === 'families')
+                            Families Report
+                        @elseif($reportType === 'donations-received')
+                            Donations Received Report
+                        @elseif($reportType === 'donations-given')
+                            Donations Given Report
+                        @elseif($reportType === 'santhas')
+                            Santha Payments Report
+                        @elseif($reportType === 'madrasa')
+                            Madrasa Report
+                        @elseif($reportType === 'imam')
+                            Imam Management Report
+                        @elseif($reportType === 'porridge')
+                            Ramadan Porridge Report
+                        @elseif($reportType === 'financial')
+                            Financial Summary Report
+                        @endif
+                    </div>
+                    <div class="report-period">
+                        Report Period: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} to {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}
+                    </div>
+                    <div class="print-date">
+                        Prepared by: {{ auth()->user()->name ?? 'Administrator' }} | Generated: {{ now()->format('d M Y, h:i A') }}
+                    </div>
+                </div>
+
+                {{-- Report Content --}}
+                @if($reportType === 'overview')
+                    @include('livewire.mosque.reports.overview')
+                @elseif($reportType === 'families')
+                    @include('livewire.mosque.reports.families')
+                @elseif($reportType === 'donations-received' || $reportType === 'donations-given')
+                    @include('livewire.mosque.reports.donations')
+                @elseif($reportType === 'santhas')
+                    @include('livewire.mosque.reports.santhas')
+                @elseif($reportType === 'madrasa')
+                    @include('livewire.mosque.reports.madrasa')
+                @elseif($reportType === 'imam')
+                    @include('livewire.mosque.reports.imam')
+                @elseif($reportType === 'porridge')
+                    @include('livewire.mosque.reports.porridge')
+                @elseif($reportType === 'financial')
+                    @include('livewire.mosque.reports.financial')
+                @endif
+
+                {{-- Print Footer (Only visible when printing) --}}
+                <div class="print-footer hidden print:block" style="display: none; margin-top: 40px; padding-top: 20px; border-top: 2px solid #333;">
+                    <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+                        <div style="width: 45%; text-align: center;">
+                            <div style="border-top: 1px solid #000; padding-top: 5px; margin-top: 50px;">
+                                Prepared By
+                            </div>
+                        </div>
+                        <div style="width: 45%; text-align: center;">
+                            <div style="border-top: 1px solid #000; padding-top: 5px; margin-top: 50px;">
+                                Authorized Signature
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px; font-size: 9pt; color: #666;">
+                        This is a computer-generated report. | {{ config('app.name') }} © {{ date('Y') }}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

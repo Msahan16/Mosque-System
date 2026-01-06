@@ -22,6 +22,9 @@
     <!-- CSRF Token for Livewire -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
+    <!-- Stack for additional styles -->
+    @stack('styles')
+    
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
