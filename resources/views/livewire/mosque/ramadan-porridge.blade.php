@@ -320,6 +320,25 @@
 
                 <!-- Modal Body -->
                 <div class="p-4">
+                    <!-- Validation Errors Summary -->
+                    @if ($errors->any())
+                        <div class="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-red-600 dark:text-red-400 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">Please correct the following errors:</h4>
+                                    <ul class="list-disc list-inside text-xs text-red-700 dark:text-red-400 space-y-1">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <form wire:submit.prevent="saveSponsor" class="space-y-3">
                         <!-- Day Number -->
                         <div>
@@ -327,7 +346,7 @@
                                 Ramadan Day <span class="text-red-500">*</span>
                             </label>
                             <select wire:model="day_number" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border @error('day_number') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
                                 @for($day = 1; $day <= 30; $day++)
                                     <option value="{{ $day }}">Day {{ $day }}</option>
                                 @endfor
@@ -351,7 +370,7 @@
                                     Sponsor Name <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="sponsor_name" type="text" {{ $is_anonymous ? 'disabled' : 'required' }} placeholder="{{ $is_anonymous ? 'Anonymous' : 'Individual or Group name' }}"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500 {{ $is_anonymous ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : '' }}">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border @error('sponsor_name') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500 {{ $is_anonymous ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : '' }}">
                                 @error('sponsor_name') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -377,7 +396,16 @@
                             @error('sponsor_phone') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
-                      
+                        <!-- Porridge Count -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Number of Porridges <span class="text-red-500">*</span>
+                            </label>
+                            <input wire:model.live="porridge_count" type="number" min="1" required
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border @error('porridge_count') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"
+                                placeholder="Enter number of porridges">
+                            @error('porridge_count') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
 
                         <!-- Custom Amount per Porridge -->
                         <div>
@@ -386,7 +414,7 @@
                             </label>
                             <div class="relative">
                                 <input wire:model="custom_amount_per_porridge" type="number" step="0.01" min="0" :max="$porridgeAmount"
-                                    class="w-full pl-12 pr-4 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"
+                                    class="w-full pl-12 pr-4 py-1.5 text-xs rounded-lg border @error('custom_amount_per_porridge') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"
                                     placeholder="Leave empty to use default: {{ number_format($porridgeAmount, 2) }}">
                             </div>
                             @error('custom_amount_per_porridge') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror

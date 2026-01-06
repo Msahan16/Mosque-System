@@ -110,6 +110,13 @@ class RamadanPorridge extends Component
 
     public function saveSponsor()
     {
+        // Convert empty string to null for custom_amount_per_porridge
+        if ($this->custom_amount_per_porridge === '' || $this->custom_amount_per_porridge === null) {
+            $this->custom_amount_per_porridge = null;
+        } else {
+            $this->custom_amount_per_porridge = (float) $this->custom_amount_per_porridge;
+        }
+
         // Custom validation for anonymous sponsors
         if (!$this->is_anonymous && empty($this->sponsor_name)) {
             $this->addError('sponsor_name', 'Sponsor name is required unless marked as anonymous.');
@@ -125,7 +132,7 @@ class RamadanPorridge extends Component
 
         try {
             // Check daily budget limit using porridge_amount as the daily limit
-            $dailyBudgetLimit = $this->porridgeAmount; // Use porridge_amount as daily limit
+            $dailyBudgetLimit = (float) $this->porridgeAmount; // Use porridge_amount as daily limit
             $currentAmountForDay = PorridgeSponsor::where('mosque_id', Auth::user()->mosque_id)
                 ->where('ramadan_year', $this->ramadanYear)
                 ->where('day_number', $this->day_number)
@@ -134,15 +141,14 @@ class RamadanPorridge extends Component
                 })
                 ->sum('total_amount');
 
-            $newTotalAmount = $this->porridge_count * ($this->custom_amount_per_porridge ?? $this->porridgeAmount);
+            $amountPerPorridge = $this->custom_amount_per_porridge ?? (float) $this->porridgeAmount;
+            $newTotalAmount = (int) $this->porridge_count * $amountPerPorridge;
 
             if (($currentAmountForDay + $newTotalAmount) > $dailyBudgetLimit) {
                 $remainingBudget = $dailyBudgetLimit - $currentAmountForDay;
                 $this->addError('porridge_count', "Cannot add this sponsorship. Daily budget limit: LKR " . number_format($dailyBudgetLimit, 2) . ". Remaining budget: LKR " . number_format($remainingBudget, 2) . ". This sponsorship would cost: LKR " . number_format($newTotalAmount, 2) . ".");
                 return;
             }
-
-            $amountPerPorridge = $this->custom_amount_per_porridge ?? $this->porridgeAmount;
             
             $data = [
                 'mosque_id' => Auth::user()->mosque_id,
@@ -153,7 +159,7 @@ class RamadanPorridge extends Component
                 'sponsor_type' => $this->sponsor_type,
                 'porridge_count' => $this->porridge_count,
                 'amount_per_porridge' => $amountPerPorridge,
-                'total_amount' => $this->porridge_count * $amountPerPorridge,
+                'total_amount' => (int) $this->porridge_count * $amountPerPorridge,
                 'payment_status' => $this->payment_status,
                 'payment_method' => $this->payment_method,
                 'distribution_status' => $this->distribution_status,
