@@ -13,6 +13,7 @@ use App\Livewire\Mosque\Donations;
 use App\Livewire\Mosque\Settings;
 use App\Livewire\Mosque\IslamicCalendar;
 use App\Livewire\Mosque\StaffManagement;
+use App\Livewire\Mosque\Reports;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,5 +93,6 @@ Route::middleware([
         Route::get('/imam-management', \App\Livewire\Mosque\ImamManagement::class)->name('imam-management')->middleware('staff.permission:imam');
         Route::get('/ramadan-porridge', \App\Livewire\Mosque\RamadanPorridge::class)->name('ramadan-porridge')->middleware('staff.permission:porridge');
         Route::get('/staff-management', StaffManagement::class)->name('staff-management')->middleware('staff.permission:settings');
+        Route::get('/reports', Reports::class)->name('reports')->middleware('staff.permission:dashboard');
     });
 });
