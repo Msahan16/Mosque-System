@@ -28,7 +28,8 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Sponsor Name</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Phone</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Sponsored Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Ramadan Year</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Day Number</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Amount</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Notes</th>
                     </tr>
@@ -36,15 +37,16 @@
                 <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
                     @forelse($reportData['sponsors_list'] ?? [] as $sponsor)
                         <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white">{{ $sponsor->sponsor_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">{{ $sponsor->phone }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">{{ \Carbon\Carbon::parse($sponsor->sponsored_date)->format('d M Y') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-emerald-600 dark:text-emerald-400">LKR {{ number_format($sponsor->amount) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white">{{ $sponsor->sponsor_name ?? 'Anonymous' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">{{ $sponsor->sponsor_phone ?? '-' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">{{ $sponsor->ramadan_year }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">Day {{ $sponsor->day_number }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-emerald-600 dark:text-emerald-400">LKR {{ number_format($sponsor->total_amount) }}</td>
                             <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">{{ $sponsor->notes ?? '-' }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                            <td colspan="6" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                                 No sponsors in this period
                             </td>
                         </tr>

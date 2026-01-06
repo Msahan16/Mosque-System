@@ -7,7 +7,6 @@ use App\Models\Donation;
 use App\Models\Santha;
 use App\Models\Student;
 use App\Models\Ustad;
-use App\Models\ImamSchedule;
 use App\Models\ImamFinancialRecord;
 use App\Models\PorridgeSponsor;
 use Livewire\Component;
@@ -67,8 +66,11 @@ class Reports extends Component
             case 'families':
                 $this->reportData = $this->getFamiliesReport($mosqueId, $start, $end);
                 break;
-            case 'donations':
-                $this->reportData = $this->getDonationsReport($mosqueId, $start, $end);
+            case 'donations-received':
+                $this->reportData = $this->getDonationsReport($mosqueId, $start, $end, 'received');
+                break;
+            case 'donations-given':
+                $this->reportData = $this->getDonationsReport($mosqueId, $start, $end, 'given');
                 break;
             case 'santhas':
                 $this->reportData = $this->getSanthasReport($mosqueId, $start, $end);
@@ -125,13 +127,15 @@ class Reports extends Component
         ];
     }
 
-    private function getDonationsReport($mosqueId, $start, $end)
+    private function getDonationsReport($mosqueId, $start, $end, $transactionType = 'received')
     {
         $donations = Donation::where('mosque_id', $mosqueId)
+            ->where('transaction_type', $transactionType)
             ->whereBetween('donation_date', [$start, $end])
             ->get();
 
         return [
+            'transaction_type' => $transactionType,
             'total_amount' => $donations->sum('amount'),
             'total_count' => $donations->count(),
             'by_type' => $donations->groupBy('donation_type')->map(function($group) {
@@ -189,38 +193,35 @@ class Reports extends Component
 
     private function getImamReport($mosqueId, $start, $end)
     {
-        $schedules = ImamSchedule::where('mosque_id', $mosqueId)
-            ->whereBetween('date', [$start, $end])
-            ->get();
-
         $financials = ImamFinancialRecord::where('mosque_id', $mosqueId)
-            ->whereBetween('date', [$start, $end])
+            ->whereBetween('record_date', [$start, $end])
             ->get();
 
         return [
-            'total_schedules' => $schedules->count(),
+            'total_schedules' => 0, // Schedules not implemented
             'total_payments' => $financials->where('type', 'salary')->sum('amount'),
-            'total_expenses' => $financials->where('type', 'expense')->sum('amount'),
-            'schedules_list' => $schedules,
+            'total_advances' => $financials->where('type', 'advance')->sum('amount'),
             'financials_list' => $financials,
-            'by_imam' => $schedules->groupBy('imam_name')->map->count(),
+            'by_type' => $financials->groupBy('type')->map->count(),
         ];
     }
 
     private function getPorridgeReport($mosqueId, $start, $end)
     {
+        // Get the year range from start and end dates
+        $startYear = $start->year;
+        $endYear = $end->year;
+        
         $sponsors = PorridgeSponsor::where('mosque_id', $mosqueId)
-            ->whereBetween('sponsored_date', [$start, $end])
+            ->whereBetween('ramadan_year', [$startYear, $endYear])
             ->get();
 
         return [
             'total_sponsors' => $sponsors->count(),
-            'total_amount' => $sponsors->sum('amount'),
-            'days_covered' => $sponsors->pluck('sponsored_date')->unique()->count(),
+            'total_amount' => $sponsors->sum('total_amount'),
+            'days_covered' => $sponsors->pluck('day_number')->unique()->count(),
             'sponsors_list' => $sponsors,
-            'by_month' => $sponsors->groupBy(function($sponsor) {
-                return Carbon::parse($sponsor->sponsored_date)->format('Y-m');
-            })->map->count(),
+            'by_year' => $sponsors->groupBy('ramadan_year')->map->count(),
         ];
     }
 
@@ -235,12 +236,16 @@ class Reports extends Component
             ->where('is_paid', true)
             ->sum('amount');
 
+        // Get the year range from start and end dates for porridge
+        $startYear = $start->year;
+        $endYear = $end->year;
+        
         $porridge = PorridgeSponsor::where('mosque_id', $mosqueId)
-            ->whereBetween('sponsored_date', [$start, $end])
-            ->sum('amount');
+            ->whereBetween('ramadan_year', [$startYear, $endYear])
+            ->sum('total_amount');
 
         $imamExpenses = ImamFinancialRecord::where('mosque_id', $mosqueId)
-            ->whereBetween('date', [$start, $end])
+            ->whereBetween('record_date', [$start, $end])
             ->sum('amount');
 
         $totalIncome = $donations + $santhas + $porridge;

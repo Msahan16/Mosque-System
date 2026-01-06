@@ -31,7 +31,8 @@
                     <select wire:model.live="reportType" class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
                         <option value="overview">📊 Overview Summary</option>
                         <option value="families">👨‍👩‍👧‍👦 Families Report</option>
-                        <option value="donations">💰 Donations Report</option>
+                        <option value="donations-received">💰 Donations Received</option>
+                        <option value="donations-given">🎁 Donations Given</option>
                         <option value="santhas">📅 Santha Payments</option>
                         <option value="madrasa">📚 Madrasa Report</option>
                         <option value="imam">🕌 Imam Management</option>
@@ -85,7 +86,7 @@
             @include('livewire.mosque.reports.overview')
         @elseif($reportType === 'families')
             @include('livewire.mosque.reports.families')
-        @elseif($reportType === 'donations')
+        @elseif($reportType === 'donations-received' || $reportType === 'donations-given')
             @include('livewire.mosque.reports.donations')
         @elseif($reportType === 'santhas')
             @include('livewire.mosque.reports.santhas')
