@@ -523,7 +523,20 @@ class Santhas extends Component
             ];
 
             if ($this->editMode) {
-                Santha::findOrFail($this->santhaId)->update($data);
+                $santha = Santha::findOrFail($this->santhaId);
+                $santha->update($data);
+                
+                // Update associated Baithulmal transaction if exists
+                if ($santha->baithulmalTransaction) {
+                    $santha->baithulmalTransaction->update([
+                        'amount' => $this->amount,
+                        'transaction_date' => $this->payment_date,
+                        'payment_method' => $this->payment_method,
+                        'description' => 'Santha Payment - ' . $monthName . ' ' . $year . ' (' . count($this->selectedMonths) . ' months)',
+                        'notes' => $this->notes,
+                    ]);
+                }
+                
                 $message = 'Payment updated successfully';
             } else {
                 $santha = Santha::create($data);

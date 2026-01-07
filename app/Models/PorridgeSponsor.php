@@ -45,9 +45,9 @@ class PorridgeSponsor extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function baithulmalTransaction(): BelongsTo
+    public function baithulmalTransaction()
     {
-        return $this->belongsTo(BaithulmalTransaction::class, 'id', 'reference_porridge_id');
+        return $this->hasOne(BaithulmalTransaction::class, 'reference_porridge_id');
     }
 
     // Accessors & Mutators

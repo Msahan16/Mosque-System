@@ -169,7 +169,22 @@ class RamadanPorridge extends Component
             ];
 
             if ($this->editMode) {
-                PorridgeSponsor::findOrFail($this->sponsorId)->update($data);
+                $sponsor = PorridgeSponsor::findOrFail($this->sponsorId);
+                $sponsor->update($data);
+                
+                // Update associated Baithulmal transaction if exists
+                if ($sponsor->baithulmalTransaction) {
+                    $sponsor->baithulmalTransaction->update([
+                        'amount' => $sponsor->total_amount,
+                        'transaction_date' => now()->toDateString(),
+                        'payment_method' => $this->payment_method,
+                        'description' => 'Ramadan Porridge Sponsorship - Day ' . $this->day_number . ' (' . $this->porridge_count . ' portions)',
+                        'received_from' => $this->is_anonymous ? 'Anonymous' : ($this->sponsor_name ?? 'Sponsor'),
+                        'notes' => $this->notes,
+                        'is_anonymous' => $this->is_anonymous ?? false,
+                    ]);
+                }
+                
                 $this->dispatch('swal:success', title: 'Success', text: 'Porridge sponsorship updated successfully');
             } else {
                 $sponsor = PorridgeSponsor::create($data);
