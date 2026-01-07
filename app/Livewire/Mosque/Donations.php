@@ -4,6 +4,7 @@ namespace App\Livewire\Mosque;
 
 use App\Models\Donation;
 use App\Models\Family;
+use App\Models\BaithulmalTransaction;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
@@ -170,10 +171,45 @@ class Donations extends Component
             ];
 
             if ($this->editMode) {
-                Donation::findOrFail($this->donationId)->update($data);
+                $donation = Donation::findOrFail($this->donationId);
+                $donation->update($data);
+                
+                // Update associated Baithulmal transaction if exists
+                if ($donation->baithulmalTransaction) {
+                    $donation->baithulmalTransaction->update([
+                        'amount' => $this->amount,
+                        'transaction_date' => $this->donation_date,
+                        'payment_method' => $this->payment_method,
+                        'description' => $this->purpose,
+                        'notes' => $this->notes,
+                    ]);
+                }
+                
                 $this->dispatch('swal:success', title: 'Success', text: 'Donation updated successfully');
             } else {
-                Donation::create($data);
+                $donation = Donation::create($data);
+                
+                // Create corresponding Baithulmal transaction
+                // Received donations = income, Given donations = expense
+                $transactionType = $this->transaction_type === 'received' ? 'income' : 'expense';
+                
+                BaithulmalTransaction::create([
+                    'mosque_id' => auth()->user()->mosque_id,
+                    'type' => $transactionType,
+                    'category' => 'donation',
+                    'description' => $this->purpose ?: 'Donation - ' . $this->donation_type,
+                    'amount' => $this->amount,
+                    'transaction_date' => $this->donation_date,
+                    'payment_method' => $this->payment_method,
+                    'reference_number' => $donation->receipt_number ?: $donation->id,
+                    'reference_donation_id' => $donation->id,
+                    'received_from' => $this->transaction_type === 'received' ? ($this->is_anonymous ? 'Anonymous' : $this->donor_name) : null,
+                    'paid_to' => $this->transaction_type === 'given' ? ($this->is_anonymous ? 'Anonymous' : $this->donor_name) : null,
+                    'notes' => $this->notes,
+                    'is_anonymous' => $this->is_anonymous,
+                    'created_by' => auth()->id(),
+                ]);
+                
                 $message = $this->transaction_type === 'received' ? 'Donation received successfully' : 'Donation given successfully';
                 $this->dispatch('swal:success', title: 'Success', text: $message);
             }
@@ -187,7 +223,14 @@ class Donations extends Component
     public function deleteDonation($id)
     {
         try {
-            Donation::findOrFail($id)->delete();
+            $donation = Donation::findOrFail($id);
+            
+            // Delete associated Baithulmal transaction if exists
+            if ($donation->baithulmalTransaction) {
+                $donation->baithulmalTransaction->delete();
+            }
+            
+            $donation->delete();
             $this->dispatch('swal:success', title: 'Success', text: 'Donation deleted successfully');
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());

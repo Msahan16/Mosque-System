@@ -19,6 +19,7 @@ class BaithulmalTransaction extends Model
         'transaction_date',
         'payment_method',
         'reference_number',
+        'reference_donation_id',
         'paid_to',
         'received_from',
         'notes',
@@ -48,6 +49,14 @@ class BaithulmalTransaction extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the donation that references this transaction.
+     */
+    public function donation(): BelongsTo
+    {
+        return $this->belongsTo(Donation::class, 'reference_donation_id');
     }
 
     /**

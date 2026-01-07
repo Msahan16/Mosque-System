@@ -42,4 +42,9 @@ class Donation extends Model
     {
         return $this->belongsTo(Family::class);
     }
+
+    public function baithulmalTransaction()
+    {
+        return $this->hasOne(BaithulmalTransaction::class, 'reference_donation_id');
+    }
 }
