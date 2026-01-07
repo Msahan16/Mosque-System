@@ -45,6 +45,11 @@ class Santha extends Model
         return $this->belongsTo(Family::class);
     }
 
+    public function baithulmalTransaction()
+    {
+        return $this->hasOne(BaithulmalTransaction::class, 'reference_santha_id');
+    }
+
     /**
      * Get formatted months covered display
      */

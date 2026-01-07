@@ -5,6 +5,7 @@ namespace App\Livewire\Mosque;
 use App\Models\Santha;
 use App\Models\Family;
 use App\Models\MosqueSetting;
+use App\Models\BaithulmalTransaction;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
@@ -525,7 +526,24 @@ class Santhas extends Component
                 Santha::findOrFail($this->santhaId)->update($data);
                 $message = 'Payment updated successfully';
             } else {
-                Santha::create($data);
+                $santha = Santha::create($data);
+                
+                // Create corresponding Baithulmal income transaction
+                BaithulmalTransaction::create([
+                    'mosque_id' => $mosqueId,
+                    'type' => 'income',
+                    'category' => 'santha',
+                    'description' => 'Santha Payment - ' . $monthName . ' ' . $year . ' (' . count($this->selectedMonths) . ' months)',
+                    'amount' => $this->amount,
+                    'transaction_date' => $this->payment_date,
+                    'payment_method' => $this->payment_method,
+                    'reference_number' => $receiptNumber,
+                    'reference_santha_id' => $santha->id,
+                    'received_from' => $this->family_id ? Family::find($this->family_id)?->family_head_name : 'Unknown',
+                    'notes' => $this->notes,
+                    'created_by' => Auth::id(),
+                ]);
+                
                 $message = 'Payment recorded successfully';
             }
 
@@ -546,7 +564,14 @@ class Santhas extends Component
     public function deleteSantha($id)
     {
         try {
-            Santha::findOrFail($id)->delete();
+            $santha = Santha::findOrFail($id);
+            
+            // Delete associated Baithulmal transaction if exists
+            if ($santha->baithulmalTransaction) {
+                $santha->baithulmalTransaction->delete();
+            }
+            
+            $santha->delete();
             $this->dispatch('swal:success', title: 'Success', text: 'Payment deleted successfully');
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());

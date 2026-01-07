@@ -20,6 +20,7 @@ class BaithulmalTransaction extends Model
         'payment_method',
         'reference_number',
         'reference_donation_id',
+        'reference_santha_id',
         'paid_to',
         'received_from',
         'notes',
@@ -57,6 +58,14 @@ class BaithulmalTransaction extends Model
     public function donation(): BelongsTo
     {
         return $this->belongsTo(Donation::class, 'reference_donation_id');
+    }
+
+    /**
+     * Get the santha payment that references this transaction.
+     */
+    public function santha(): BelongsTo
+    {
+        return $this->belongsTo(Santha::class, 'reference_santha_id');
     }
 
     /**
