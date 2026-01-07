@@ -4,6 +4,7 @@ namespace App\Livewire\Mosque;
 
 use App\Models\MosqueSetting;
 use App\Models\PorridgeSponsor;
+use App\Models\BaithulmalTransaction;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
@@ -171,7 +172,27 @@ class RamadanPorridge extends Component
                 PorridgeSponsor::findOrFail($this->sponsorId)->update($data);
                 $this->dispatch('swal:success', title: 'Success', text: 'Porridge sponsorship updated successfully');
             } else {
-                PorridgeSponsor::create($data);
+                $sponsor = PorridgeSponsor::create($data);
+                
+                // Create Baithulmal income transaction if sponsor is created with paid status
+                if ($this->payment_status === 'paid') {
+                    BaithulmalTransaction::create([
+                        'mosque_id' => Auth::user()->mosque_id,
+                        'type' => 'income',
+                        'category' => 'porridge_sponsorship',
+                        'description' => 'Ramadan Porridge Sponsorship - Day ' . $this->day_number . ' (' . $this->porridge_count . ' portions)',
+                        'amount' => $sponsor->total_amount,
+                        'transaction_date' => now()->toDateString(),
+                        'payment_method' => $this->payment_method,
+                        'reference_number' => 'PORD-' . now()->format('Ymd') . '-' . $sponsor->id,
+                        'reference_porridge_id' => $sponsor->id,
+                        'received_from' => $this->is_anonymous ? 'Anonymous' : ($this->sponsor_name ?? 'Sponsor'),
+                        'notes' => $this->notes,
+                        'is_anonymous' => $this->is_anonymous ?? false,
+                        'created_by' => Auth::id(),
+                    ]);
+                }
+                
                 $this->dispatch('swal:success', title: 'Success', text: 'Porridge sponsorship added successfully');
             }
 
@@ -184,7 +205,12 @@ class RamadanPorridge extends Component
     public function deleteSponsor($id)
     {
         try {
-            PorridgeSponsor::findOrFail($id)->delete();
+            $sponsor = PorridgeSponsor::findOrFail($id);
+            
+            // Delete associated Baithulmal transaction if exists
+            BaithulmalTransaction::where('reference_porridge_id', $id)->delete();
+            
+            $sponsor->delete();
             $this->dispatch('swal:success', title: 'Success', text: 'Porridge sponsorship deleted successfully');
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
@@ -208,7 +234,31 @@ class RamadanPorridge extends Component
     public function markAsPaid($id)
     {
         try {
-            PorridgeSponsor::findOrFail($id)->update(['payment_status' => 'paid']);
+            $sponsor = PorridgeSponsor::findOrFail($id);
+            $sponsor->update(['payment_status' => 'paid']);
+            
+            // Check if Baithulmal transaction already exists
+            $existingTransaction = BaithulmalTransaction::where('reference_porridge_id', $id)->first();
+            
+            if (!$existingTransaction) {
+                // Create Baithulmal income transaction when marking as paid
+                BaithulmalTransaction::create([
+                    'mosque_id' => Auth::user()->mosque_id,
+                    'type' => 'income',
+                    'category' => 'porridge_sponsorship',
+                    'description' => 'Ramadan Porridge Sponsorship - Day ' . $sponsor->day_number . ' (' . $sponsor->porridge_count . ' portions)',
+                    'amount' => $sponsor->total_amount,
+                    'transaction_date' => now()->toDateString(),
+                    'payment_method' => $sponsor->payment_method,
+                    'reference_number' => 'PORD-' . now()->format('Ymd') . '-' . $sponsor->id,
+                    'reference_porridge_id' => $sponsor->id,
+                    'received_from' => $sponsor->is_anonymous ? 'Anonymous' : ($sponsor->sponsor_name ?? 'Sponsor'),
+                    'notes' => $sponsor->notes,
+                    'is_anonymous' => $sponsor->is_anonymous ?? false,
+                    'created_by' => Auth::id(),
+                ]);
+            }
+            
             $this->dispatch('swal:success', title: 'Success', text: 'Payment marked as paid');
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());

@@ -45,6 +45,11 @@ class PorridgeSponsor extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function baithulmalTransaction(): BelongsTo
+    {
+        return $this->belongsTo(BaithulmalTransaction::class, 'id', 'reference_porridge_id');
+    }
+
     // Accessors & Mutators
     public function getTotalAmountAttribute($value)
     {
