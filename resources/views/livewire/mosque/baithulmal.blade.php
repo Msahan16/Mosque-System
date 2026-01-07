@@ -1,7 +1,7 @@
 <div class="min-h-screen p-4 sm:p-6 lg:p-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header Section -->
-        <div class="content-overlay rounded-2xl shadow-2xl p-6 sm:p-8 mb-6 border border-blue-100 dark:border-blue-900">
+        <div class="content-overlay rounded-2xl shadow-2xl p-6 sm:p-8 mb-6 border border-blue-100 dark:border-blue-900 print:hidden">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
@@ -30,7 +30,8 @@
         </div>
 
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        @if($activeTab !== 'reports')
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 print:hidden">
             <!-- Total Income Card -->
             <div class="content-overlay rounded-2xl shadow-xl p-6 border-l-4 border-green-500 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
                 <div class="flex items-center justify-between">
@@ -82,6 +83,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Tabs -->
         <div class="content-overlay rounded-2xl shadow-xl mb-6 border border-blue-100 dark:border-blue-900">
@@ -277,43 +279,345 @@
                         {{ $transactions->links() }}
                     </div>
                 @elseif($activeTab === 'reports')
-                    <!-- Reports Section -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Income by Category -->
-                        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Income by Category</h3>
-                            <div class="space-y-3">
-                                @forelse($incomeByCategory as $category => $amount)
-                                    <div class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            {{ str_replace('_', ' ', ucwords($category, '_')) }}
-                                        </span>
-                                        <span class="text-sm font-bold text-green-600 dark:text-green-400">
-                                            LKR {{ number_format($amount, 2) }}
-                                        </span>
-                                    </div>
-                                @empty
-                                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">No income data available</p>
-                                @endforelse
+                    <!-- Reports Section with Print Functionality -->
+                    <div>
+                        <!-- Reports Controls -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6 print:hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">From Date</label>
+                                    <input type="date" wire:model.live="dateFrom" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">To Date</label>
+                                    <input type="date" wire:model.live="dateTo" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Report Type</label>
+                                    <select wire:model.live="reportType" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+                                        <option value="1">Baithulmal Overview Report</option>
+                                        <option value="2">Expense Report</option>
+                                        <option value="3">Income Report</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-end">
+                                    <button onclick="window.print()" class="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                                        </svg>
+                                        Print Report
+                                    </button>
+                                </div>
                             </div>
+
+                            @if($dateFrom || $dateTo)
+                                <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                    <p class="text-sm text-blue-800 dark:text-blue-300">
+                                        <strong>Showing data for:</strong> 
+                                        {{ $dateFrom ? \Carbon\Carbon::parse($dateFrom)->format('d M Y') : 'Beginning' }} 
+                                        to 
+                                        {{ $dateTo ? \Carbon\Carbon::parse($dateTo)->format('d M Y') : 'Today' }}
+                                    </p>
+                                </div>
+                            @endif
                         </div>
 
-                        <!-- Expense by Category -->
-                        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Expense by Category</h3>
-                            <div class="space-y-3">
-                                @forelse($expenseByCategory as $category => $amount)
-                                    <div class="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            {{ str_replace('_', ' ', ucwords($category, '_')) }}
-                                        </span>
-                                        <span class="text-sm font-bold text-red-600 dark:text-red-400">
-                                            LKR {{ number_format($amount, 2) }}
-                                        </span>
+                        <!-- Print Header (Hidden on Screen) -->
+                        <div class="hidden print:block mb-8">
+                            <div class="text-center mb-6 border-b-2 border-gray-800 pb-4">
+                                <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ auth()->user()->mosque->name ?? 'Mosque Management System' }}</h1>
+                                <p class="text-sm text-gray-600">{{ auth()->user()->mosque->address ?? '' }}</p>
+                                <h2 class="text-xl font-bold text-gray-800 mt-4">
+                                    @if($reportType === '1')
+                                        Baithulmal Overview Report
+                                    @elseif($reportType === '2')
+                                        Expense Report
+                                    @elseif($reportType === '3')
+                                        Income Report
+                                    @endif
+                                </h2>
+                                <p class="text-sm text-gray-600 mt-2">
+                                    <strong>Period:</strong> 
+                                    {{ $dateFrom ? \Carbon\Carbon::parse($dateFrom)->format('d M Y') : 'Beginning' }} 
+                                    to 
+                                    {{ $dateTo ? \Carbon\Carbon::parse($dateTo)->format('d M Y') : 'Today' }}
+                                </p>
+                                <p class="text-xs text-gray-500 mt-1">Generated on: {{ now()->format('d M Y h:i A') }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Main Report Section - Professional Table Format -->
+                        @if($reportType === '1')
+                            {{-- Overview Report --}}
+                            <div class="space-y-6">
+                                {{-- Summary Statistics Table --}}
+                                <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden border border-slate-300 dark:border-slate-600 print:shadow-none print:border-2 print:border-gray-800">
+                                    {{-- Table Header --}}
+                                    <div class="bg-gradient-to-r from-indigo-700 to-indigo-800 px-6 py-4 border-b-2 border-indigo-900 print:bg-gray-100 print:border-gray-800">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h2 class="text-2xl font-bold text-white print:text-gray-900 print:hidden\">Baithulmal Overview Report</h2>
+                                                <p class="text-indigo-100 text-sm mt-1 print:hidden">Comprehensive income and expense summary</p>
+                                            </div>
+                                            <div class="text-right print:hidden">
+                                                <p class="text-indigo-100 text-xs uppercase tracking-wide">Report Period</p>
+                                                <p class="text-lg font-bold text-white">{{ $dateFrom ? \Carbon\Carbon::parse($dateFrom)->format('d M Y') : 'All Time' }} - {{ $dateTo ? \Carbon\Carbon::parse($dateTo)->format('d M Y') : 'Today' }}</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                @empty
-                                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">No expense data available</p>
-                                @endforelse
+
+                                    {{-- Table Content --}}
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full border-collapse">
+                                            <thead>
+                                                <tr class="bg-slate-200 dark:bg-slate-700 border-b-2 border-slate-400 dark:border-slate-500 print:bg-gray-200">
+                                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600 print:text-gray-900">Category</th>
+                                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600 print:text-gray-900">Description</th>
+                                                    <th class="px-6 py-4 text-right text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider print:text-gray-900">Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white dark:bg-slate-800 print:bg-white">
+                                                {{-- Income Summary --}}
+                                                <tr class="border-b border-slate-200 dark:border-slate-700 hover:bg-green-50 transition-colors print:border-gray-300">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-700 dark:text-green-400 border-r border-slate-200 dark:border-slate-700 print:text-green-700 print:border-gray-300">
+                                                        <span class="flex items-center gap-2">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                                                            </svg>
+                                                            Income
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 print:text-gray-700 print:border-gray-300">Total Income (This Period)</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-700 dark:text-green-400 text-right print:text-green-700">LKR {{ number_format($totalIncome, 2) }}</td>
+                                                </tr>
+
+                                                {{-- Expense Summary --}}
+                                                <tr class="border-b border-slate-200 dark:border-slate-700 hover:bg-red-50 transition-colors print:border-gray-300">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-700 dark:text-red-400 border-r border-slate-200 dark:border-slate-700 print:text-red-700 print:border-gray-300">
+                                                        <span class="flex items-center gap-2">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
+                                                            </svg>
+                                                            Expense
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 print:text-gray-700 print:border-gray-300">Total Expense (This Period)</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-700 dark:text-red-400 text-right print:text-red-700">LKR {{ number_format($totalExpense, 2) }}</td>
+                                                </tr>
+
+                                                {{-- Net Balance --}}
+                                                <tr class="border-b-2 border-slate-400 dark:border-slate-500 hover:bg-blue-50 transition-colors bg-slate-50 dark:bg-slate-700/30 print:bg-gray-100 print:border-gray-800">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-700 dark:text-blue-400 border-r border-slate-200 dark:border-slate-700 print:text-blue-700 print:border-gray-300">
+                                                        <span class="flex items-center gap-2">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                            </svg>
+                                                            Net Balance
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-6 py-4 text-sm font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700 print:text-gray-700 print:border-gray-300">Income - Expense ({{ $balance >= 0 ? 'Surplus' : 'Deficit' }})</td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-base font-bold {{ $balance >= 0 ? 'text-blue-700 dark:text-blue-400' : 'text-orange-700 dark:text-orange-400' }} text-right print:{{ $balance >= 0 ? 'text-blue-700' : 'text-orange-700' }}">LKR {{ number_format($balance, 2) }}</td>
+                                                </tr>
+
+                                                {{-- Income by Category Section --}}
+                                                @if($incomeByCategory->count() > 0)
+                                                    <tr class="bg-green-50 dark:bg-green-900/10 border-b border-slate-200 dark:border-slate-700 print:bg-green-100 print:border-gray-300">
+                                                        <td colspan="3" class="px-6 py-3 text-sm font-bold text-green-800 dark:text-green-300 uppercase tracking-wide print:text-green-800">
+                                                            Income Breakdown by Category
+                                                        </td>
+                                                    </tr>
+                                                    @foreach($incomeByCategory as $category => $amount)
+                                                        <tr class="border-b border-slate-200 dark:border-slate-700 hover:bg-green-50 transition-colors print:border-gray-300">
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600 dark:text-green-400 border-r border-slate-200 dark:border-slate-700 print:text-green-600 print:border-gray-300"></td>
+                                                            <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 print:text-gray-700 print:border-gray-300">
+                                                                {{ str_replace('_', ' ', ucwords($category, '_')) }}
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600 dark:text-green-400 text-right print:text-green-600">LKR {{ number_format($amount, 2) }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
+
+                                                {{-- Expense by Category Section --}}
+                                                @if($expenseByCategory->count() > 0)
+                                                    <tr class="bg-red-50 dark:bg-red-900/10 border-b border-slate-200 dark:border-slate-700 print:bg-red-100 print:border-gray-300">
+                                                        <td colspan="3" class="px-6 py-3 text-sm font-bold text-red-800 dark:text-red-300 uppercase tracking-wide print:text-red-800">
+                                                            Expense Breakdown by Category
+                                                        </td>
+                                                    </tr>
+                                                    @foreach($expenseByCategory as $category => $amount)
+                                                        <tr class="border-b border-slate-200 dark:border-slate-700 hover:bg-red-50 transition-colors print:border-gray-300">
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-600 dark:text-red-400 border-r border-slate-200 dark:border-slate-700 print:text-red-600 print:border-gray-300"></td>
+                                                            <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700 print:text-gray-700 print:border-gray-300">
+                                                                {{ str_replace('_', ' ', ucwords($category, '_')) }}
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-600 dark:text-red-400 text-right print:text-red-600">LKR {{ number_format($amount, 2) }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {{-- Expense Report --}}
+                        @elseif($reportType === '2')
+                            <div class="space-y-6">
+                                {{-- Expense Summary Table --}}
+                                <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden border border-slate-300 dark:border-slate-600 print:shadow-none print:border-2 print:border-gray-800">
+                                    {{-- Table Header --}}
+                                    <div class="bg-gradient-to-r from-red-700 to-red-800 px-6 py-4 border-b-2 border-red-900 print:bg-red-100 print:border-gray-800">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h2 class="text-2xl font-bold text-white print:text-gray-900 print:hidden">Expense Report</h2>
+                                                <p class="text-red-100 text-sm mt-1 print:hidden">Detailed expense breakdown and analysis</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-red-100 text-xs uppercase tracking-wide print:text-gray-700">Total Expense</p>
+                                                <p class="text-3xl font-bold text-white print:text-red-700">LKR {{ number_format($totalExpense, 2) }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Table Content --}}
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full border-collapse">
+                                            <thead>
+                                                <tr class="bg-slate-200 dark:bg-slate-700 border-b-2 border-slate-400 dark:border-slate-500 print:bg-gray-200">
+                                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600 print:text-gray-900 print:border-gray-300">Category</th>
+                                                    <th class="px-6 py-4 text-right text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600 print:text-gray-900 print:border-gray-300">Amount</th>
+                                                    <th class="px-6 py-4 text-right text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider print:text-gray-900">Percentage</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white dark:bg-slate-800 print:bg-white">
+                                                @forelse($expenseByCategory as $category => $amount)
+                                                    <tr class="border-b border-slate-200 dark:border-slate-700 hover:bg-red-50 transition-colors print:border-gray-300">
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100 border-r border-slate-200 dark:border-slate-700 print:text-gray-900 print:border-gray-300">
+                                                            {{ str_replace('_', ' ', ucwords($category, '_')) }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-600 dark:text-red-400 text-right border-r border-slate-200 dark:border-slate-700 print:text-red-600 print:border-gray-300">
+                                                            LKR {{ number_format($amount, 2) }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-700 dark:text-slate-300 text-right print:text-gray-700">
+                                                            @if($totalExpense > 0)
+                                                                {{ number_format(($amount / $totalExpense) * 100, 1) }}%
+                                                            @else
+                                                                0%
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="3" class="py-8 text-center text-slate-500 dark:text-slate-400 print:text-gray-500">No expense data available</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                            @if($expenseByCategory->count() > 0)
+                                                <tfoot class="bg-red-50 dark:bg-red-900/10 border-t-2 border-slate-300 dark:border-slate-600 print:bg-red-100 print:border-gray-800">
+                                                    <tr>
+                                                        <td class="px-6 py-4 text-sm font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700 print:text-gray-900 print:border-gray-300">TOTAL EXPENSE</td>
+                                                        <td class="px-6 py-4 text-right text-sm font-bold text-red-700 dark:text-red-300 border-r border-slate-200 dark:border-slate-700 print:text-red-700 print:border-gray-300">LKR {{ number_format($totalExpense, 2) }}</td>
+                                                        <td class="px-6 py-4 text-right text-sm font-bold text-red-700 dark:text-red-300 print:text-red-700">100%</td>
+                                                    </tr>
+                                                </tfoot>
+                                            @endif
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {{-- Income Report --}}
+                        @elseif($reportType === '3')
+                            <div class="space-y-6">
+                                {{-- Income Summary Table --}}
+                                <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden border border-slate-300 dark:border-slate-600 print:shadow-none print:border-2 print:border-gray-800">
+                                    {{-- Table Header --}}
+                                    <div class="bg-gradient-to-r from-green-700 to-green-800 px-6 py-4 border-b-2 border-green-900 print:bg-green-100 print:border-gray-800">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h2 class="text-2xl font-bold text-white print:text-gray-900 print:hidden">Income Report</h2>
+                                                <p class="text-green-100 text-sm mt-1 print:hidden">Detailed income breakdown and analysis</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-green-100 text-xs uppercase tracking-wide print:text-gray-700">Total Income</p>
+                                                <p class="text-3xl font-bold text-white print:text-green-700">LKR {{ number_format($totalIncome, 2) }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Table Content --}}
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full border-collapse">
+                                            <thead>
+                                                <tr class="bg-slate-200 dark:bg-slate-700 border-b-2 border-slate-400 dark:border-slate-500 print:bg-gray-200">
+                                                    <th class="px-6 py-4 text-left text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600 print:text-gray-900 print:border-gray-300">Category</th>
+                                                    <th class="px-6 py-4 text-right text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider border-r border-slate-300 dark:border-slate-600 print:text-gray-900 print:border-gray-300">Amount</th>
+                                                    <th class="px-6 py-4 text-right text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider print:text-gray-900">Percentage</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white dark:bg-slate-800 print:bg-white">
+                                                @forelse($incomeByCategory as $category => $amount)
+                                                    <tr class="border-b border-slate-200 dark:border-slate-700 hover:bg-green-50 transition-colors print:border-gray-300">
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100 border-r border-slate-200 dark:border-slate-700 print:text-gray-900 print:border-gray-300">
+                                                            {{ str_replace('_', ' ', ucwords($category, '_')) }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600 dark:text-green-400 text-right border-r border-slate-200 dark:border-slate-700 print:text-green-600 print:border-gray-300">
+                                                            LKR {{ number_format($amount, 2) }}
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-700 dark:text-slate-300 text-right print:text-gray-700">
+                                                            @if($totalIncome > 0)
+                                                                {{ number_format(($amount / $totalIncome) * 100, 1) }}%
+                                                            @else
+                                                                0%
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="3" class="py-8 text-center text-slate-500 dark:text-slate-400 print:text-gray-500">No income data available</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                            @if($incomeByCategory->count() > 0)
+                                                <tfoot class="bg-green-50 dark:bg-green-900/10 border-t-2 border-slate-300 dark:border-slate-600 print:bg-green-100 print:border-gray-800">
+                                                    <tr>
+                                                        <td class="px-6 py-4 text-sm font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-700 print:text-gray-900 print:border-gray-300">TOTAL INCOME</td>
+                                                        <td class="px-6 py-4 text-right text-sm font-bold text-green-700 dark:text-green-300 border-r border-slate-200 dark:border-slate-700 print:text-green-700 print:border-gray-300">LKR {{ number_format($totalIncome, 2) }}</td>
+                                                        <td class="px-6 py-4 text-right text-sm font-bold text-green-700 dark:text-green-300 print:text-green-700">100%</td>
+                                                    </tr>
+                                                </tfoot>
+                                            @endif
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Print Footer (Hidden on Screen) -->
+                        <div class="hidden print:block mt-16 pt-8 border-t-2 border-gray-800">
+                            <div class="grid grid-cols-3 gap-8 text-center">
+                                <div>
+                                    <div class="border-t-2 border-gray-800 pt-2 mt-16">
+                                        <p class="text-sm font-semibold">Prepared By</p>
+                                        <p class="text-xs text-gray-600 mt-1">{{ auth()->user()->name }}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="border-t-2 border-gray-800 pt-2 mt-16">
+                                        <p class="text-sm font-semibold">Verified By</p>
+                                        <p class="text-xs text-gray-600 mt-1">Treasury Officer</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="border-t-2 border-gray-800 pt-2 mt-16">
+                                        <p class="text-sm font-semibold">Approved By</p>
+                                        <p class="text-xs text-gray-600 mt-1">Mosque Administrator</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-8 text-xs text-gray-500">
+                                <p>This is a computer-generated report from the Mosque Management System</p>
+                                <p class="mt-1">Printed on: {{ now()->format('l, d F Y \\a\\t h:i A') }}</p>
                             </div>
                         </div>
                     </div>

@@ -28,6 +28,7 @@ class Baithulmal extends Component
     public $filterCategory = '';
     public $dateFrom = '';
     public $dateTo = '';
+    public $reportType = '1'; // 1 = overview, 2 = expense, 3 = income
 
     // Modal properties
     public $showModal = false;
