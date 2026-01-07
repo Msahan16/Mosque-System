@@ -87,6 +87,7 @@ Route::middleware([
         Route::get('/families', Families::class)->name('families')->middleware('staff.permission:families');
         Route::get('/santhas', Santhas::class)->name('santhas')->middleware('staff.permission:santha');
         Route::get('/donations', Donations::class)->name('donations')->middleware('staff.permission:donations');
+        Route::get('/baithulmal', \App\Livewire\Mosque\Baithulmal::class)->name('baithulmal')->middleware('staff.permission:donations');
         Route::get('/settings', Settings::class)->name('settings')->middleware('staff.permission:settings');
         Route::get('/islamic-calendar', IslamicCalendar::class)->name('islamic-calendar');
         Route::get('/madrasa', \App\Livewire\Mosque\Madrasa::class)->name('madrasa')->middleware('staff.permission:students');

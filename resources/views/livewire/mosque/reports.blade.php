@@ -38,6 +38,7 @@
                             <option value="madrasa">📚 Madrasa Report</option>
                             <option value="imam">🕌 Imam Management</option>
                             <option value="porridge">🍲 Ramadan Porridge</option>
+                            <option value="baithulmal">💼 Baithulmal (Treasury)</option>
                             <option value="financial">💵 Financial Summary</option>
                         </select>
                     </div>
@@ -104,6 +105,8 @@
                             Imam Management Report
                         @elseif($reportType === 'porridge')
                             Ramadan Porridge Report
+                        @elseif($reportType === 'baithulmal')
+                            Baithulmal (Treasury) Report
                         @elseif($reportType === 'financial')
                             Financial Summary Report
                         @endif
@@ -131,6 +134,8 @@
                     @include('livewire.mosque.reports.imam')
                 @elseif($reportType === 'porridge')
                     @include('livewire.mosque.reports.porridge')
+                @elseif($reportType === 'baithulmal')
+                    @include('livewire.mosque.reports.baithulmal')
                 @elseif($reportType === 'financial')
                     @include('livewire.mosque.reports.financial')
                 @endif

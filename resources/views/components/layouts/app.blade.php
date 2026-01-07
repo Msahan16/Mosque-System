@@ -193,6 +193,13 @@
                             </svg>
                             <span class="font-medium">Donations</span>
                         </a>
+                        
+                        <a href="{{ route('mosque.baithulmal') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white {{ request()->routeIs('mosque.baithulmal') ? 'bg-blue-500 text-white shadow-lg' : '' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span class="font-medium">Baithulmal</span>
+                        </a>
                         @endif
                         
                         @if($canAccess('prayer_schedule'))

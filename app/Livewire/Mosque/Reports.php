@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\Ustad;
 use App\Models\ImamFinancialRecord;
 use App\Models\PorridgeSponsor;
+use App\Models\BaithulmalTransaction;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Carbon\Carbon;
@@ -83,6 +84,9 @@ class Reports extends Component
                 break;
             case 'porridge':
                 $this->reportData = $this->getPorridgeReport($mosqueId, $start, $end);
+                break;
+            case 'baithulmal':
+                $this->reportData = $this->getBaithulmalReport($mosqueId, $start, $end);
                 break;
             case 'financial':
                 $this->reportData = $this->getFinancialReport($mosqueId, $start, $end);
@@ -222,6 +226,45 @@ class Reports extends Component
             'days_covered' => $sponsors->pluck('day_number')->unique()->count(),
             'sponsors_list' => $sponsors,
             'by_year' => $sponsors->groupBy('ramadan_year')->map->count(),
+        ];
+    }
+
+    private function getBaithulmalReport($mosqueId, $start, $end)
+    {
+        $transactions = BaithulmalTransaction::where('mosque_id', $mosqueId)
+            ->whereBetween('transaction_date', [$start, $end])
+            ->get();
+
+        $income = $transactions->where('type', 'income');
+        $expense = $transactions->where('type', 'expense');
+
+        return [
+            'total_income' => $income->sum('amount'),
+            'total_expense' => $expense->sum('amount'),
+            'net_balance' => $income->sum('amount') - $expense->sum('amount'),
+            'income_count' => $income->count(),
+            'expense_count' => $expense->count(),
+            'income_by_category' => $income->groupBy('category')->map(function($group) {
+                return [
+                    'count' => $group->count(),
+                    'amount' => $group->sum('amount')
+                ];
+            }),
+            'expense_by_category' => $expense->groupBy('category')->map(function($group) {
+                return [
+                    'count' => $group->count(),
+                    'amount' => $group->sum('amount')
+                ];
+            }),
+            'transactions_list' => $transactions,
+            'by_month' => $transactions->groupBy(function($transaction) {
+                return Carbon::parse($transaction->transaction_date)->format('Y-m');
+            })->map(function($group) {
+                return [
+                    'income' => $group->where('type', 'income')->sum('amount'),
+                    'expense' => $group->where('type', 'expense')->sum('amount'),
+                ];
+            }),
         ];
     }
 
