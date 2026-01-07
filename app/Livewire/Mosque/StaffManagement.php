@@ -79,6 +79,7 @@ class StaffManagement extends Component
             'students' => 'Student Management',
             'donations' => 'Donation Management',
             'porridge' => 'Porridge Management',
+            'baithulmal' => 'Baithulmal Management',
             'imam' => 'Imam Management',
             'ustad' => 'Ustad Management',
             'prayer_schedule' => 'Prayer Schedule',
