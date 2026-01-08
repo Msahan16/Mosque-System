@@ -48,6 +48,11 @@ class ImamFinancialRecord extends Model
         return $this->belongsTo(Mosque::class);
     }
 
+    public function baithulmalTransaction()
+    {
+        return $this->hasOne(BaithulmalTransaction::class, 'reference_imam_record_id');
+    }
+
     // Scopes for different types
     public function scopeSalaries($query)
     {

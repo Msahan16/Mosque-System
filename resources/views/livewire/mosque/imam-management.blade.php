@@ -284,7 +284,16 @@
             <!-- Financial Summary Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 @forelse($financialSummary as $summary)
-                    <div class="bg-gradient-to-br from-green-200 to-emerald-200 dark:from-green-800 dark:to-emerald-800 rounded-xl p-6 border border-green-300 dark:border-green-700 shadow-lg text-gray-900 dark:text-white">
+                    <div class="bg-gradient-to-br from-green-200 to-emerald-200 dark:from-green-800 dark:to-emerald-800 rounded-xl p-6 border border-green-300 dark:border-green-700 shadow-lg text-gray-900 dark:text-white relative">
+                        <!-- Paid Badge -->
+                        @if($summary['salary_paid'])
+                            <div class="absolute top-3 right-3">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-lg">
+                                    ✓ PAID
+                                </span>
+                            </div>
+                        @endif
+
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-12 w-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
@@ -305,24 +314,58 @@
                             </div>
 
                             <!-- Paid Advances -->
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-gray-600 dark:text-gray-400">Paid Advances</span>
-                                <span class="text-sm font-semibold text-red-600 dark:text-red-400">-LKR{{ number_format($summary['paid_advances'], 2) }}</span>
-                            </div>
+                            @if($summary['paid_advances'] > 0)
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600 dark:text-gray-400">Paid Advances</span>
+                                    <span class="text-sm font-semibold text-red-600 dark:text-red-400">-LKR{{ number_format($summary['paid_advances'], 2) }}</span>
+                                </div>
+                            @endif
+
+                            <!-- Paid Salary Amount -->
+                            @if($summary['salary_paid'])
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600 dark:text-gray-400">Paid Salary ({{ now()->format('M Y') }})</span>
+                                    <span class="text-sm font-semibold text-blue-600 dark:text-blue-400">LKR{{ number_format($summary['paid_salary_amount'], 2) }}</span>
+                                </div>
+                            @endif
 
                             <!-- Available Salary -->
-                            <div class="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
-                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Available Salary</span>
-                                <span class="text-lg font-bold {{ $summary['available_salary'] >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
-                                    LKR{{ number_format($summary['available_salary'], 2) }}
-                                </span>
-                            </div>
+                            @if(!$summary['salary_paid'])
+                                <div class="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
+                                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Available Salary</span>
+                                    <span class="text-lg font-bold {{ $summary['available_salary'] >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                                        LKR{{ number_format($summary['available_salary'], 2) }}
+                                    </span>
+                                </div>
+                            @endif
 
                             <!-- Pending Advances -->
                             @if($summary['pending_advances'] > 0)
                                 <div class="flex justify-between items-center pt-2 border-t border-orange-200 dark:border-orange-700">
-                                    <span class="text-xs font-medium text-orange-700 dark:text-orange-300">Want to Pay</span>
+                                    <span class="text-xs font-medium text-orange-700 dark:text-orange-300">Pending Advances</span>
                                     <span class="text-sm font-bold text-orange-600 dark:text-orange-400">LKR{{ number_format($summary['pending_advances'], 2) }}</span>
+                                </div>
+                            @endif
+
+                            <!-- Pay Salary Button -->
+                            @if($summary['salary_paid'])
+                                <div class="w-full mt-4 space-y-2">
+                                    <div class="px-4 py-2.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg font-medium text-sm text-center border-2 border-green-500">
+                                        ✓ Salary Paid This Month
+                                    </div>
+                                    <button wire:click="viewSalarySlip({{ $summary['salary_record_id'] }})" 
+                                            class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                                        📄 View Salary Slip
+                                    </button>
+                                </div>
+                            @elseif($summary['available_salary'] > 0)
+                                <button wire:click="openSalaryPaymentModal({{ $summary['imam']->id }})" 
+                                        class="w-full mt-4 px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-medium text-sm hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                                    💰 Pay Salary Now
+                                </button>
+                            @else
+                                <div class="w-full mt-4 px-4 py-2.5 bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg font-medium text-sm text-center cursor-not-allowed">
+                                    No Available Salary
                                 </div>
                             @endif
                         </div>
@@ -1174,4 +1217,257 @@
             </div>
         </div>
     @endif
+
+    <!-- Salary Payment Modal -->
+    @if($showSalaryPaymentModal)
+        <div class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-4 flex items-center justify-between">
+                    <h3 class="text-white font-bold text-lg">Pay Salary</h3>
+                    <button wire:click="closeSalaryPaymentModal" class="text-white hover:bg-white/20 p-1 rounded transition">✕</button>
+                </div>
+
+                <form wire:submit="paySalary" class="p-6 space-y-4">
+                    <!-- Imam Name (Read-only) -->
+                    @if($paymentImamId)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Imam</label>
+                            <input type="text" value="{{ \App\Models\Imam::find($paymentImamId)?->name }}" disabled
+                                class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300">
+                        </div>
+                    @endif
+
+                    <!-- Amount -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount (LKR)</label>
+                        <input type="number" wire:model="paymentAmount" step="0.01" min="0"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        @error('paymentAmount') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    <!-- Payment Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Date</label>
+                        <input type="date" wire:model="paymentDate"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        @error('paymentDate') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Method</label>
+                        <select wire:model="paymentMethodSalary"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="cash">Cash</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                            <option value="cheque">Cheque</option>
+                            <option value="online">Online</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Transaction ID -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Transaction ID (Optional)</label>
+                        <input type="text" wire:model="paymentTransactionId" placeholder="e.g., TXN123456"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Notes -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes (Optional)</label>
+                        <textarea wire:model="paymentNotes" placeholder="Add any additional notes..." rows="2"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"></textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-2 pt-4">
+                        <button type="button" wire:click="closeSalaryPaymentModal"
+                            class="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold transition">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 font-semibold transition shadow-lg">
+                            Pay Salary
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
+    <!-- Salary Slip Modal -->
+    @if($showSalarySlip && !empty($viewingSalarySlip))
+        <div class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
+                <div class="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-4 flex items-center justify-between">
+                    <h3 class="text-white font-bold text-lg">Salary Payment Slip</h3>
+                    <button wire:click="closeSalarySlip" class="text-white hover:bg-white/20 p-1 rounded transition">✕</button>
+                </div>
+
+                <div class="p-6">
+                    <!-- Print & Download Buttons -->
+                    <div class="mb-4 flex gap-2">
+                        <button onclick="printSalarySlip()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+                            Print
+                        </button>
+                        <button onclick="downloadSalarySlip()" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition">
+                            Download PDF
+                        </button>
+                        <button wire:click="closeSalarySlip" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-400 dark:hover:bg-gray-600 transition">
+                            Close
+                        </button>
+                    </div>
+
+                    <!-- Salary Slip Content -->
+                    <div id="salary-slip-content" style="background:#ffffff;padding:22px;color:#111827;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;max-width:640px;margin:0 auto;">
+                        <div style="text-align:center;margin-bottom:8px;">
+                            <h2 style="font-size:20px;margin:0 0 4px 0;font-weight:700;color:#0f172a;">{{ $viewingSalarySlip['mosque_name'] }}</h2>
+                            <p style="margin:0;color:#6b7280;font-size:13px;">Salary Payment Slip</p>
+                        </div>
+
+                        <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+                            <tr>
+                                <td style="padding:8px 0;color:#374151;width:60%;"><strong>Slip #</strong></td>
+                                <td style="padding:8px 0;text-align:right;color:#111827;">{{ $viewingSalarySlip['slip_number'] }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0;color:#374151;"><strong>Payment Date</strong></td>
+                                <td style="padding:8px 0;text-align:right;color:#111827;">{{ $viewingSalarySlip['payment_date'] }}</td>
+                            </tr>
+                        </table>
+
+                        <hr style="border:none;border-top:1px solid #e6e9ee;margin:12px 0;">
+
+                        <div style="color:#374151;font-size:14px;line-height:1.5;margin-bottom:10px;">
+                            <div><strong>Imam:</strong> {{ $viewingSalarySlip['imam_name'] }}</div>
+                            <div><strong>Phone:</strong> {{ $viewingSalarySlip['imam_phone'] }}</div>
+                            <div><strong>Period:</strong> {{ $viewingSalarySlip['period'] }}</div>
+                        </div>
+
+                        <hr style="border:none;border-top:1px solid #e6e9ee;margin:12px 0;">
+
+                        <!-- Salary Calculation Breakdown -->
+                        <div style="background:#f9fafb;padding:12px;border-radius:4px;margin-bottom:10px;font-size:14px;">
+                            <div style="font-weight:600;color:#111827;margin-bottom:8px;font-size:15px;">Salary Calculation</div>
+                            
+                            <table style="width:100%;border-collapse:collapse;">
+                                <!-- Basic Salary -->
+                                <tr style="border-bottom:1px solid #e5e7eb;">
+                                    <td style="padding:8px 0;color:#374151;">Basic Salary</td>
+                                    <td style="padding:8px 0;text-align:right;color:#059669;font-weight:700;font-size:15px;">LKR{{ number_format($viewingSalarySlip['basic_salary'], 2) }}</td>
+                                </tr>
+
+                                <!-- Allowances if any -->
+                                @if($viewingSalarySlip['house_allowance'] > 0)
+                                    <tr>
+                                        <td style="padding:6px 0 6px 20px;color:#6b7280;font-size:13px;">+ House Allowance</td>
+                                        <td style="padding:6px 0;text-align:right;color:#059669;font-weight:600;">LKR{{ number_format($viewingSalarySlip['house_allowance'], 2) }}</td>
+                                    </tr>
+                                @endif
+                                @if($viewingSalarySlip['transport_allowance'] > 0)
+                                    <tr>
+                                        <td style="padding:6px 0 6px 20px;color:#6b7280;font-size:13px;">+ Transport Allowance</td>
+                                        <td style="padding:6px 0;text-align:right;color:#059669;font-weight:600;">LKR{{ number_format($viewingSalarySlip['transport_allowance'], 2) }}</td>
+                                    </tr>
+                                @endif
+                                @if($viewingSalarySlip['medical_allowance'] > 0)
+                                    <tr>
+                                        <td style="padding:6px 0 6px 20px;color:#6b7280;font-size:13px;">+ Medical Allowance</td>
+                                        <td style="padding:6px 0;text-align:right;color:#059669;font-weight:600;">LKR{{ number_format($viewingSalarySlip['medical_allowance'], 2) }}</td>
+                                    </tr>
+                                @endif
+                                @if($viewingSalarySlip['other_allowances'] > 0)
+                                    <tr>
+                                        <td style="padding:6px 0 6px 20px;color:#6b7280;font-size:13px;">+ Other Allowances</td>
+                                        <td style="padding:6px 0;text-align:right;color:#059669;font-weight:600;">LKR{{ number_format($viewingSalarySlip['other_allowances'], 2) }}</td>
+                                    </tr>
+                                @endif
+
+                                <!-- Advances Deducted -->
+                                @if(!empty($viewingSalarySlip['advances']) && count($viewingSalarySlip['advances']) > 0)
+                                    @foreach($viewingSalarySlip['advances'] as $advance)
+                                        <tr>
+                                            <td style="padding:6px 0 6px 20px;color:#dc2626;font-size:13px;">
+                                                - Advance ({{ $advance['date'] }})
+                                                @if(!empty($advance['purpose']))
+                                                    <br><span style="font-size:11px;color:#991b1b;margin-left:10px;">{{ $advance['purpose'] }}</span>
+                                                @endif
+                                            </td>
+                                            <td style="padding:6px 0;text-align:right;color:#dc2626;font-weight:600;">-LKR{{ number_format($advance['amount'], 2) }}</td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+
+                                <!-- Net Salary -->
+                                <tr style="border-top:2px solid #111827;background:#dcfce7;">
+                                    <td style="padding:12px 8px;color:#14532d;font-weight:700;font-size:16px;">Pay Balance Salary</td>
+                                    <td style="padding:12px 8px;text-align:right;color:#15803d;font-weight:700;font-size:18px;">LKR{{ number_format($viewingSalarySlip['amount'], 2) }}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Payment Details -->
+                        <div style="background:#f3f4f6;padding:10px;border-radius:4px;margin-top:12px;font-size:13px;">
+                            <table style="width:100%;border-collapse:collapse;">
+                                <tr>
+                                    <td style="padding:4px 0;color:#374151;">Payment Method:</td>
+                                    <td style="padding:4px 0;text-align:right;color:#111827;font-weight:600;">{{ $viewingSalarySlip['payment_method'] }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:4px 0;color:#374151;">Transaction ID:</td>
+                                    <td style="padding:4px 0;text-align:right;color:#111827;font-weight:600;">{{ $viewingSalarySlip['transaction_id'] }}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        @if(!empty($viewingSalarySlip['notes']))
+                            <div style="margin-top:8px;font-size:13px;color:#374151;">
+                                <strong>Notes:</strong> {{ $viewingSalarySlip['notes'] }}
+                            </div>
+                        @endif
+
+                        <div style="text-align:left;color:#9ca3af;margin-top:16px;font-size:12px;">
+                            Processed by: {{ $viewingSalarySlip['created_by'] }} | Generated: {{ now()->format('Y-m-d H:i:s') }}
+                        </div>
+                        <div style="text-align:left;color:#9ca3af;font-size:12px;">
+                            This slip is generated by {{ config('app.name') }}.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
+
+<script>
+    function printSalarySlip() {
+        const content = document.getElementById('salary-slip-content');
+        if (!content) return;
+        
+        const printWindow = window.open('', '', 'height=600,width=800');
+        printWindow.document.write('<html><head><title>Salary Slip</title>');
+        printWindow.document.write(content.outerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    function downloadSalarySlip() {
+        const content = document.getElementById('salary-slip-content');
+        if (typeof html2pdf !== 'undefined' && content) {
+            const temp = document.createElement('div');
+            temp.innerHTML = content.innerHTML;
+            html2pdf().from(temp).set({margin:10, filename: 'salary_slip_'+Date.now()+'.pdf', jsPDF:{unit:'pt', format:'a4', orientation:'portrait'}}).save().then(() => temp.remove());
+        } else if (content) {
+            const s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+            document.head.appendChild(s);
+            s.onload = () => { 
+                const temp = document.createElement('div');
+                temp.innerHTML = content.innerHTML;
+                html2pdf().from(temp).set({margin:10, filename: 'salary_slip_'+Date.now()+'.pdf', jsPDF:{unit:'pt', format:'a4', orientation:'portrait'}}).save().then(() => temp.remove());
+            };
+        }
+    }
+</script>

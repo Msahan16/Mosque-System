@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Mosque;
 
+use App\Models\BaithulmalTransaction;
 use App\Models\Imam;
 use App\Models\ImamAvailableDay;
 use App\Models\ImamFinancialRecord;
@@ -47,6 +48,20 @@ class ImamManagement extends Component
     public $showPaymentModal = false;
     public $paymentAdvance;
     public $payment_notes;
+
+    // Salary payment properties
+    public $showSalaryPaymentModal = false;
+    public $paymentImamId;
+    public $paymentAmount;
+    public $paymentDate;
+    public $paymentMethodSalary = 'cash';
+    public $paymentNotes = '';
+    public $paymentTransactionId = '';
+
+    // Salary slip viewing
+    public $showSalarySlip = false;
+    public $viewingSalarySlip = [];
+    public $slipReference = '';
 
     protected $rules = [
         'name' => 'required|string|max:255',
@@ -137,7 +152,19 @@ class ImamManagement extends Component
 
     public function saveImam()
     {
-        $this->validate();
+        // Validate only imam-related fields
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'date_of_birth' => 'nullable|date|before:today',
+            'qualification' => 'nullable|string|max:255',
+            'experience' => 'nullable|string',
+            'monthly_salary' => 'required|numeric|min:0',
+            'status' => 'required|in:active,inactive',
+            'notes' => 'nullable|string',
+        ]);
 
         try {
             $data = [
@@ -272,11 +299,65 @@ class ImamManagement extends Component
             }
 
             if ($this->editingRecord) {
-                ImamFinancialRecord::findOrFail($this->record_id)->update($data);
-                $message = $this->record_type === 'salary' ? 'Salary record updated successfully' : 'Advance payment updated successfully';
+                $record = ImamFinancialRecord::findOrFail($this->record_id);
+                $oldStatus = $record->status;
+                $record->update($data);
+                
+                // Handle Baithulmal transaction based on status changes
+                if ($this->record_status === 'paid') {
+                    if ($record->baithulmalTransaction) {
+                        // Update existing transaction
+                        $record->baithulmalTransaction->update([
+                            'amount' => $this->amount,
+                            'transaction_date' => $this->payment_date ?: $this->record_date,
+                            'payment_method' => $this->payment_method ?: null,
+                            'category' => $this->record_type,
+                            'description' => $this->record_type === 'salary' ? 'Imam Salary Payment' : 'Imam Advance Payment',
+                            'paid_to' => $record->imam->name ?? 'Imam',
+                            'notes' => $this->record_notes,
+                        ]);
+                    } else {
+                        // Create new transaction when status changed to paid
+                        BaithulmalTransaction::create([
+                            'mosque_id' => $record->mosque_id,
+                            'type' => 'expense',
+                            'category' => $this->record_type,
+                            'description' => $this->record_type === 'salary' ? 'Imam Salary Payment' : 'Imam Advance Payment',
+                            'amount' => $this->amount,
+                            'transaction_date' => $this->payment_date ?: $this->record_date,
+                            'payment_method' => $this->payment_method ?: null,
+                            'reference_imam_record_id' => $record->id,
+                            'paid_to' => $record->imam->name ?? 'Imam',
+                            'notes' => $this->record_notes,
+                            'created_by' => auth()->id(),
+                        ]);
+                    }
+                } elseif ($oldStatus === 'paid' && $this->record_status !== 'paid') {
+                    // Delete transaction if status changed from paid to something else
+                    if ($record->baithulmalTransaction) {
+                        $record->baithulmalTransaction->delete();
+                    }
+                }
+                $message = $this->record_type === 'salary' ? 'Salary record updated successfully' : 'Advance record updated successfully';
             } else {
-                ImamFinancialRecord::create($data);
-                $message = $this->record_type === 'salary' ? 'Salary record added successfully' : 'Advance payment requested successfully';
+                $record = ImamFinancialRecord::create($data);
+                // Only create Baithulmal expense transaction if status is paid
+                if ($this->record_status === 'paid') {
+                    BaithulmalTransaction::create([
+                        'mosque_id' => $record->mosque_id,
+                        'type' => 'expense',
+                        'category' => $this->record_type,
+                        'description' => $this->record_type === 'salary' ? 'Imam Salary Payment' : 'Imam Advance Payment',
+                        'amount' => $this->amount,
+                        'transaction_date' => $this->payment_date ?: $this->record_date,
+                        'payment_method' => $this->payment_method ?: null,
+                        'reference_imam_record_id' => $record->id,
+                        'paid_to' => $record->imam->name ?? 'Imam',
+                        'notes' => $this->record_notes,
+                        'created_by' => auth()->id(),
+                    ]);
+                }
+                $message = $this->record_type === 'salary' ? 'Salary record added successfully' : ($this->record_status === 'paid' ? 'Advance paid successfully' : 'Advance request added successfully');
             }
 
             $this->dispatch('swal:success', title: 'Success', text: $message);
@@ -286,27 +367,14 @@ class ImamManagement extends Component
         }
     }
 
-    public function getAvailableSalary($imamId)
-    {
-        $imam = Imam::find($imamId);
-        if (!$imam) return 0;
-
-        $currentMonth = now()->format('Y-m');
-        
-        // Get total advances for current month
-        $monthlyAdvances = ImamFinancialRecord::where('imam_id', $imamId)
-            ->where('type', 'advance')
-            ->where('status', 'paid')
-            ->whereRaw("DATE_FORMAT(record_date, '%Y-%m') = ?", [$currentMonth])
-            ->sum('amount');
-
-        return (float)$imam->monthly_salary - (float)$monthlyAdvances;
-    }
-
     public function deleteRecord($recordId)
     {
         try {
             $record = ImamFinancialRecord::findOrFail($recordId);
+            // Delete associated Baithulmal transaction if exists
+            if ($record->baithulmalTransaction) {
+                $record->baithulmalTransaction->delete();
+            }
             $record->delete();
             $message = $record->type === 'salary' ? 'Salary record deleted successfully' : 'Advance record deleted successfully';
             $this->dispatch('swal:success', title: 'Success', text: $message);
@@ -415,6 +483,23 @@ class ImamManagement extends Component
                 'status' => 'paid',
             ]);
 
+            // Create Baithulmal expense transaction when advance is paid
+            if (!$this->paymentAdvance->baithulmalTransaction) {
+                BaithulmalTransaction::create([
+                    'mosque_id' => $this->paymentAdvance->mosque_id,
+                    'type' => 'expense',
+                    'category' => 'advance',
+                    'description' => 'Imam Advance Payment - ' . ($this->paymentAdvance->imam->name ?? 'Imam'),
+                    'amount' => $this->paymentAdvance->amount,
+                    'transaction_date' => $this->payment_date,
+                    'payment_method' => $this->payment_method ?: null,
+                    'reference_imam_record_id' => $this->paymentAdvance->id,
+                    'paid_to' => $this->paymentAdvance->imam->name ?? 'Imam',
+                    'notes' => $this->payment_notes ?: null,
+                    'created_by' => auth()->id(),
+                ]);
+            }
+
             $this->dispatch('swal:success', title: 'Success', text: 'Advance payment processed successfully');
             $this->closePaymentModal();
         } catch (\Exception $e) {
@@ -511,28 +596,6 @@ class ImamManagement extends Component
             ->orderBy('name')
             ->paginate($this->perPage);
 
-        $salaries = ImamFinancialRecord::where('mosque_id', $mosqueId)
-            ->where('type', 'salary')
-            ->with('imam')
-            ->when($this->search, function($query) {
-                $query->whereHas('imam', function($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%');
-                });
-            })
-            ->orderBy('record_date', 'desc')
-            ->paginate($this->perPage);
-
-        $advances = ImamFinancialRecord::where('mosque_id', $mosqueId)
-            ->where('type', 'advance')
-            ->with('imam')
-            ->when($this->search, function($query) {
-                $query->whereHas('imam', function($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%');
-                });
-            })
-            ->orderBy('record_date', 'desc')
-            ->paginate($this->perPage);
-
         $availableDays = ImamAvailableDay::where('mosque_id', $mosqueId)
             ->with('imam')
             ->when($this->search, function($query) {
@@ -543,11 +606,34 @@ class ImamManagement extends Component
             ->orderBy('start_date', 'desc')
             ->paginate($this->perPage);
 
+        // Get all salary and advance records for the mosque
+        $salaries = ImamFinancialRecord::where('mosque_id', $mosqueId)
+            ->where('type', 'salary')
+            ->orderBy('record_date', 'desc')
+            ->paginate($this->perPage);
+
+        $advances = ImamFinancialRecord::where('mosque_id', $mosqueId)
+            ->where('type', 'advance')
+            ->orderBy('record_date', 'desc')
+            ->paginate($this->perPage);
+
         // Calculate financial summary for salaries tab
         $financialSummary = [];
         $allImams = Imam::where('mosque_id', $mosqueId)->where('status', 'active')->get();
 
         foreach ($allImams as $imam) {
+            // Check if salary already paid this month
+            $salaryRecord = ImamFinancialRecord::where('imam_id', $imam->id)
+                ->where('type', 'salary')
+                ->where('status', 'paid')
+                ->whereRaw("DATE_FORMAT(payment_date, '%Y-%m') = ?", [$currentMonth])
+                ->first();
+
+            $salaryPaid = $salaryRecord !== null;
+
+            $paidSalaryAmount = $salaryRecord ? $salaryRecord->amount : 0;
+            $salaryRecordId = $salaryRecord ? $salaryRecord->id : null;
+
             // Paid advances for current month
             $paidAdvances = ImamFinancialRecord::where('imam_id', $imam->id)
                 ->where('type', 'advance')
@@ -570,6 +656,9 @@ class ImamManagement extends Component
                 'paid_advances' => $paidAdvances,
                 'pending_advances' => $pendingAdvances,
                 'available_salary' => $availableSalary,
+                'salary_paid' => $salaryPaid,
+                'paid_salary_amount' => $paidSalaryAmount,
+                'salary_record_id' => $salaryRecordId,
             ];
         }
 
@@ -580,5 +669,202 @@ class ImamManagement extends Component
             'availableDays' => $availableDays,
             'financialSummary' => $financialSummary,
         ]);
+    }
+
+    public function getAvailableSalary($imamId)
+    {
+        $imam = Imam::find($imamId);
+        if (!$imam) {
+            return 0;
+        }
+
+        $currentMonth = now()->format('Y-m');
+
+        // Paid advances for current month
+        $paidAdvances = ImamFinancialRecord::where('imam_id', $imamId)
+            ->where('type', 'advance')
+            ->where('status', 'paid')
+            ->whereRaw("DATE_FORMAT(record_date, '%Y-%m') = ?", [$currentMonth])
+            ->sum('amount');
+
+        // Available salary = monthly salary - paid advances
+        return $imam->monthly_salary - $paidAdvances;
+    }
+
+    public function openSalaryPaymentModal($imamId)
+    {
+        $imam = Imam::find($imamId);
+        if (!$imam) {
+            $this->dispatch('swal:error', title: 'Error', text: 'Imam not found');
+            return;
+        }
+
+        $this->paymentImamId = $imamId;
+        $this->paymentAmount = $this->getAvailableSalary($imamId);
+        $this->paymentDate = now()->format('Y-m-d');
+        $this->paymentMethodSalary = 'cash';
+        $this->paymentNotes = '';
+        $this->paymentTransactionId = '';
+        $this->showSalaryPaymentModal = true;
+    }
+
+    public function closeSalaryPaymentModal()
+    {
+        $this->showSalaryPaymentModal = false;
+        $this->paymentImamId = null;
+        $this->paymentAmount = 0;
+        $this->paymentDate = '';
+        $this->paymentMethodSalary = 'cash';
+        $this->paymentNotes = '';
+        $this->paymentTransactionId = '';
+    }
+
+    public function paySalary()
+    {
+        try {
+            // Validate inputs
+            $this->validate([
+                'paymentImamId' => 'required|exists:imams,id',
+                'paymentAmount' => 'required|numeric|min:0.01',
+                'paymentDate' => 'required|date',
+                'paymentMethodSalary' => 'required|in:cash,bank_transfer,cheque,online,other',
+            ], [
+                'paymentAmount.required' => 'Payment amount is required',
+                'paymentAmount.min' => 'Payment amount must be greater than 0',
+                'paymentDate.required' => 'Payment date is required',
+            ]);
+
+            $imam = Imam::find($this->paymentImamId);
+            if (!$imam) {
+                $this->dispatch('swal:error', title: 'Error', text: 'Imam not found');
+                return;
+            }
+
+            // Check if salary already paid this month
+            $currentMonth = now()->format('Y-m');
+            $alreadyPaid = ImamFinancialRecord::where('imam_id', $this->paymentImamId)
+                ->where('type', 'salary')
+                ->where('status', 'paid')
+                ->whereRaw("DATE_FORMAT(payment_date, '%Y-%m') = ?", [$currentMonth])
+                ->exists();
+
+            if ($alreadyPaid) {
+                $this->dispatch('swal:error', title: 'Already Paid', text: 'Salary for this month has already been paid to this imam');
+                return;
+            }
+
+            // Create salary payment record
+            $record = ImamFinancialRecord::create([
+                'imam_id' => $this->paymentImamId,
+                'mosque_id' => auth()->user()->mosque->id,
+                'type' => 'salary',
+                'amount' => $this->paymentAmount,
+                'record_date' => $this->paymentDate,
+                'payment_date' => $this->paymentDate,
+                'payment_method' => $this->paymentMethodSalary,
+                'transaction_id' => $this->paymentTransactionId ?: null,
+                'notes' => $this->paymentNotes ?: null,
+                'status' => 'paid',
+                'basic_salary' => $imam->monthly_salary,
+                'house_allowance' => 0,
+                'transport_allowance' => 0,
+                'medical_allowance' => 0,
+                'other_allowances' => 0,
+            ]);
+
+            // Create Baithulmal transaction
+            BaithulmalTransaction::create([
+                'mosque_id' => auth()->user()->mosque->id,
+                'type' => 'expense',
+                'category' => 'salary',
+                'description' => 'Imam Salary Payment - ' . $imam->name,
+                'amount' => $this->paymentAmount,
+                'transaction_date' => $this->paymentDate,
+                'payment_method' => $this->paymentMethodSalary ?: null,
+                'reference_imam_record_id' => $record->id,
+                'paid_to' => $imam->name,
+                'notes' => $this->paymentNotes ?: null,
+                'created_by' => auth()->id(),
+            ]);
+
+            // Close modal first
+            $this->closeSalaryPaymentModal();
+
+            // Show success and view slip
+            $this->dispatch('swal:success', title: 'Success', text: 'Salary payment recorded successfully');
+            
+            // View the salary slip
+            $this->viewSalarySlip($record->id);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Let validation errors show naturally
+            throw $e;
+        } catch (\Exception $e) {
+            $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
+        }
+    }
+
+    public function viewSalarySlip($recordId)
+    {
+        try {
+            $record = ImamFinancialRecord::with('imam')->findOrFail($recordId);
+            
+            // Get advances paid in the same month as salary payment
+            $paymentMonth = $record->payment_date?->format('Y-m');
+            $advances = ImamFinancialRecord::where('imam_id', $record->imam_id)
+                ->where('type', 'advance')
+                ->where('status', 'paid')
+                ->whereRaw("DATE_FORMAT(record_date, '%Y-%m') = ?", [$paymentMonth])
+                ->get()
+                ->map(function($adv) {
+                    return [
+                        'date' => $adv->record_date?->format('Y-m-d'),
+                        'amount' => $adv->amount,
+                        'purpose' => $adv->purpose ?? 'Advance',
+                        'reason' => $adv->reason ?? '',
+                    ];
+                })
+                ->toArray();
+            
+            $totalAdvances = array_sum(array_column($advances, 'amount'));
+            $monthlySalary = $record->imam->monthly_salary ?? 0;
+            $grossSalary = $monthlySalary + ($record->house_allowance ?? 0) + 
+                          ($record->transport_allowance ?? 0) + ($record->medical_allowance ?? 0) + 
+                          ($record->other_allowances ?? 0);
+            
+            $this->viewingSalarySlip = [
+                'slip_number' => 'SAL-' . str_pad($record->id, 5, '0', STR_PAD_LEFT),
+                'imam_name' => $record->imam->name,
+                'imam_phone' => $record->imam->phone,
+                'mosque_name' => $record->imam->mosque->name ?? 'Mosque',
+                'monthly_salary' => $monthlySalary,
+                'gross_salary' => $grossSalary,
+                'amount' => $record->amount,
+                'basic_salary' => $monthlySalary,
+                'house_allowance' => $record->house_allowance ?? 0,
+                'transport_allowance' => $record->transport_allowance ?? 0,
+                'medical_allowance' => $record->medical_allowance ?? 0,
+                'other_allowances' => $record->other_allowances ?? 0,
+                'payment_date' => $record->payment_date?->format('Y-m-d'),
+                'record_date' => $record->record_date?->format('Y-m-d'),
+                'payment_method' => ucfirst($record->payment_method ?? 'cash'),
+                'transaction_id' => $record->transaction_id ?? 'N/A',
+                'notes' => $record->notes ?? '',
+                'created_by' => auth()->user()->name,
+                'advances' => $advances,
+                'total_advances' => $totalAdvances,
+                'period' => $record->payment_date?->format('F Y') ?? now()->format('F Y'),
+            ];
+            
+            $this->showSalarySlip = true;
+        } catch (\Exception $e) {
+            $this->dispatch('swal:error', title: 'Error', text: 'Could not load salary slip');
+        }
+    }
+
+    public function closeSalarySlip()
+    {
+        $this->showSalarySlip = false;
+        $this->viewingSalarySlip = [];
     }
 }

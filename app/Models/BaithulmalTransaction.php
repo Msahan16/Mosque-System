@@ -22,6 +22,7 @@ class BaithulmalTransaction extends Model
         'reference_donation_id',
         'reference_santha_id',
         'reference_porridge_id',
+        'reference_imam_record_id',
         'paid_to',
         'received_from',
         'notes',
@@ -75,6 +76,14 @@ class BaithulmalTransaction extends Model
     public function porridge(): BelongsTo
     {
         return $this->belongsTo(PorridgeSponsor::class, 'reference_porridge_id');
+    }
+
+    /**
+     * Get the imam financial record that references this transaction.
+     */
+    public function imamRecord(): BelongsTo
+    {
+        return $this->belongsTo(ImamFinancialRecord::class, 'reference_imam_record_id');
     }
 
     /**
