@@ -83,10 +83,11 @@
         }
         
         .mosque-bg {
-            background-color: #1a4d7a;
-            background-image: url("{{ asset('images/mosque2.jpg') }}");
+            background-color: #0a1929;
+            background-image: url("{{ asset('images/mqss.jpg') }}");
             background-size: cover;
-            background-position: center;
+            background-position: center bottom;
+            background-repeat: no-repeat;
             background-attachment: fixed;
         }
         
