@@ -125,27 +125,65 @@
                 </div>
             </div>
 
-            <!-- Pending Payments -->
+            <!-- Baithulmal Summary -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
-                <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
-                    <h3 class="text-lg font-bold text-white">Pending Payments</h3>
-                    <p class="text-purple-100 text-sm mt-1">Unpaid santhas</p>
+                <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4">
+                    <h3 class="text-lg font-bold text-white">Baithulmal Summary</h3>
+                    <p class="text-emerald-100 text-sm mt-1">Financial overview</p>
                 </div>
+                
+                <!-- Summary Cards -->
+                <div class="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-b border-emerald-200 dark:border-emerald-800">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="text-center">
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mb-1">Income</p>
+                            <p class="text-sm font-bold text-emerald-600 dark:text-emerald-400">LKR{{ number_format($baithulmalSummary['totalIncome'], 0) }}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mb-1">Expense</p>
+                            <p class="text-sm font-bold text-red-600 dark:text-red-400">LKR{{ number_format($baithulmalSummary['totalExpense'], 0) }}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mb-1">Balance</p>
+                            <p class="text-sm font-bold {{ $baithulmalSummary['currentBalance'] >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400' }}">
+                                LKR{{ number_format($baithulmalSummary['currentBalance'], 0) }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
                 <div class="divide-y divide-slate-200 dark:divide-slate-700 max-h-96 overflow-y-auto">
-                    @forelse($upcomingSanthas as $santha)
+                    @forelse($recentBaithulmalTransactions as $transaction)
                         <div class="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                            <h4 class="font-bold text-slate-900 dark:text-white">{{ $santha->family->family_head_name }}</h4>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">{{ $santha->month }} {{ $santha->year }}</p>
-                            <div class="flex items-center justify-between mt-2">
-                                <span class="px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                    Unpaid
-                                </span>
-                                <span class="font-bold text-purple-600 dark:text-purple-400">LKR{{ number_format($santha->amount, 0) }}</span>
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="px-2 py-0.5 rounded text-xs font-medium {{ $transaction->type === 'income' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $transaction->type === 'income' ? '↑ Income' : '↓ Expense' }}
+                                        </span>
+                                        <span class="text-xs text-slate-500 dark:text-slate-400">{{ $transaction->category }}</span>
+                                    </div>
+                                    <h4 class="font-semibold text-slate-900 dark:text-white text-sm">
+                                        {{ $transaction->description ?: ($transaction->type === 'income' ? 'Income' : 'Expense') }}
+                                    </h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                        {{ $transaction->transaction_date->format('M d, Y') }}
+                                    </p>
+                                </div>
+                                <div class="text-right ml-4">
+                                    <p class="font-bold {{ $transaction->type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">
+                                        {{ $transaction->type === 'income' ? '+' : '-' }}LKR{{ number_format($transaction->amount, 0) }}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     @empty
                         <div class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
-                            <p>All paid! ✨</p>
+                            <svg class="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <p>No transactions yet</p>
                         </div>
                     @endforelse
                 </div>

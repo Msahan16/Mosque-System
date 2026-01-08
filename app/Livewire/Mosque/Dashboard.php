@@ -5,6 +5,7 @@ namespace App\Livewire\Mosque;
 use App\Models\Family;
 use App\Models\Donation;
 use App\Models\Santha;
+use App\Models\BaithulmalTransaction;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 
@@ -45,17 +46,32 @@ class Dashboard extends Component
             ->take(5)
             ->get();
 
-        $upcomingSanthas = Santha::where('mosque_id', $user->mosque_id)
-            ->where('is_paid', false)
-            ->orderBy('year', 'desc')
-            ->orderBy('month', 'desc')
+        // Get recent Baithulmal transactions
+        $recentBaithulmalTransactions = BaithulmalTransaction::where('mosque_id', $user->mosque_id)
+            ->latest('transaction_date')
             ->take(5)
             ->get();
+
+        // Calculate Baithulmal summary
+        $totalIncome = BaithulmalTransaction::where('mosque_id', $user->mosque_id)
+            ->where('type', 'income')
+            ->sum('amount');
+        
+        $totalExpense = BaithulmalTransaction::where('mosque_id', $user->mosque_id)
+            ->where('type', 'expense')
+            ->sum('amount');
+        
+        $currentBalance = $totalIncome - $totalExpense;
         
         return view('livewire.mosque.dashboard', [
             'recentFamilies' => $recentFamilies,
             'recentDonations' => $recentDonations,
-            'upcomingSanthas' => $upcomingSanthas,
+            'recentBaithulmalTransactions' => $recentBaithulmalTransactions,
+            'baithulmalSummary' => [
+                'totalIncome' => $totalIncome,
+                'totalExpense' => $totalExpense,
+                'currentBalance' => $currentBalance,
+            ],
         ]);
     }
 }
