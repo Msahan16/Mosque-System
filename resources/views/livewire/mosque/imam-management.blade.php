@@ -8,52 +8,58 @@
                 <h2 class="text-2xl sm:text-3xl font-bold text-white dark:text-white">Imam Management</h2>
                 <p class="text-white/80 dark:text-gray-400 mt-1 text-sm sm:text-base">Manage imams, salaries, advances, and availability schedules</p>
             </div>
-            <div class="flex gap-2 w-full sm:w-auto">
-                <button wire:click="openImamModal" class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition shadow-lg text-sm sm:text-base">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
+                <button wire:click="openImamModal" class="inline-flex items-center justify-center px-3 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition shadow-lg text-xs sm:text-base">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
-                    Add Imam
+                    <span class="hidden sm:inline">Add Imam</span>
+                    <span class="sm:hidden ml-1">Imam</span>
                 </button>
-                <button wire:click="openSalaryModal" class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition shadow-lg text-sm sm:text-base">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button wire:click="openSalaryModal" class="inline-flex items-center justify-center px-3 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition shadow-lg text-xs sm:text-base">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    Record Salary
+                    <span class="hidden sm:inline">Record Salary</span>
+                    <span class="sm:hidden ml-1">Salary</span>
                 </button>
-                <button wire:click="openAdvanceModal" class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-indigo-700 transition shadow-lg text-sm sm:text-base">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button wire:click="openAdvanceModal" class="inline-flex items-center justify-center px-3 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-indigo-700 transition shadow-lg text-xs sm:text-base">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
-                    Request Advance
+                    <span class="hidden sm:inline">Request Advance</span>
+                    <span class="sm:hidden ml-1">Advance</span>
                 </button>
-                <button wire:click="openDaysModal" class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white font-semibold rounded-lg hover:from-orange-700 hover:to-red-700 transition shadow-lg text-sm sm:text-base">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button wire:click="openDaysModal" class="inline-flex items-center justify-center px-3 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white font-semibold rounded-lg hover:from-orange-700 hover:to-red-700 transition shadow-lg text-xs sm:text-base">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
-                    Add Availability
+                    <span class="hidden sm:inline">Add Availability</span>
+                    <span class="sm:hidden ml-1">Schedule</span>
                 </button>
             </div>
         </div>
 
         <!-- Type Filter Tabs -->
-        <div class="mb-6 flex gap-2 border-b border-gray-300 dark:border-gray-700">
-            <button wire:click="$set('activeTab', 'imams')"
-                class="px-4 py-3 font-medium text-sm text-white transition {{ $activeTab === 'imams' ? 'border-b-2 border-blue-600 dark:border-blue-400' : 'hover:opacity-80' }}">
-                👥 Imams
-            </button>
-            <button wire:click="$set('activeTab', 'salaries')"
-                class="px-4 py-3 font-medium text-sm text-white transition {{ $activeTab === 'salaries' ? 'border-b-2 border-green-600 dark:border-green-400' : 'hover:opacity-80' }}">
-                💰 Salaries
-            </button>
-            <button wire:click="$set('activeTab', 'advances')"
-                class="px-4 py-3 font-medium text-sm text-white transition {{ $activeTab === 'advances' ? 'border-b-2 border-purple-600 dark:border-purple-400' : 'hover:opacity-80' }}">
-                🤝 Advances
-            </button>
-            <button wire:click="$set('activeTab', 'availability')"
-                class="px-4 py-3 font-medium text-sm text-white transition {{ $activeTab === 'availability' ? 'border-b-2 border-orange-600 dark:border-orange-400' : 'hover:opacity-80' }}">
-                📅 Availability
-            </button>
+        <div class="mb-6 overflow-x-auto border-b border-gray-300 dark:border-gray-700">
+            <div class="flex gap-2 min-w-max">
+                <button wire:click="$set('activeTab', 'imams')"
+                    class="px-3 sm:px-4 py-2.5 sm:py-3 font-medium text-xs sm:text-sm text-white transition whitespace-nowrap {{ $activeTab === 'imams' ? 'border-b-2 border-blue-600 dark:border-blue-400' : 'hover:opacity-80' }}">
+                    👥 Imams
+                </button>
+                <button wire:click="$set('activeTab', 'salaries')"
+                    class="px-3 sm:px-4 py-2.5 sm:py-3 font-medium text-xs sm:text-sm text-white transition whitespace-nowrap {{ $activeTab === 'salaries' ? 'border-b-2 border-green-600 dark:border-green-400' : 'hover:opacity-80' }}">
+                    💰 Salaries
+                </button>
+                <button wire:click="$set('activeTab', 'advances')"
+                    class="px-3 sm:px-4 py-2.5 sm:py-3 font-medium text-xs sm:text-sm text-white transition whitespace-nowrap {{ $activeTab === 'advances' ? 'border-b-2 border-purple-600 dark:border-purple-400' : 'hover:opacity-80' }}">
+                    🤝 Advances
+                </button>
+                <button wire:click="$set('activeTab', 'availability')"
+                    class="px-3 sm:px-4 py-2.5 sm:py-3 font-medium text-xs sm:text-sm text-white transition whitespace-nowrap {{ $activeTab === 'availability' ? 'border-b-2 border-orange-600 dark:border-orange-400' : 'hover:opacity-80' }}">
+                    📅 Availability
+                </button>
+            </div>
         </div>
 
         <!-- Filters -->
@@ -86,121 +92,121 @@
 
         <!-- Statistics Cards -->
         @if($activeTab === 'imams')
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-blue-100 text-sm font-medium">Total Imams</span>
-                        <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-blue-100 text-xs sm:text-sm font-medium">Total Imams</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">{{ $imams->total() }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ $imams->total() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-green-100 text-sm font-medium">Active Imams</span>
-                        <svg class="w-8 h-8 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-green-100 text-xs sm:text-sm font-medium">Active Imams</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">{{ $imams->where('status', 'active')->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ $imams->where('status', 'active')->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-orange-100 text-sm font-medium">Inactive Imams</span>
-                        <svg class="w-8 h-8 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-orange-100 text-xs sm:text-sm font-medium">Inactive Imams</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">{{ $imams->where('status', 'inactive')->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ $imams->where('status', 'inactive')->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-purple-500 to-indigo-500 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-purple-100 text-sm font-medium">Total Salary Budget</span>
-                        <svg class="w-8 h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-br from-purple-500 to-indigo-500 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-purple-100 text-xs sm:text-sm font-medium">Total Salary Budget</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">LKR{{ number_format($imams->sum('monthly_salary'), 0) }}</p>
+                    <p class="text-xl sm:text-3xl font-bold">LKR{{ number_format($imams->sum('monthly_salary'), 0) }}</p>
                 </div>
             </div>
         
         @elseif($activeTab === 'advances')
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-purple-100 text-sm font-medium">Total Advances</span>
-                        <svg class="w-8 h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
+                <div class="bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-purple-100 text-xs sm:text-sm font-medium">Total Advances</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">LKR{{ number_format($advances->sum('amount'), 0) }}</p>
+                    <p class="text-xl sm:text-3xl font-bold">LKR{{ number_format($advances->sum('amount'), 0) }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-green-100 text-sm font-medium">Paid Advances</span>
-                        <svg class="w-8 h-8 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-green-100 text-xs sm:text-sm font-medium">Paid Advances</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">{{ $advances->where('status', 'paid')->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ $advances->where('status', 'paid')->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-yellow-500 to-orange-500 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-yellow-100 text-sm font-medium">Pending Advances</span>
-                        <svg class="w-8 h-8 text-yellow-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-br from-yellow-500 to-orange-500 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-yellow-100 text-xs sm:text-sm font-medium">Pending Advances</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">{{ $advances->where('status', 'pending')->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ $advances->where('status', 'pending')->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-blue-100 text-sm font-medium">Approved Advances</span>
-                        <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-blue-100 text-xs sm:text-sm font-medium">Approved Advances</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">{{ $advances->where('status', 'approved')->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ $advances->where('status', 'approved')->count() }}</p>
                 </div>
             </div>
         @elseif($activeTab === 'availability')
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-orange-100 text-sm font-medium">Total Schedules</span>
-                        <svg class="w-8 h-8 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
+                <div class="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-orange-100 text-xs sm:text-sm font-medium">Total Schedules</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">{{ $availableDays->total() }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ $availableDays->total() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-green-100 text-sm font-medium">Available Slots</span>
-                        <svg class="w-8 h-8 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-green-100 text-xs sm:text-sm font-medium">Available Slots</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">{{ $availableDays->where('is_available', true)->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ $availableDays->where('is_available', true)->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-red-500 to-pink-500 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-red-100 text-sm font-medium">Unavailable Slots</span>
-                        <svg class="w-8 h-8 text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-br from-red-500 to-pink-500 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-red-100 text-xs sm:text-sm font-medium">Unavailable Slots</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">{{ $availableDays->where('is_available', false)->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ $availableDays->where('is_available', false)->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-blue-100 text-sm font-medium">Active Imams</span>
-                        <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl p-3 sm:p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="text-blue-100 text-xs sm:text-sm font-medium">Active Imams</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
-                    <p class="text-3xl font-bold">{{ $availableDays->unique('imam_id')->count() }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ $availableDays->unique('imam_id')->count() }}</p>
                 </div>
             </div>
         @endif
@@ -282,9 +288,9 @@
         <!-- Salaries Tab -->
         @if($activeTab === 'salaries')
             <!-- Financial Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 @forelse($financialSummary as $summary)
-                    <div class="bg-gradient-to-br from-green-200 to-emerald-200 dark:from-green-800 dark:to-emerald-800 rounded-xl p-6 border border-green-300 dark:border-green-700 shadow-lg text-gray-900 dark:text-white relative">
+                    <div class="bg-gradient-to-br from-green-200 to-emerald-200 dark:from-green-800 dark:to-emerald-800 rounded-xl p-4 sm:p-6 border border-green-300 dark:border-green-700 shadow-lg text-gray-900 dark:text-white relative">
                         <!-- Paid Badge -->
                         @if($summary['salary_paid'])
                             <div class="absolute top-3 right-3">
