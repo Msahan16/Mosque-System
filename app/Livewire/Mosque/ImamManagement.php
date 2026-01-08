@@ -7,6 +7,7 @@ use App\Models\Imam;
 use App\Models\ImamAvailableDay;
 use App\Models\ImamFinancialRecord;
 use App\Models\Mosque;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -168,7 +169,7 @@ class ImamManagement extends Component
 
         try {
             $data = [
-                'mosque_id' => auth()->user()->mosque->id,
+                'mosque_id' => Auth::user()->mosque->id,
                 'name' => $this->name,
                 'email' => $this->email ?: null,
                 'phone' => $this->phone ?: null,
@@ -272,7 +273,7 @@ class ImamManagement extends Component
         try {
             $data = [
                 'imam_id' => $this->imam_id_record,
-                'mosque_id' => auth()->user()->mosque->id,
+                'mosque_id' => Auth::user()->mosque->id,
                 'type' => $this->record_type,
                 'amount' => $this->amount,
                 'record_date' => $this->record_date,
@@ -329,7 +330,7 @@ class ImamManagement extends Component
                             'reference_imam_record_id' => $record->id,
                             'paid_to' => $record->imam->name ?? 'Imam',
                             'notes' => $this->record_notes,
-                            'created_by' => auth()->id(),
+                            'created_by' => Auth::id(),
                         ]);
                     }
                 } elseif ($oldStatus === 'paid' && $this->record_status !== 'paid') {
@@ -354,7 +355,7 @@ class ImamManagement extends Component
                         'reference_imam_record_id' => $record->id,
                         'paid_to' => $record->imam->name ?? 'Imam',
                         'notes' => $this->record_notes,
-                        'created_by' => auth()->id(),
+                        'created_by' => Auth::id(),
                     ]);
                 }
                 $message = $this->record_type === 'salary' ? 'Salary record added successfully' : ($this->record_status === 'paid' ? 'Advance paid successfully' : 'Advance request added successfully');
@@ -417,7 +418,7 @@ class ImamManagement extends Component
         try {
             $data = [
                 'imam_id' => $this->imam_id_day,
-                'mosque_id' => auth()->user()->mosque->id,
+                'mosque_id' => Auth::user()->mosque->id,
                 'day_of_week' => 'period', // Default value since it's required in DB
                 'is_available' => $this->is_available,
                 'specific_date' => null,
@@ -496,7 +497,7 @@ class ImamManagement extends Component
                     'reference_imam_record_id' => $this->paymentAdvance->id,
                     'paid_to' => $this->paymentAdvance->imam->name ?? 'Imam',
                     'notes' => $this->payment_notes ?: null,
-                    'created_by' => auth()->id(),
+                    'created_by' => Auth::id(),
                 ]);
             }
 
@@ -584,7 +585,7 @@ class ImamManagement extends Component
 
     public function render()
     {
-        $mosqueId = auth()->user()->mosque->id;
+        $mosqueId = Auth::user()->mosque->id;
         $currentMonth = now()->format('Y-m');
 
         $imams = Imam::where('mosque_id', $mosqueId)
@@ -756,7 +757,7 @@ class ImamManagement extends Component
             // Create salary payment record
             $record = ImamFinancialRecord::create([
                 'imam_id' => $this->paymentImamId,
-                'mosque_id' => auth()->user()->mosque->id,
+                'mosque_id' => Auth::user()->mosque->id,
                 'type' => 'salary',
                 'amount' => $this->paymentAmount,
                 'record_date' => $this->paymentDate,
@@ -774,7 +775,7 @@ class ImamManagement extends Component
 
             // Create Baithulmal transaction
             BaithulmalTransaction::create([
-                'mosque_id' => auth()->user()->mosque->id,
+                'mosque_id' => Auth::user()->mosque->id,
                 'type' => 'expense',
                 'category' => 'salary',
                 'description' => 'Imam Salary Payment - ' . $imam->name,
@@ -784,7 +785,7 @@ class ImamManagement extends Component
                 'reference_imam_record_id' => $record->id,
                 'paid_to' => $imam->name,
                 'notes' => $this->paymentNotes ?: null,
-                'created_by' => auth()->id(),
+                'created_by' => Auth::id(),
             ]);
 
             // Close modal first
@@ -850,7 +851,7 @@ class ImamManagement extends Component
                 'payment_method' => ucfirst($record->payment_method ?? 'cash'),
                 'transaction_id' => $record->transaction_id ?? 'N/A',
                 'notes' => $record->notes ?? '',
-                'created_by' => auth()->user()->name,
+                'created_by' => Auth::user()->name,
                 'advances' => $advances,
                 'total_advances' => $totalAdvances,
                 'period' => $record->payment_date?->format('F Y') ?? now()->format('F Y'),
