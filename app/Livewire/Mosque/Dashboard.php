@@ -6,6 +6,10 @@ use App\Models\Family;
 use App\Models\Donation;
 use App\Models\Santha;
 use App\Models\BaithulmalTransaction;
+use App\Models\DashboardPreference;
+use App\Models\Student;
+use App\Models\PorridgeSponsor;
+use App\Models\Imam;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 
@@ -17,6 +21,12 @@ class Dashboard extends Component
     public $totalMembers;
     public $totalDonations;
     public $todaySanthas;
+    
+    // Customization properties
+    public $showCustomizeModal = false;
+    public $availableCards = [];
+    public $visibleCards = [];
+    public $cardPositions = [];
 
     public function mount()
     {
@@ -31,6 +41,120 @@ class Dashboard extends Component
             ->whereYear('payment_date', now()->year)
             ->where('is_paid', true)
             ->count();
+        
+        // Define all available dashboard cards
+        $this->availableCards = $this->getAvailableCards();
+        
+        // Load user preferences
+        $this->loadPreferences();
+    }
+
+    public function getAvailableCards()
+    {
+        return [
+            'families' => ['name' => 'Total Families', 'icon' => 'users', 'color' => 'blue'],
+            'members' => ['name' => 'Total Members', 'icon' => 'user-group', 'color' => 'emerald'],
+            'donations' => ['name' => 'Total Donations', 'icon' => 'currency', 'color' => 'cyan'],
+            'santhas_paid' => ['name' => 'This Month Paid', 'icon' => 'check', 'color' => 'purple'],
+            'recent_families' => ['name' => 'Recent Families', 'icon' => 'list', 'color' => 'blue', 'type' => 'list'],
+            'recent_donations' => ['name' => 'Recent Donations', 'icon' => 'list', 'color' => 'cyan', 'type' => 'list'],
+            'baithulmal_summary' => ['name' => 'Baithulmal Summary', 'icon' => 'wallet', 'color' => 'emerald', 'type' => 'list'],
+            'students_count' => ['name' => 'Madrasa Students', 'icon' => 'academic-cap', 'color' => 'indigo'],
+            'porridge_sponsors' => ['name' => 'Porridge Sponsors', 'icon' => 'gift', 'color' => 'orange'],
+            'active_imams' => ['name' => 'Active Imams', 'icon' => 'user', 'color' => 'teal'],
+        ];
+    }
+
+    public function loadPreferences()
+    {
+        $user = auth()->user();
+        $preference = DashboardPreference::where('user_id', $user->id)->first();
+        
+        if ($preference) {
+            $this->visibleCards = $preference->visible_cards ?? $this->getDefaultVisibleCards();
+            $this->cardPositions = $preference->card_positions ?? array_keys($this->availableCards);
+        } else {
+            // Default: show first 7 cards
+            $this->visibleCards = $this->getDefaultVisibleCards();
+            $this->cardPositions = array_keys($this->availableCards);
+        }
+    }
+
+    public function getDefaultVisibleCards()
+    {
+        // Return first 7 cards by default
+        return array_slice(array_keys($this->availableCards), 0, 7);
+    }
+
+    public function openCustomizeModal()
+    {
+        $this->showCustomizeModal = true;
+    }
+
+    public function closeCustomizeModal()
+    {
+        $this->showCustomizeModal = false;
+    }
+
+    public function toggleCard($cardId)
+    {
+        if (in_array($cardId, $this->visibleCards)) {
+            // Remove card
+            $this->visibleCards = array_values(array_diff($this->visibleCards, [$cardId]));
+        } else {
+            // Check if already at maximum (7 cards) - prevent action
+            if (count($this->visibleCards) >= 7) {
+                return; // Silently prevent - UI already shows disabled state
+            }
+            $this->visibleCards[] = $cardId;
+        }
+    }
+
+    public function moveCardUp($cardId)
+    {
+        $index = array_search($cardId, $this->cardPositions);
+        if ($index > 0) {
+            $temp = $this->cardPositions[$index - 1];
+            $this->cardPositions[$index - 1] = $this->cardPositions[$index];
+            $this->cardPositions[$index] = $temp;
+        }
+    }
+
+    public function moveCardDown($cardId)
+    {
+        $index = array_search($cardId, $this->cardPositions);
+        if ($index < count($this->cardPositions) - 1) {
+            $temp = $this->cardPositions[$index + 1];
+            $this->cardPositions[$index + 1] = $this->cardPositions[$index];
+            $this->cardPositions[$index] = $temp;
+        }
+    }
+
+    public function savePreferences()
+    {
+        $user = auth()->user();
+        
+        DashboardPreference::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'visible_cards' => $this->visibleCards,
+                'card_positions' => $this->cardPositions,
+            ]
+        );
+        
+        $this->dispatch('swal:success', [
+            'title' => 'Saved!',
+            'text' => 'Dashboard preferences saved successfully.',
+        ]);
+        
+        $this->closeCustomizeModal();
+    }
+
+    public function resetToDefault()
+    {
+        $this->visibleCards = $this->getDefaultVisibleCards(); // First 7 cards
+        $this->cardPositions = array_keys($this->availableCards);
+        $this->savePreferences();
     }
 
     public function render()
@@ -63,6 +187,11 @@ class Dashboard extends Component
         
         $currentBalance = $totalIncome - $totalExpense;
         
+        // Additional stats for new cards
+        $studentsCount = Student::where('mosque_id', $user->mosque_id)->count();
+        $porridgeSponsorsCount = PorridgeSponsor::where('mosque_id', $user->mosque_id)->count();
+        $activeImamsCount = Imam::where('mosque_id', $user->mosque_id)->where('status', 'active')->count();
+        
         return view('livewire.mosque.dashboard', [
             'recentFamilies' => $recentFamilies,
             'recentDonations' => $recentDonations,
@@ -72,6 +201,9 @@ class Dashboard extends Component
                 'totalExpense' => $totalExpense,
                 'currentBalance' => $currentBalance,
             ],
+            'studentsCount' => $studentsCount,
+            'porridgeSponsorsCount' => $porridgeSponsorsCount,
+            'activeImamsCount' => $activeImamsCount,
         ]);
     }
 }
