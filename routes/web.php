@@ -67,7 +67,7 @@ Route::middleware([
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         }
-        if ($user->isMosque()) {
+        if ($user->isMosque() || $user->isStaff()) {
             return redirect()->route('mosque.dashboard');
         }
 
@@ -93,7 +93,7 @@ Route::middleware([
         Route::get('/madrasa', \App\Livewire\Mosque\Madrasa::class)->name('madrasa')->middleware('staff.permission:students');
         Route::get('/imam-management', \App\Livewire\Mosque\ImamManagement::class)->name('imam-management')->middleware('staff.permission:imam');
         Route::get('/ramadan-porridge', \App\Livewire\Mosque\RamadanPorridge::class)->name('ramadan-porridge')->middleware('staff.permission:porridge');
-        Route::get('/staff-management', StaffManagement::class)->name('staff-management')->middleware('staff.permission:settings');
+        Route::get('/staff-management', StaffManagement::class)->name('staff-management')->middleware('staff.permission:board');
         Route::get('/reports', Reports::class)->name('reports')->middleware('staff.permission:dashboard');
     });
 });

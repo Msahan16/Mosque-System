@@ -20,6 +20,7 @@ class StaffManagement extends Component
     public $showViewModal = false;
     public $viewStaffId;
     public $staffDetails = null;
+    public $isEditingAdmin = false;
 
     // Form fields
     public $name;
@@ -29,19 +30,43 @@ class StaffManagement extends Component
     public $phone;
     public $is_active = true;
     public $selectedPermissions = [];
+    public $board_role = 'member';
+    public $custom_board_role;
+    public $term_year;
+    public $selectedYear;
+
+    public $boardRoles = [
+        'admin' => 'Masjid Administrator',
+        'president' => 'Head (President)',
+        'secretary' => 'Secretary',
+        'treasurer' => 'Treasurer',
+        'member' => 'Other Member'
+    ];
 
     protected $rules = [
         'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255',
-        'password' => 'nullable|string|min:6|confirmed',
+        'email' => 'required|email|max:255|unique:users,email',
+        'password' => 'required|string|min:6',
         'phone' => 'nullable|string|max:20',
         'is_active' => 'boolean',
         'selectedPermissions' => 'array',
+        'board_role' => 'required|in:president,secretary,treasurer,member',
+        'custom_board_role' => 'nullable|string|max:255',
+        'term_year' => 'required|integer',
     ];
 
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
+    }
+
+    public function updatedIsActive($value)
+    {
+        if ($value && empty($this->selectedPermissions)) {
+            $this->grantAllPermissions();
+        } elseif (!$value) {
+            $this->removeAllPermissions();
+        }
     }
 
     public function mount($mosqueId = null)
@@ -54,20 +79,48 @@ class StaffManagement extends Component
         } else {
             abort(403, 'Unable to determine mosque.');
         }
+
+        $this->term_year = date('Y');
+        $this->selectedYear = date('Y');
     }
 
     public function render()
     {
         $staff = User::where('mosque_id', $this->mosqueId)
             ->where('role', 'staff')
-            ->orderBy('created_at', 'desc')
+            ->where('term_year', $this->selectedYear)
+            ->orderByRaw("FIELD(board_role, 'president', 'secretary', 'treasurer', 'member')")
+            ->orderBy('name', 'asc')
             ->paginate(10);
 
+        // Fetch the main mosque administrator for this mosque
+        $mosqueAdmin = User::where('mosque_id', $this->mosqueId)
+            ->where('role', 'mosque')
+            ->first();
+
         $availablePermissions = $this->getAvailablePermissions();
+        
+        $dbYears = User::where('mosque_id', $this->mosqueId)
+            ->where('role', 'staff')
+            ->whereNotNull('term_year')
+            ->distinct()
+            ->pluck('term_year')
+            ->toArray();
+
+        $currentYear = (int)date('Y');
+        $rangeYears = [];
+        for ($i = 0; $i <= 5; $i++) {
+            $rangeYears[] = $currentYear - $i;
+        }
+
+        $years = collect(array_unique(array_merge($dbYears, $rangeYears)))->sortDesc();
 
         return view('livewire.mosque.staff-management', [
             'staff' => $staff,
+            'mosqueAdmin' => $mosqueAdmin,
             'availablePermissions' => $availablePermissions,
+            'years' => $years,
+            'selectableYears' => $rangeYears,
         ]);
     }
 
@@ -84,6 +137,7 @@ class StaffManagement extends Component
             'ustad' => 'Ustad Management',
             'prayer_schedule' => 'Prayer Schedule',
             'families' => 'Family Management',
+            'board' => 'Mosque Board',
             'settings' => 'Mosque Settings',
             'reports' => 'Reports & Analytics',
         ];
@@ -105,24 +159,21 @@ class StaffManagement extends Component
     {
         $this->validate();
 
-        $data = [
+        User::create([
             'mosque_id' => $this->mosqueId,
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
+            'password' => $this->password,
             'role' => 'staff',
             'is_active' => $this->is_active,
             'permissions' => $this->selectedPermissions,
-        ];
+            'board_role' => $this->board_role,
+            'custom_board_role' => $this->board_role === 'member' ? $this->custom_board_role : null,
+            'term_year' => $this->term_year,
+        ]);
 
-        // Only add password if provided (it will be auto-hashed due to 'hashed' cast)
-        if ($this->password) {
-            $data['password'] = $this->password;
-        }
-
-        User::create($data);
-
-        $this->dispatch('swal:success', title: 'Success', text: 'Staff member created successfully!');
+        $this->dispatch('swal:success', title: 'Success', text: 'Board member added successfully!');
         $this->closeModal();
     }
 
@@ -136,7 +187,11 @@ class StaffManagement extends Component
         $this->phone = $staff->phone;
         $this->is_active = $staff->is_active;
         $this->selectedPermissions = $staff->getPermissionKeys();
+        $this->board_role = $staff->board_role ?? 'member';
+        $this->custom_board_role = $staff->custom_board_role;
+        $this->term_year = $staff->term_year;
         
+        $this->isEditingAdmin = $staff->role === 'mosque';
         $this->editMode = true;
         $this->showModal = true;
     }
@@ -145,7 +200,7 @@ class StaffManagement extends Component
     {
         $rules = $this->rules;
         $rules['email'] = 'required|email|max:255|unique:users,email,' . $this->staffId;
-        $rules['password'] = 'nullable|string|min:6|confirmed';
+        $rules['password'] = 'nullable|string|min:6';
 
         $this->validate($rules);
 
@@ -157,6 +212,9 @@ class StaffManagement extends Component
             'phone' => $this->phone,
             'is_active' => $this->is_active,
             'permissions' => $this->selectedPermissions,
+            'board_role' => $this->board_role,
+            'custom_board_role' => $this->board_role === 'member' ? $this->custom_board_role : null,
+            'term_year' => $this->term_year,
         ];
 
         // Only update password if provided
@@ -166,7 +224,7 @@ class StaffManagement extends Component
 
         $staff->update($data);
 
-        $this->dispatch('swal:success', title: 'Success', text: 'Staff member updated successfully!');
+        $this->dispatch('swal:success', title: 'Success', text: 'Board member updated successfully!');
         $this->closeModal();
     }
 
@@ -174,7 +232,7 @@ class StaffManagement extends Component
     {
         try {
             User::findOrFail($id)->delete();
-            $this->dispatch('swal:success', title: 'Success', text: 'Staff member deleted successfully!');
+            $this->dispatch('swal:success', title: 'Success', text: 'Board member deleted successfully!');
         } catch (\Exception $e) {
             $this->dispatch('swal:error', title: 'Error', text: $e->getMessage());
         }
@@ -210,27 +268,32 @@ class StaffManagement extends Component
     private function resetForm()
     {
         $this->reset([
-            'staffId',
-            'name',
-            'email',
-            'password',
-            'password_confirmation',
-            'phone',
-            'selectedPermissions',
-            'editMode'
+            'staffId', 'name', 'email', 'password', 'password_confirmation',
+            'phone', 'selectedPermissions', 'editMode', 'board_role', 'custom_board_role', 'isEditingAdmin'
         ]);
+        $this->term_year = date('Y');
         $this->is_active = true;
     }
 
     public function togglePermission($permission)
     {
         if (in_array($permission, $this->selectedPermissions)) {
-            $this->selectedPermissions = array_filter(
+            $this->selectedPermissions = array_values(array_filter(
                 $this->selectedPermissions,
                 fn($p) => $p !== $permission
-            );
+            ));
         } else {
             $this->selectedPermissions[] = $permission;
         }
+    }
+
+    public function grantAllPermissions()
+    {
+        $this->selectedPermissions = array_keys($this->getAvailablePermissions());
+    }
+
+    public function removeAllPermissions()
+    {
+        $this->selectedPermissions = [];
     }
 }

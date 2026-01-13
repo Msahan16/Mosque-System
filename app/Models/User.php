@@ -35,6 +35,9 @@ class User extends Authenticatable
         'is_active',
         'status',
         'permissions',
+        'board_role',
+        'custom_board_role',
+        'term_year',
     ];
 
     /**
@@ -106,8 +109,8 @@ class User extends Authenticatable
             return true;
         }
 
-        // Check if staff has the permission
-        if ($this->isStaff() && $this->permissions) {
+        // Check if staff has specific permission
+        if ($this->isStaff() && $this->is_active && $this->permissions) {
             return in_array($permission, $this->permissions);
         }
 
@@ -125,7 +128,7 @@ class User extends Authenticatable
         }
 
         // Check if staff has any of the permissions
-        if ($this->isStaff() && $this->permissions) {
+        if ($this->isStaff() && $this->is_active && $this->permissions) {
             foreach ($permissions as $permission) {
                 if (in_array($permission, $this->permissions)) {
                     return true;
