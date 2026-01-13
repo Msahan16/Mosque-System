@@ -26,8 +26,8 @@ class Donations extends Component
         return Family::where('mosque_id', auth()->user()->mosque_id)
             ->where(function ($query) {
                 $query->where('family_head_name', 'like', '%' . $this->familySearch . '%')
-                      ->orWhere('phone', 'like', '%' . $this->familySearch . '%')
-                      ->orWhere('id', 'like', '%' . $this->familySearch . '%');
+                      ->orWhere('family_id', 'like', '%' . $this->familySearch . '%')
+                      ->orWhere('phone', 'like', '%' . $this->familySearch . '%');
             })
             ->limit(10)
             ->get();

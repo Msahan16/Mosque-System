@@ -8,29 +8,29 @@
                 <h2 class="text-2xl sm:text-3xl font-bold text-white dark:text-white">Imam Management</h2>
                 <p class="text-white/80 dark:text-gray-400 mt-1 text-sm sm:text-base">Manage imams, salaries, advances, and availability schedules</p>
             </div>
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 w-full lg:w-auto">
-                <button wire:click="openImamModal" class="inline-flex items-center justify-center px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition shadow-lg text-xs sm:text-sm lg:text-base">
+            <div class="grid grid-cols-2 lg:flex lg:flex-wrap lg:justify-end gap-2 w-full lg:w-auto">
+                <button wire:click="openImamModal" class="inline-flex items-center justify-center px-3 sm:px-4 lg:px-4 py-2 sm:py-3 lg:py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-900 transition shadow-lg text-xs sm:text-sm lg:text-sm">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                     <span class="hidden sm:inline">Add Imam</span>
                     <span class="sm:hidden">Imam</span>
                 </button>
-                <button wire:click="openSalaryModal" class="inline-flex items-center justify-center px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-emerald-700 transition shadow-lg text-xs sm:text-sm lg:text-base">
+                <button wire:click="openSalaryModal" class="inline-flex items-center justify-center px-3 sm:px-4 lg:px-4 py-2 sm:py-3 lg:py-2 bg-gradient-to-r from-emerald-600 to-emerald-800 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-emerald-900 transition shadow-lg text-xs sm:text-sm lg:text-sm">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <span class="hidden sm:inline">Record Salary</span>
                     <span class="sm:hidden">Salary</span>
                 </button>
-                <button wire:click="openAdvanceModal" class="inline-flex items-center justify-center px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-indigo-700 transition shadow-lg text-xs sm:text-sm lg:text-base">
+                <button wire:click="openAdvanceModal" class="inline-flex items-center justify-center px-3 sm:px-4 lg:px-4 py-2 sm:py-3 lg:py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-900 transition shadow-lg text-xs sm:text-sm lg:text-sm">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
                     <span class="hidden sm:inline">Request Advance</span>
                     <span class="sm:hidden">Advance</span>
                 </button>
-                <button wire:click="openDaysModal" class="inline-flex items-center justify-center px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white font-semibold rounded-lg hover:from-orange-700 hover:to-red-700 transition shadow-lg text-xs sm:text-sm lg:text-base">
+                <button wire:click="openDaysModal" class="inline-flex items-center justify-center px-3 sm:px-4 lg:px-4 py-2 sm:py-3 lg:py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-900 transition shadow-lg text-xs sm:text-sm lg:text-sm">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
@@ -41,23 +41,35 @@
         </div>
 
         <!-- Type Filter Tabs -->
-        <div class="mb-6 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-            <div class="flex gap-2 border-b border-gray-300 dark:border-gray-700 min-w-max sm:min-w-0">
+        <div class="mb-8 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+            <div class="flex p-1.5 bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-white/10 w-fit min-w-max">
                 <button wire:click="$set('activeTab', 'imams')"
-                    class="px-3 sm:px-4 py-2.5 sm:py-3 font-medium text-xs sm:text-sm text-white transition whitespace-nowrap {{ $activeTab === 'imams' ? 'border-b-2 border-blue-600 dark:border-blue-400' : 'hover:opacity-80' }}">
-                    👥 Imams
+                    class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'imams' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    Imams
                 </button>
                 <button wire:click="$set('activeTab', 'salaries')"
-                    class="px-3 sm:px-4 py-2.5 sm:py-3 font-medium text-xs sm:text-sm text-white transition whitespace-nowrap {{ $activeTab === 'salaries' ? 'border-b-2 border-green-600 dark:border-green-400' : 'hover:opacity-80' }}">
-                    💰 Salaries
+                    class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'salaries' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Salaries
                 </button>
                 <button wire:click="$set('activeTab', 'advances')"
-                    class="px-3 sm:px-4 py-2.5 sm:py-3 font-medium text-xs sm:text-sm text-white transition whitespace-nowrap {{ $activeTab === 'advances' ? 'border-b-2 border-purple-600 dark:border-purple-400' : 'hover:opacity-80' }}">
-                    🤝 Advances
+                    class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'advances' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Advances
                 </button>
                 <button wire:click="$set('activeTab', 'availability')"
-                    class="px-3 sm:px-4 py-2.5 sm:py-3 font-medium text-xs sm:text-sm text-white transition whitespace-nowrap {{ $activeTab === 'availability' ? 'border-b-2 border-orange-600 dark:border-orange-400' : 'hover:opacity-80' }}">
-                    📅 Availability
+                    class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'availability' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    Availability
                 </button>
             </div>
         </div>
@@ -111,19 +123,19 @@
                     </div>
                     <p class="text-2xl sm:text-3xl font-bold">{{ $imams->where('status', 'active')->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-xl p-4 sm:p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-red-500 to-red-700 text-white rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-orange-100 text-xs sm:text-sm font-medium">Inactive Imams</span>
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="text-red-100 text-xs sm:text-sm font-medium">Inactive Imams</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                         </svg>
                     </div>
                     <p class="text-2xl sm:text-3xl font-bold">{{ $imams->where('status', 'inactive')->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-purple-500 to-indigo-500 text-white rounded-xl p-4 sm:p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-purple-100 text-xs sm:text-sm font-medium">Total Salary Budget</span>
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="text-blue-100 text-xs sm:text-sm font-medium">Total Salary Budget</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -133,10 +145,10 @@
         
         @elseif($activeTab === 'advances')
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-                <div class="bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-xl p-4 sm:p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-purple-100 text-xs sm:text-sm font-medium">Total Advances</span>
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="text-blue-100 text-xs sm:text-sm font-medium">Total Advances</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -151,16 +163,16 @@
                     </div>
                     <p class="text-2xl sm:text-3xl font-bold">{{ $advances->where('status', 'paid')->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-yellow-500 to-orange-500 text-white rounded-xl p-4 sm:p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-red-500 to-red-700 text-white rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-yellow-100 text-xs sm:text-sm font-medium">Pending Advances</span>
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="text-red-100 text-xs sm:text-sm font-medium">Pending Advances</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
                     <p class="text-2xl sm:text-3xl font-bold">{{ $advances->where('status', 'pending')->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl p-4 sm:p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-blue-100 text-xs sm:text-sm font-medium">Approved Advances</span>
                         <svg class="w-6 h-6 sm:w-8 sm:h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,10 +184,10 @@
             </div>
         @elseif($activeTab === 'availability')
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-                <div class="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-xl p-4 sm:p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-orange-100 text-xs sm:text-sm font-medium">Total Schedules</span>
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="text-blue-100 text-xs sm:text-sm font-medium">Total Schedules</span>
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
                     </div>
@@ -190,7 +202,7 @@
                     </div>
                     <p class="text-2xl sm:text-3xl font-bold">{{ $availableDays->where('is_available', true)->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-red-500 to-pink-500 text-white rounded-xl p-4 sm:p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-red-500 to-red-700 text-white rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-red-100 text-xs sm:text-sm font-medium">Unavailable Slots</span>
                         <svg class="w-6 h-6 sm:w-8 sm:h-8 text-red-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,7 +211,7 @@
                     </div>
                     <p class="text-2xl sm:text-3xl font-bold">{{ $availableDays->where('is_available', false)->count() }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl p-4 sm:p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-blue-100 text-xs sm:text-sm font-medium">Active Imams</span>
                         <svg class="w-6 h-6 sm:w-8 sm:h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -401,7 +413,7 @@
             <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30">
+                        <thead class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
                             <tr>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Imam</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Amount</th>
@@ -416,7 +428,7 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
                                                 <span class="text-white font-bold text-sm">{{ strtoupper(substr($advance->imam->name, 0, 1)) }}</span>
                                             </div>
                                             <div class="ml-3">
@@ -453,7 +465,7 @@
                                                     <span class="hidden sm:inline">Pay</span>
                                                 </button>
                                             @endif
-                                            <button wire:click="openAdvanceModal({{ $advance->id }})" title="Edit" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-purple-600 text-white text-xs rounded hover:bg-purple-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                            <button wire:click="openAdvanceModal({{ $advance->id }})" title="Edit" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-blue-600 text-white text-xs rounded hover:bg-purple-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
                                                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                                 <span class="hidden sm:inline">Edit</span>
                                             </button>
@@ -494,7 +506,7 @@
             <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30">
+                        <thead class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
                             <tr>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Imam</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Period</th>
@@ -507,7 +519,7 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
                                                 <span class="text-white font-bold text-sm">{{ strtoupper(substr($day->imam->name, 0, 1)) }}</span>
                                             </div>
                                             <div class="ml-3">
@@ -528,7 +540,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex flex-col sm:flex-row gap-1 sm:justify-center sm:space-x-1">
-                                            <button wire:click="openDaysModal({{ $day->id }})" title="Edit" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-orange-600 text-white text-xs rounded hover:bg-orange-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                            <button wire:click="openDaysModal({{ $day->id }})" title="Edit" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-blue-600 text-white text-xs rounded hover:bg-orange-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
                                                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                                 <span class="hidden sm:inline">Edit</span>
                                             </button>
@@ -575,7 +587,7 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4" wire:click.self="closeImamModal">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
                 <!-- Modal Header -->
-                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-3 rounded-t-2xl">
+                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-5 py-3 rounded-t-2xl">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold">{{ $editingImam ? 'Edit Imam' : 'Add New Imam' }}</h3>
                         <button wire:click="closeImamModal" class="text-white hover:text-gray-200 transition">
@@ -911,7 +923,7 @@
                                 Imam <span class="text-red-500">*</span>
                             </label>
                             <select wire:model.live="imam_id_record" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-purple-500">
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 <option value="">Select Imam</option>
                                 @foreach($imams->items() as $imam)
                                     <option value="{{ $imam->id }}">{{ $imam->name }}</option>
@@ -955,7 +967,7 @@
                                     Amount (LKR) <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="amount" type="number" step="0.01" min="0" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-purple-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('amount') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -963,7 +975,7 @@
                                     Request Date <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="record_date" type="date" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-purple-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('record_date') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -975,7 +987,7 @@
                                     Purpose
                                 </label>
                                 <select wire:model="purpose"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-purple-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                     <option value="">Select Purpose</option>
                                     <option value="Medical">Medical</option>
                                     <option value="Family Emergency">Family Emergency</option>
@@ -990,7 +1002,7 @@
                                     Status <span class="text-red-500">*</span>
                                 </label>
                                 <select wire:model="record_status" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-purple-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                     <option value="pending">Pending</option>
                                     <option value="approved">Approved</option>
                                     <option value="paid">Paid</option>
@@ -1006,7 +1018,7 @@
                                 Reason
                             </label>
                             <textarea wire:model="reason" rows="2"
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-purple-500"></textarea>
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"></textarea>
                             @error('reason') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -1016,7 +1028,7 @@
                                 Notes
                             </label>
                             <textarea wire:model="record_notes" rows="2"
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-purple-500"></textarea>
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"></textarea>
                             @error('record_notes') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -1027,7 +1039,7 @@
                                 Cancel
                             </button>
                             <button type="submit"
-                                class="flex-1 px-3 py-1.5 text-xs bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 font-semibold transition shadow-lg">
+                                class="flex-1 px-3 py-1.5 text-xs bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg hover:from-blue-700 hover:to-blue-900 font-semibold transition shadow-lg">
                                 {{ $editingRecord ? 'Update Advance' : 'Request Advance' }}
                             </button>
                         </div>
@@ -1148,7 +1160,7 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4" wire:click.self="closeDaysModal">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
                 <!-- Modal Header -->
-                <div class="sticky top-0 bg-gradient-to-r from-orange-600 to-red-600 text-white px-5 py-3 rounded-t-2xl">
+                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-5 py-3 rounded-t-2xl">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold">{{ $editingDay ? 'Edit Availability' : 'Add Availability' }}</h3>
                         <button wire:click="closeDaysModal" class="text-white hover:text-gray-200 transition">
@@ -1168,7 +1180,7 @@
                                 Imam <span class="text-red-500">*</span>
                             </label>
                             <select wire:model="imam_id_day" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-orange-500">
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 <option value="">Select Imam</option>
                                 @foreach($imams->items() as $imam)
                                     <option value="{{ $imam->id }}">{{ $imam->name }}</option>
@@ -1184,7 +1196,7 @@
                                     Start Date <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="start_date" type="date" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-orange-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('start_date') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -1192,7 +1204,7 @@
                                     End Date <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="end_date" type="date" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-orange-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('end_date') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -1203,7 +1215,7 @@
                                 Notes
                             </label>
                             <textarea wire:model="day_notes" rows="2"
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-orange-500"></textarea>
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"></textarea>
                             @error('day_notes') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -1214,7 +1226,7 @@
                                 Cancel
                             </button>
                             <button type="submit"
-                                class="flex-1 px-3 py-1.5 text-xs bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg hover:from-orange-700 hover:to-red-700 font-semibold transition shadow-lg">
+                                class="flex-1 px-3 py-1.5 text-xs bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg hover:from-blue-700 hover:to-blue-900 font-semibold transition shadow-lg">
                                 {{ $editingDay ? 'Update Availability' : 'Add Availability' }}
                             </button>
                         </div>

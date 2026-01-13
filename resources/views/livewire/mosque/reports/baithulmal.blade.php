@@ -3,16 +3,16 @@
     {{-- Summary Statistics Table --}}
     <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden border border-slate-300 dark:border-slate-600">
         {{-- Table Header --}}
-        <div class="bg-gradient-to-r from-indigo-700 to-indigo-800 px-6 py-4 border-b-2 border-indigo-900">
+        <div class="bg-gradient-to-r from-blue-700 to-blue-900 px-6 py-4 border-b-2 border-blue-900">
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-2xl font-bold text-white">Baithulmal (Treasury) Report</h2>
-                    <p class="text-indigo-100 text-sm mt-1">Comprehensive income and expense management summary</p>
+                    <p class="text-blue-100 text-sm mt-1">Comprehensive income and expense management summary</p>
                 </div>
                 <div class="text-right">
-                    <p class="text-indigo-100 text-xs uppercase tracking-wide">Report Period</p>
+                    <p class="text-blue-100 text-xs uppercase tracking-wide">Report Period</p>
                     <p class="text-lg font-bold text-white">{{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}</p>
-                    <p class="text-indigo-200 text-sm">{{ \Carbon\Carbon::parse($startDate)->diffInDays(\Carbon\Carbon::parse($endDate)) + 1 }} Days</p>
+                    <p class="text-blue-200 text-sm">{{ \Carbon\Carbon::parse($startDate)->diffInDays(\Carbon\Carbon::parse($endDate)) + 1 }} Days</p>
                 </div>
             </div>
         </div>
@@ -77,7 +77,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-sm font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">Income - Expense ({{ ($reportData['net_balance'] ?? 0) >= 0 ? 'Surplus' : 'Deficit' }})</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-base font-bold {{ ($reportData['net_balance'] ?? 0) >= 0 ? 'text-blue-700 dark:text-blue-400' : 'text-orange-700 dark:text-orange-400' }} text-right">LKR {{ number_format($reportData['net_balance'] ?? 0, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-base font-bold {{ ($reportData['net_balance'] ?? 0) >= 0 ? 'text-blue-700 dark:text-blue-400' : 'text-red-700 dark:text-red-400' }} text-right">LKR {{ number_format($reportData['net_balance'] ?? 0, 2) }}</td>
                     </tr>
 
                     {{-- Income by Category Section --}}

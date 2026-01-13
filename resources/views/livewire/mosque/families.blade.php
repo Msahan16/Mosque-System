@@ -8,7 +8,7 @@
                 <h2 class="text-2xl sm:text-3xl font-bold text-white dark:text-white">Families Management</h2>
                 <p class="text-white/80 dark:text-white-400 mt-1 text-sm sm:text-base">Manage registered families and their members</p>
             </div>
-            <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition shadow-lg text-sm sm:text-base">
+            <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-900 transition shadow-lg text-sm sm:text-base">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
@@ -19,7 +19,7 @@
         <!-- Search -->
         <div class="mb-6">
             <input wire:model.live="search" type="text" placeholder="Search families by name, phone, or address..." 
-                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 placeholder-gray-500">
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 placeholder-gray-500">
         </div>
 
         <!-- Families Table -->
@@ -27,7 +27,7 @@
             <div class="overflow-x-auto -mx-4 sm:mx-0">
                 <div class="inline-block min-w-full">
                     <table class="w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
-                    <thead class="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30">
+                    <thead class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Family Head</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Contact</th>
@@ -41,7 +41,7 @@
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-12 w-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
+                                        <div class="flex-shrink-0 h-12 w-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
                                             <span class="text-white font-bold text-lg">{{ strtoupper(substr($family->family_head_name, 0, 1)) }}</span>
                                         </div>
                                         <div class="ml-4">
@@ -70,7 +70,7 @@
                                             </svg>
                                             <span class="hidden sm:inline">Members</span>
                                         </button>
-                                        <button wire:click="editFamily({{ $family->id }})" title="Edit Family" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-emerald-600 text-white text-xs rounded hover:bg-emerald-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
+                                        <button wire:click="editFamily({{ $family->id }})" title="Edit Family" class="w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition font-medium flex items-center justify-center sm:justify-start gap-1">
                                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                             <span class="hidden sm:inline">Edit</span>
                                         </button>
@@ -131,7 +131,7 @@
                                 Family ID <span class="text-red-500">*</span>
                             </label>
                             <input wire:model="family_id" type="text" required placeholder="e.g., FAM001, F-2024-001"
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                             @error('family_id') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Unique identifier for this family</p>
                         </div>
@@ -143,7 +143,7 @@
                                     Head Name <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="family_head_name" type="text" required placeholder="Full name"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('family_head_name') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -151,7 +151,7 @@
                                     Profession
                                 </label>
                                 <input wire:model="family_head_profession" type="text" placeholder="Job/profession"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('family_head_profession') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -163,7 +163,7 @@
                                     Phone <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="phone" type="tel" required placeholder="Phone"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('phone') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -171,7 +171,7 @@
                                     Email
                                 </label>
                                 <input wire:model="email" type="email" placeholder="Email"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('email') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -182,7 +182,7 @@
                                 Address <span class="text-red-500">*</span>
                             </label>
                             <textarea wire:model="address" required rows="2" placeholder="Address"
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"></textarea>
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"></textarea>
                             @error('address') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -193,7 +193,7 @@
                                     Members <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="total_members" type="number" required min="1" placeholder="No. of members"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('total_members') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -201,7 +201,7 @@
                                     Income (LKR)
                                 </label>
                                 <input wire:model="family_income" type="number" step="0.01" placeholder="Monthly income"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('family_income') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -213,13 +213,13 @@
                                     Reg. Date <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="registration_date" type="date" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('registration_date') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div class="flex items-end">
                                 <label class="flex items-center gap-2">
                                     <input wire:model="is_active" type="checkbox"
-                                        class="w-4 h-4 text-emerald-600 border-gray-300 dark:border-gray-600 rounded focus:ring-emerald-500">
+                                        class="w-4 h-4 text-emerald-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500">
                                     <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Active</span>
                                 </label>
                             </div>
@@ -231,7 +231,7 @@
                                 Notes
                             </label>
                             <textarea wire:model="notes" rows="1" placeholder="Optional notes..."
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"></textarea>
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"></textarea>
                             @error('notes') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -252,17 +252,17 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
                                         <input wire:model="memberName" type="text" placeholder="Full Name *"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm">
                                         @error('memberName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
                                         <input wire:model="memberRelation" type="text" placeholder="Relation (Wife, Son, Daughter, etc.) *"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm">
                                         @error('memberRelation') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
                                         <select wire:model="memberGender"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm">
                                             <option value="">Select Gender *</option>
                                             <option value="Male">Male</option>
                                             <option value="Female">Female</option>
@@ -272,28 +272,28 @@
                                     </div>
                                     <div>
                                         <input wire:model="memberDob" type="date" placeholder="Date of Birth"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm">
                                         @error('memberDob') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
                                         <input wire:model="memberOccupation" type="text" placeholder="Occupation"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm">
                                     </div>
                                     <div>
                                         <input wire:model="memberEducation" type="text" placeholder="Education"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm">
                                     </div>
                                     <div>
                                         <input wire:model="memberPhone" type="tel" placeholder="Phone"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm">
                                     </div>
                                     <div>
                                         <input wire:model="memberEmail" type="email" placeholder="Email"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm">
                                     </div>
                                     <div>
                                         <input wire:model="memberNotes" type="text" placeholder="Notes"
-                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 text-sm">
+                                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-sm">
                                     </div>
                                 </div>
                                 <button type="button" wire:click="addMember"
@@ -342,7 +342,7 @@
                                 Cancel
                             </button>
                             <button type="submit"
-                                class="flex-1 px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 font-semibold text-xs transition shadow-lg">
+                                class="flex-1 px-4 py-1.5 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg hover:from-blue-700 hover:to-blue-900 font-semibold text-xs transition shadow-lg">
                                 {{ $editMode ? 'Update' : 'Add Family' }}
                             </button>
                         </div>
@@ -357,11 +357,11 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" wire:click.self="closeMembersModal">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <!-- Modal Header -->
-                <div class="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-4 rounded-t-2xl">
+                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-6 py-4 rounded-t-2xl">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-xl font-bold">Family Members</h3>
-                            <p class="text-emerald-100 text-sm mt-1">{{ $selectedFamily->family_head_name }} - {{ $selectedFamily->phone }}</p>
+                            <p class="text-blue-100 text-sm mt-1">{{ $selectedFamily->family_head_name }} - {{ $selectedFamily->phone }}</p>
                         </div>
                         <button wire:click="closeMembersModal" class="text-white hover:text-gray-200 transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

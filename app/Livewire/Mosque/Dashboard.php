@@ -58,6 +58,7 @@ class Dashboard extends Component
             'santhas_paid' => ['name' => 'This Month Paid', 'icon' => 'check', 'color' => 'purple'],
             'recent_families' => ['name' => 'Recent Families', 'icon' => 'list', 'color' => 'blue', 'type' => 'list'],
             'recent_donations' => ['name' => 'Recent Donations', 'icon' => 'list', 'color' => 'cyan', 'type' => 'list'],
+            'recent_santhas' => ['name' => 'Recent Santha Collections', 'icon' => 'list', 'color' => 'purple', 'type' => 'list'],
             'baithulmal_summary' => ['name' => 'Baithulmal Summary', 'icon' => 'wallet', 'color' => 'emerald', 'type' => 'list'],
             'students_count' => ['name' => 'Madrasa Students', 'icon' => 'academic-cap', 'color' => 'indigo'],
             'porridge_sponsors' => ['name' => 'Porridge Sponsors', 'icon' => 'gift', 'color' => 'orange'],
@@ -72,7 +73,17 @@ class Dashboard extends Component
         
         if ($preference) {
             $this->visibleCards = $preference->visible_cards ?? $this->getDefaultVisibleCards();
-            $this->cardPositions = $preference->card_positions ?? array_keys($this->availableCards);
+            $savedPositions = $preference->card_positions ?? [];
+            
+            // Ensure any new available cards are added to the end of positions if not already there
+            $allAvailableKeys = array_keys($this->availableCards);
+            $newCards = array_diff($allAvailableKeys, $savedPositions);
+            
+            if (!empty($newCards)) {
+                $this->cardPositions = array_merge($savedPositions, array_values($newCards));
+            } else {
+                $this->cardPositions = $savedPositions;
+            }
         } else {
             // Default: show first 7 cards
             $this->visibleCards = $this->getDefaultVisibleCards();
@@ -191,10 +202,17 @@ class Dashboard extends Component
         $studentsCount = Student::where('mosque_id', $user->mosque_id)->count();
         $porridgeSponsorsCount = PorridgeSponsor::where('mosque_id', $user->mosque_id)->count();
         $activeImamsCount = Imam::where('mosque_id', $user->mosque_id)->where('status', 'active')->count();
+
+        $recentSanthas = Santha::with('family')
+            ->where('mosque_id', $user->mosque_id)
+            ->latest('payment_date')
+            ->take(5)
+            ->get();
         
         return view('livewire.mosque.dashboard', [
             'recentFamilies' => $recentFamilies,
             'recentDonations' => $recentDonations,
+            'recentSanthas' => $recentSanthas,
             'recentBaithulmalTransactions' => $recentBaithulmalTransactions,
             'baithulmalSummary' => [
                 'totalIncome' => $totalIncome,

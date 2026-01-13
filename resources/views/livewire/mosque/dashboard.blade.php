@@ -17,7 +17,7 @@
     <div class="px-6 py-8 -mt-12 relative z-10">
         <!-- Customize Button -->
         <div class="flex justify-end mb-4">
-            <button wire:click="openCustomizeModal" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-indigo-700 transition shadow-lg">
+            <button wire:click="openCustomizeModal" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-900 transition shadow-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                 </svg>
@@ -59,73 +59,73 @@
                         </div>
                     @elseif($cardId === 'donations')
                         <!-- Donations Card -->
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-cyan-600">
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-emerald-600">
                             <div class="flex items-center justify-between mb-4">
-                                <div class="bg-cyan-100 dark:bg-cyan-900/30 p-3 rounded-lg">
-                                    <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-lg">
+                                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
                                 <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">↑ 12%</span>
                             </div>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-2">Total Donations</p>
-                            <p class="text-4xl font-bold text-cyan-600 dark:text-cyan-400">LKR{{ number_format($totalDonations, 0) }}</p>
+                            <p class="text-4xl font-bold text-emerald-600 dark:text-emerald-400">LKR{{ number_format($totalDonations, 0) }}</p>
                         </div>
                     @elseif($cardId === 'santhas_paid')
                         <!-- Paid This Month Card -->
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-purple-600">
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-emerald-600">
                             <div class="flex items-center justify-between mb-4">
-                                <div class="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
-                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-lg">
+                                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
                                 <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Regular</span>
                             </div>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-2">This Month Paid</p>
-                            <p class="text-4xl font-bold text-purple-600 dark:text-purple-400">{{ $todaySanthas }}</p>
+                            <p class="text-4xl font-bold text-emerald-600 dark:text-emerald-400">{{ $todaySanthas }}</p>
                         </div>
                     @elseif($cardId === 'students_count')
                         <!-- Madrasa Students Card -->
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-indigo-600">
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-blue-600">
                             <div class="flex items-center justify-between mb-4">
-                                <div class="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded-lg">
-                                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                                     </svg>
                                 </div>
                                 <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Learning</span>
                             </div>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-2">Madrasa Students</p>
-                            <p class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">{{ $studentsCount }}</p>
+                            <p class="text-4xl font-bold text-blue-600 dark:text-blue-400">{{ $studentsCount }}</p>
                         </div>
                     @elseif($cardId === 'porridge_sponsors')
                         <!-- Porridge Sponsors Card -->
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-orange-600">
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-emerald-600">
                             <div class="flex items-center justify-between mb-4">
-                                <div class="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-lg">
-                                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-lg">
+                                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                     </svg>
                                 </div>
                                 <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Ramadan</span>
                             </div>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-2">Porridge Sponsors</p>
-                            <p class="text-4xl font-bold text-orange-600 dark:text-orange-400">{{ $porridgeSponsorsCount }}</p>
+                            <p class="text-4xl font-bold text-emerald-600 dark:text-emerald-400">{{ $porridgeSponsorsCount }}</p>
                         </div>
                     @elseif($cardId === 'active_imams')
                         <!-- Active Imams Card -->
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-teal-600">
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 border-l-4 border-blue-600">
                             <div class="flex items-center justify-between mb-4">
-                                <div class="bg-teal-100 dark:bg-teal-900/30 p-3 rounded-lg">
-                                    <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
                                 </div>
                                 <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Serving</span>
                             </div>
                             <p class="text-slate-600 dark:text-slate-400 text-sm mb-2">Active Imams</p>
-                            <p class="text-4xl font-bold text-teal-600 dark:text-teal-400">{{ $activeImamsCount }}</p>
+                            <p class="text-4xl font-bold text-blue-600 dark:text-blue-400">{{ $activeImamsCount }}</p>
                         </div>
                     @endif
                 @endif
@@ -139,7 +139,7 @@
                     @if($cardId === 'recent_families')
                         <!-- Recent Families -->
                         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
-                            <div class="bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-4">
+                            <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
                                 <h3 class="text-lg font-bold text-white">Recent Families</h3>
                                 <p class="text-blue-100 text-sm mt-1">Latest registrations</p>
                             </div>
@@ -160,9 +160,9 @@
                     @elseif($cardId === 'recent_donations')
                         <!-- Recent Donations -->
                         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
-                            <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                            <div class="bg-gradient-to-r from-emerald-600 to-emerald-800 px-6 py-4">
                                 <h3 class="text-lg font-bold text-white">Recent Donations</h3>
-                                <p class="text-cyan-100 text-sm mt-1">Latest received</p>
+                                <p class="text-emerald-100 text-sm mt-1">Latest received</p>
                             </div>
                             <div class="divide-y divide-slate-200 dark:divide-slate-700 max-h-96 overflow-y-auto">
                                 @forelse($recentDonations as $donation)
@@ -172,7 +172,7 @@
                                                 <h4 class="font-bold text-slate-900 dark:text-white">{{ $donation->donor_name }}</h4>
                                                 <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">{{ $donation->donation_type }}</p>
                                             </div>
-                                            <div class="text-cyan-600 dark:text-cyan-400 font-bold">LKR{{ number_format($donation->amount, 0) }}</div>
+                                            <div class="text-emerald-600 dark:text-emerald-400 font-bold">LKR{{ number_format($donation->amount, 0) }}</div>
                                         </div>
                                     </div>
                                 @empty
@@ -185,7 +185,7 @@
                     @elseif($cardId === 'baithulmal_summary')
                         <!-- Baithulmal Summary -->
                         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
-                            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4">
+                            <div class="bg-gradient-to-r from-emerald-600 to-emerald-800 px-6 py-4">
                                 <h3 class="text-lg font-bold text-white">Baithulmal Summary</h3>
                                 <p class="text-emerald-100 text-sm mt-1">Financial overview</p>
                             </div>
@@ -246,6 +246,36 @@
                                 @endforelse
                             </div>
                         </div>
+                    @elseif($cardId === 'recent_santhas')
+                        <!-- Recent Santhas -->
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
+                            <div class="bg-gradient-to-r from-emerald-600 to-emerald-800 px-6 py-4">
+                                <h3 class="text-lg font-bold text-white">Recent Santha Collections</h3>
+                                <p class="text-emerald-100 text-sm mt-1">Latest collections</p>
+                            </div>
+                            <div class="divide-y divide-slate-200 dark:divide-slate-700 max-h-96 overflow-y-auto">
+                                @forelse($recentSanthas as $santha)
+                                    <div class="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex-1">
+                                                <h4 class="font-bold text-slate-900 dark:text-white">{{ $santha->family->family_head_name ?? 'Unknown Family' }}</h4>
+                                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                                                    {{ $santha->getMonthsCoveredDisplay() }}
+                                                </p>
+                                                <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+                                                    {{ $santha->payment_date->format('M d, Y') }}
+                                                </p>
+                                            </div>
+                                            <div class="text-emerald-600 dark:text-emerald-400 font-bold">LKR{{ number_format($santha->amount, 0) }}</div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                                        <p>No santha collections yet</p>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
                     @endif
                 @endif
             @endforeach
@@ -257,11 +287,11 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" wire:click.self="closeCustomizeModal">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 <!-- Modal Header -->
-                <div class="sticky top-0 z-10 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-4 rounded-t-2xl shadow-lg">
+                <div class="sticky top-0 z-10 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-6 py-4 rounded-t-2xl shadow-lg">
                     <div class="flex items-center justify-between mb-2">
                         <div>
                             <h3 class="text-xl font-bold">Customize Dashboard</h3>
-                            <p class="text-purple-100 text-sm mt-1">Choose which cards to display and their order</p>
+                            <p class="text-blue-100 text-sm mt-1">Choose which cards to display and their order</p>
                         </div>
                         <button wire:click="closeCustomizeModal" class="text-white hover:text-gray-200 transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

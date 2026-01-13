@@ -285,11 +285,13 @@
                     </div>
                     
                     <!-- Dark Mode Toggle -->
-                    <button onclick="toggleDarkMode()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white">
-                        <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                        </svg>
-                        <span class="font-medium">Dark Mode</span>
+                    <button onclick="toggleDarkMode()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white transition-all duration-300">
+                        <div id="theme-icon-container" class="transition-transform duration-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path id="theme-icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </div>
+                        <span id="theme-text" class="font-medium">Dark Mode</span>
                     </button>
                     
                     <form method="POST" action="{{ route('logout') }}">
@@ -311,11 +313,13 @@
                     </div>
                     
                     <!-- Dark Mode Toggle -->
-                    <button onclick="toggleDarkMode()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white">
-                        <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                        </svg>
-                        <span class="font-medium">Dark Mode</span>
+                    <button onclick="toggleDarkMode()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-500 hover:text-white transition-all duration-300">
+                        <div id="staff-theme-icon-container" class="transition-transform duration-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path id="staff-theme-icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </div>
+                        <span id="staff-theme-text" class="font-medium">Dark Mode</span>
                     </button>
                     
                     <form method="POST" action="{{ route('logout') }}">
@@ -369,16 +373,37 @@
 
         function toggleDarkMode() {
             const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            
-            html.classList.toggle('dark');
-            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+            const isDark = html.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeUI(isDark);
+        }
+
+        function updateThemeUI(isDark) {
+            const textElements = [document.getElementById('theme-text'), document.getElementById('staff-theme-text')];
+            const iconPaths = [document.getElementById('theme-icon-path'), document.getElementById('staff-theme-icon-path')];
+            const containers = [document.getElementById('theme-icon-container'), document.getElementById('staff-theme-icon-container')];
+
+            const moonPath = "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z";
+            const sunPath = "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z";
+
+            textElements.forEach(el => { if (el) el.textContent = isDark ? 'Light Mode' : 'Dark Mode'; });
+            iconPaths.forEach(path => { if (path) path.setAttribute('d', isDark ? sunPath : moonPath); });
+            containers.forEach(container => { 
+                if (container) {
+                    container.style.transform = isDark ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            });
         }
 
         // Initialize dark mode
-        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        const initialDark = localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (initialDark) {
             document.documentElement.classList.add('dark');
         }
+        // Use DOMContentLoaded to ensure elements are available
+        document.addEventListener('DOMContentLoaded', () => {
+            updateThemeUI(initialDark);
+        });
 
         // Generic confirm helper that shows SweetAlert and dispatches Livewire events
         function confirmDelete(eventName, id, title = 'Are you sure?', text = 'This action cannot be undone.') {

@@ -11,35 +11,42 @@
         </div>
 
         <!-- Tabs -->
-        <div class="mb-6">
-            <div class="border-b border-gray-200 dark:border-gray-700">
-                <nav class="-mb-px flex space-x-8">
-                    <button wire:click="setActiveTab('ustads')"
-                            class="py-2 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'ustads' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-white hover:opacity-80' }}">
-                        Ustads (Teachers)
-                    </button>
-                    <button wire:click="setActiveTab('students')"
-                            class="py-2 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'students' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-white hover:opacity-80' }}">
-                        Students
-                    </button>
-                    <button wire:click="setActiveTab('payments')"
-                            class="py-2 px-1 border-b-2 font-medium text-sm {{ $activeTab === 'payments' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-white hover:opacity-80' }}">
-                        Payments
-                    </button>
-                </nav>
+        <div class="mb-8 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+            <div class="flex p-1.5 bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-white/10 w-fit min-w-max">
+                <button wire:click="setActiveTab('ustads')"
+                    class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'ustads' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    Ustads
+                </button>
+                <button wire:click="setActiveTab('students')"
+                    class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'students' ? 'bg-blue-700 text-white shadow-lg shadow-blue-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    Students
+                </button>
+                <button wire:click="setActiveTab('payments')"
+                    class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'payments' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Payments
+                </button>
             </div>
         </div>
 
         <!-- Search -->
         <div class="mb-6">
-            <input wire:model.live="search" type="text" placeholder="Search..." class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 placeholder-gray-500">
+            <input wire:model.live="search" type="text" placeholder="Search..." class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 placeholder-gray-500">
         </div>
 
         <!-- Ustads Tab -->
         @if($activeTab === 'ustads')
             <div class="mb-6 flex justify-between items-center">
                 <h3 class="text-xl font-semibold text-white dark:text-white">Ustads Management</h3>
-                <button wire:click="openUstadModal" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition shadow-lg">
+                <button wire:click="openUstadModal" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-900 transition shadow-lg">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
@@ -50,7 +57,7 @@
             <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div class="overflow-x-auto">
                     <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30">
+                        <thead class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
                             <tr>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Name</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Specialization</th>
@@ -65,7 +72,7 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
                                                 <span class="text-white font-bold">{{ strtoupper(substr($ustad->name, 0, 1)) }}</span>
                                             </div>
                                             <div class="ml-4">
@@ -128,7 +135,7 @@
         @if($activeTab === 'students')
             <div class="mb-6 flex justify-between items-center">
                 <h3 class="text-xl font-semibold text-white dark:text-white">Students Management</h3>
-                <button wire:click="openStudentModal" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition shadow-lg">
+                <button wire:click="openStudentModal" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition shadow-lg">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
@@ -139,7 +146,7 @@
             <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div class="overflow-x-auto">
                     <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30">
+                        <thead class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
                             <tr>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Name</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Ustad</th>
@@ -214,7 +221,7 @@
         @if($activeTab === 'payments')
             <div class="mb-6 flex justify-between items-center">
                 <h3 class="text-xl font-semibold text-white dark:text-white">Payment Records</h3>
-                <button wire:click="openPaymentModal" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition shadow-lg">
+                <button wire:click="openPaymentModal" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition shadow-lg">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
@@ -225,7 +232,7 @@
             <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div class="overflow-x-auto">
                     <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30">
+                        <thead class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
                             <tr>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Student</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Amount</th>
@@ -302,7 +309,7 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" wire:click.self="closeUstadModal">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto">
                 <!-- Modal Header -->
-                <div class="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-3 rounded-t-2xl">
+                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-5 py-3 rounded-t-2xl">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold">
                             @if($viewUstadMode)
@@ -453,7 +460,7 @@
                                 Name <span class="text-red-500">*</span>
                             </label>
                             <input wire:model="ustad_name" type="text" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                             @error('ustad_name') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -464,7 +471,7 @@
                                     Phone
                                 </label>
                                 <input wire:model="ustad_phone" type="tel"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('ustad_phone') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -472,7 +479,7 @@
                                     Email
                                 </label>
                                 <input wire:model="ustad_email" type="email"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('ustad_email') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -484,7 +491,7 @@
                                     Specialization
                                 </label>
                                 <input wire:model="ustad_specialization" type="text" placeholder="e.g., Quran, Hadith"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('ustad_specialization') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -492,7 +499,7 @@
                                     Experience (Years)
                                 </label>
                                 <input wire:model="ustad_experience_years" type="number" min="0"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('ustad_experience_years') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -504,7 +511,7 @@
                                     Qualification
                                 </label>
                                 <input wire:model="ustad_qualification" type="text" placeholder="e.g., Hafiz, Alim"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('ustad_qualification') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -512,7 +519,7 @@
                                     Salary (LKR)
                                 </label>
                                 <input wire:model="ustad_salary" type="number" step="0.01" min="0"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('ustad_salary') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -523,7 +530,7 @@
                                 Joining Date <span class="text-red-500">*</span>
                             </label>
                             <input wire:model="ustad_joining_date" type="date" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                             @error('ustad_joining_date') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -533,7 +540,7 @@
                                 Address
                             </label>
                             <textarea wire:model="ustad_address" rows="2"
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"></textarea>
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"></textarea>
                             @error('ustad_address') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
@@ -543,14 +550,14 @@
                                 Notes
                             </label>
                             <textarea wire:model="ustad_notes" rows="2"
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"></textarea>
+                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500"></textarea>
                             @error('ustad_notes') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
 
                         <!-- Active Checkbox -->
                         <div class="flex items-center gap-2">
                             <input wire:model="ustad_is_active" type="checkbox" id="ustad_is_active"
-                                class="w-4 h-4 text-emerald-600 border-gray-300 dark:border-gray-600 rounded focus:ring-emerald-500">
+                                class="w-4 h-4 text-emerald-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500">
                             <label for="ustad_is_active" class="text-xs font-medium text-gray-700 dark:text-gray-300">
                                 Active
                             </label>
@@ -563,7 +570,7 @@
                                 Cancel
                             </button>
                             <button type="submit"
-                                class="flex-1 px-3 py-1.5 text-xs bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 font-semibold transition shadow-lg">
+                                class="flex-1 px-3 py-1.5 text-xs bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 font-semibold transition shadow-lg">
                                 {{ $editUstadMode ? 'Update' : 'Save' }}
                             </button>
                         </div>
@@ -579,7 +586,7 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" wire:click.self="closeStudentModal">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto">
                 <!-- Modal Header -->
-                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-3 rounded-t-2xl">
+                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-5 py-3 rounded-t-2xl">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold">{{ $editStudentMode ? 'Edit Student' : 'Add New Student' }}</h3>
                         <button wire:click="closeStudentModal" class="text-white hover:text-gray-200 transition">
@@ -723,7 +730,7 @@
                                 Cancel
                             </button>
                             <button type="submit"
-                                class="flex-1 px-3 py-1.5 text-xs bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 font-semibold transition shadow-lg">
+                                class="flex-1 px-3 py-1.5 text-xs bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 font-semibold transition shadow-lg">
                                 {{ $editStudentMode ? 'Update' : 'Save' }}
                             </button>
                         </div>

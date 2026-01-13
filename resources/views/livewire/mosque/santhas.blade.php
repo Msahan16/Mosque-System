@@ -8,7 +8,7 @@
                 <h2 class="text-2xl sm:text-3xl font-bold text-white">Santha Collection</h2>
                 <p class="text-white/80 mt-1 text-sm">Monthly membership payments - {{ $currentMonthName }}</p>
             </div>
-            <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-green-700 transition shadow-lg">
+            <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-800 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-emerald-900 transition shadow-lg">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
@@ -22,16 +22,16 @@
                 <p class="text-blue-100 text-xs font-medium">This Month</p>
                 <p class="text-2xl font-bold mt-1">LKR {{ number_format($totalCollectedThisMonth, 0) }}</p>
             </div>
-            <div class="bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl p-4 shadow-lg">
-                <p class="text-green-100 text-xs font-medium">Paid</p>
+            <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-xl p-4 shadow-lg">
+                <p class="text-emerald-100 text-xs font-medium">Paid</p>
                 <p class="text-2xl font-bold mt-1">{{ $paidThisMonth }} / {{ $totalFamilies }}</p>
             </div>
-            <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl p-4 shadow-lg">
-                <p class="text-orange-100 text-xs font-medium">Pending</p>
+            <div class="bg-gradient-to-br from-red-500 to-red-600 text-white rounded-xl p-4 shadow-lg">
+                <p class="text-red-100 text-xs font-medium">Pending</p>
                 <p class="text-2xl font-bold mt-1">{{ $pendingThisMonth }}</p>
             </div>
-            <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-4 shadow-lg">
-                <p class="text-purple-100 text-xs font-medium">Rate</p>
+            <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl p-4 shadow-lg">
+                <p class="text-blue-100 text-xs font-medium">Rate</p>
                 <p class="text-2xl font-bold mt-1">{{ $collectionRate }}%</p>
             </div>
         </div>
@@ -63,7 +63,7 @@
         <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30">
+                    <thead class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Receipt</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Family</th>
@@ -88,7 +88,7 @@
                                         <div class="text-sm text-gray-900 dark:text-white font-medium">
                                             {{ $santha->months_covered }} Month{{ $santha->months_covered > 1 ? 's' : '' }}
                                             @if($santha->status === 'partial')
-                                                <span class="text-xs text-orange-600">({{ floor($santha->amount / 500) }} full, 1 partial)</span>
+                                                <span class="text-xs text-blue-600">({{ floor($santha->amount / 500) }} full, 1 partial)</span>
                                             @endif
                                         </div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400">{{ $santha->getMonthsCoveredDisplay() }}</div>
@@ -222,12 +222,14 @@
                                                     <div class="flex-1">
                                                         <div class="font-medium text-sm text-gray-900 dark:text-white">{{ $family->family_head_name }}</div>
                                                         <div class="flex items-center gap-2 mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                                                            <span class="flex items-center gap-0.5">
-                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                                                                </svg>
-                                                                ID: {{ $family->id }}
-                                                            </span>
+                                                            @if($family->family_id)
+                                                                <span class="flex items-center gap-0.5">
+                                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                                                    </svg>
+                                                                    ID: {{ $family->family_id }}
+                                                                </span>
+                                                            @endif
                                                             @if($family->phone)
                                                                 <span class="flex items-center gap-0.5">
                                                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -342,15 +344,15 @@
 
                         <!-- Overpayment Handling Option -->
                         @if($amount > $monthlyAmount)
-                            <div class="border border-purple-200 dark:border-purple-800 rounded p-2.5 bg-purple-50 dark:bg-purple-900/20">
+                            <div class="border border-blue-200 dark:border-blue-800 rounded p-2.5 bg-blue-50 dark:bg-blue-900/20">
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Overpayment Mode</label>
                                 <div class="space-y-1.5">
                                     <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="radio" wire:model.live="overpaymentMode" value="credit" class="text-purple-600">
+                                        <input type="radio" wire:model.live="overpaymentMode" value="credit" class="text-blue-600 focus:ring-blue-500">
                                         <span class="text-xs text-gray-900 dark:text-white">Credit for Future Months</span>
                                     </label>
                                     <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="radio" wire:model.live="overpaymentMode" value="single_month" class="text-purple-600">
+                                        <input type="radio" wire:model.live="overpaymentMode" value="single_month" class="text-blue-600 focus:ring-blue-500">
                                         <span class="text-xs text-gray-900 dark:text-white">Single Month (Extra as donation)</span>
                                     </label>
                                 </div>
@@ -400,7 +402,7 @@
                             <button type="button" wire:click="closeModal" class="flex-1 px-3 py-1.5 text-sm bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-400 font-medium">
                                 Cancel
                             </button>
-                            <button type="submit" class="flex-1 px-3 py-1.5 text-sm bg-gradient-to-r from-blue-600 to-green-600 text-white rounded hover:from-blue-700 hover:to-green-700 font-medium shadow-lg">
+                            <button type="submit" class="flex-1 px-3 py-1.5 text-sm bg-gradient-to-r from-emerald-600 to-emerald-800 text-white rounded hover:from-emerald-700 hover:to-emerald-900 font-medium shadow-lg">
                                 {{ $editMode ? 'Update' : 'Save Payment' }}
                             </button>
                         </div>
@@ -478,8 +480,8 @@
                     </div>
 
                     @if($viewingSantha['new_credit'] > 0)
-                        <div style="background:#fef3c7;padding:10px;border-radius:4px;margin-top:10px;font-size:13px;">
-                            <div style="color:#92400e;">⚠️ Balance Remaining ({{ $viewingSantha['balance_month'] }}): <strong>LKR{{ number_format($viewingSantha['new_credit'], 0) }}</strong></div>
+                        <div style="background:#eff6ff;padding:10px;border-radius:4px;margin-top:10px;font-size:13px;">
+                            <div style="color:#1e40af;">ℹ️ Balance Remaining ({{ $viewingSantha['balance_month'] }}): <strong>LKR{{ number_format($viewingSantha['new_credit'], 0) }}</strong></div>
                         </div>
                     @endif
 

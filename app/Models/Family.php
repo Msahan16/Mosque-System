@@ -11,6 +11,7 @@ class Family extends Model
 
     protected $fillable = [
         'mosque_id',
+        'family_id',
         'family_head_name',
         'family_head_profession',
         'phone',

@@ -14,21 +14,30 @@
             </div>
 
             <!-- Tabs Navigation -->
-            <div class="border-b border-gray-200 dark:border-gray-700">
-                <nav class="flex space-x-1 px-6 pt-4">
+            <div class="p-6 pb-0 overflow-x-auto scrollbar-hide">
+                <div class="flex p-1.5 bg-gray-100/50 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-gray-200 dark:border-white/10 w-fit min-w-max mx-auto">
                     <button wire:click="setActiveTab('santha')"
-                            class="flex-1 py-3 px-4 text-sm font-medium rounded-t-lg transition {{ $activeTab === 'santha' ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700' }}">
+                        class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'santha' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
                         Santha Collection
                     </button>
                     <button wire:click="setActiveTab('porridge')"
-                            class="flex-1 py-3 px-4 text-sm font-medium rounded-t-lg transition {{ $activeTab === 'porridge' ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700' }}">
+                        class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'porridge' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
                         Ramadan Porridge
                     </button>
                     <button wire:click="setActiveTab('iqamah')"
-                            class="flex-1 py-3 px-4 text-sm font-medium rounded-t-lg transition {{ $activeTab === 'iqamah' ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700' }}">
+                        class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'iqamah' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' : 'text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                         Iqamah Times
                     </button>
-                </nav>
+                </div>
             </div>
 
             <div class="p-6">

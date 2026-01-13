@@ -53,7 +53,7 @@ class RamadanPorridge extends Component
             'sponsor_phone' => 'nullable|string|max:20',
             'sponsor_type' => 'required|in:individual,group',
             'porridge_count' => 'required|integer|min:1',
-            'custom_amount_per_porridge' => 'nullable|numeric|min:0|max:' . $this->porridgeAmount,
+            'custom_amount_per_porridge' => 'nullable|numeric|min:0',
             'is_anonymous' => 'boolean',
             'payment_status' => 'required|in:pending,paid,cancelled',
             'payment_method' => 'nullable|in:cash,online,bank_transfer,other',
@@ -111,6 +111,9 @@ class RamadanPorridge extends Component
 
     public function saveSponsor()
     {
+        // Force porridge_count to 1 as per new requirement (1 day = 1 portion)
+        $this->porridge_count = 1;
+
         // Convert empty string to null for custom_amount_per_porridge
         if ($this->custom_amount_per_porridge === '' || $this->custom_amount_per_porridge === null) {
             $this->custom_amount_per_porridge = null;
@@ -146,8 +149,9 @@ class RamadanPorridge extends Component
             $newTotalAmount = (int) $this->porridge_count * $amountPerPorridge;
 
             if (($currentAmountForDay + $newTotalAmount) > $dailyBudgetLimit) {
-                $remainingBudget = $dailyBudgetLimit - $currentAmountForDay;
-                $this->addError('porridge_count', "Cannot add this sponsorship. Daily budget limit: LKR " . number_format($dailyBudgetLimit, 2) . ". Remaining budget: LKR " . number_format($remainingBudget, 2) . ". This sponsorship would cost: LKR " . number_format($newTotalAmount, 2) . ".");
+                $remainingBudget = max(0, $dailyBudgetLimit - $currentAmountForDay);
+                $errorMessage = "Cannot add this sponsorship. Daily budget limit for Day " . $this->day_number . " is LKR " . number_format($dailyBudgetLimit, 2) . ". Remaining budget: LKR " . number_format($remainingBudget, 2) . ". This sponsorship would cost: LKR " . number_format($newTotalAmount, 2) . ".";
+                $this->dispatch('swal:error', title: 'Budget Limit Exceeded', text: $errorMessage);
                 return;
             }
             

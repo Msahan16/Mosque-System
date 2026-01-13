@@ -6,17 +6,28 @@
                 <h2 class="text-2xl sm:text-3xl font-bold text-white">Ramadan Porridge Distribution</h2>
                 <p class="text-white/80 mt-1 text-sm sm:text-base">Track daily porridge sponsorship and distribution</p>
             </div>
-            <div class="flex items-center gap-4">
-                <select wire:model.live="ramadanYear" class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white">
-                    @for($year = 2024; $year <= 2030; $year++)
-                        <option value="{{ $year }}">{{ $year }} Ramadan</option>
-                    @endfor
-                </select>
-                <button wire:click="openModal" class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-green-700 transition shadow-lg text-sm sm:text-base">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <div class="relative group">
+                    <select wire:model.live="ramadanYear" 
+                        class="appearance-none pl-4 pr-10 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all cursor-pointer hover:bg-white/20 shadow-lg">
+                        @for($year = 2024; $year <= 2030; $year++)
+                            <option value="{{ $year }}" class="text-gray-900">{{ $year }} Ramadan</option>
+                        @endfor
+                    </select>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/60 group-hover:text-white transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <button wire:click="openModal" 
+                    class="group relative inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white font-bold rounded-xl transition-all duration-300 shadow-[0_10px_20px_-10px_rgba(16,185,129,0.5)] hover:shadow-[0_15px_25px_-10px_rgba(16,185,129,0.6)] hover:-translate-y-0.5 active:translate-y-0 overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <svg class="w-5 h-5 mr-2 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
-                    Add Sponsor
+                    <span>Add Sponsor</span>
                 </button>
             </div>
         </div>
@@ -42,40 +53,48 @@
                 </div>
                 <p class="text-3xl font-bold">{{ number_format($totalPorridges) }}</p>                <p class="text-xs text-green-200 mt-1">1 per day</p>            </div>
 
-            <div class="bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-xl p-6 shadow-lg">
+            <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl p-6 shadow-lg">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-amber-100 text-sm font-medium">Total Amount</span>
-                    <svg class="w-8 h-8 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span class="text-blue-100 text-sm font-medium">Total Amount</span>
+                    <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
                 <p class="text-3xl font-bold">LKR {{ number_format($totalAmount, 2) }}</p>
-                <p class="text-xs text-amber-200 mt-1">Paid: LKR {{ number_format($paidAmount, 2) }}</p>
+                <p class="text-xs text-blue-200 mt-1">Paid: LKR {{ number_format($paidAmount, 2) }}</p>
             </div>
 
-            <div class="bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl p-6 shadow-lg">
+            <div class="bg-gradient-to-br from-blue-700 to-blue-900 text-white rounded-xl p-6 shadow-lg">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-purple-100 text-sm font-medium">Distributed</span>
-                    <svg class="w-8 h-8 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span class="text-blue-100 text-sm font-medium">Distributed</span>
+                    <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
                 <p class="text-3xl font-bold">{{ number_format($distributedCount) }}</p>
-                <p class="text-xs text-purple-200 mt-1">of {{ number_format($totalPorridges) }} total</p>
+                <p class="text-xs text-blue-200 mt-1">of {{ number_format($totalPorridges) }} total</p>
             </div>
         </div>
     </div>
 
     <!-- Tabs -->
-    <div class="mb-6 flex gap-2 border-b border-gray-300 dark:border-gray-700">
-        <button wire:click="setActiveTab('overview')" 
-            class="px-4 py-3 font-medium text-sm text-white transition {{ $activeTab === 'overview' ? 'border-b-2 border-emerald-600 dark:border-emerald-400' : 'hover:opacity-80' }}">
-            Overview
-        </button>
-        <button wire:click="setActiveTab('sponsors')" 
-            class="px-4 py-3 font-medium text-sm text-white transition {{ $activeTab === 'sponsors' ? 'border-b-2 border-emerald-600 dark:border-emerald-400' : 'hover:opacity-80' }}">
-            Sponsors
-        </button>
+    <div class="mb-8 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+        <div class="flex p-1.5 bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-white/10 w-fit min-w-max">
+            <button wire:click="setActiveTab('overview')"
+                class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'overview' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Overview
+            </button>
+            <button wire:click="setActiveTab('sponsors')"
+                class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'sponsors' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Sponsors
+            </button>
+        </div>
     </div>
 
     <!-- Overview Tab -->
@@ -91,27 +110,27 @@
                 <div class="p-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                         @for($day = 1; $day <= 30; $day++)
-                            <div class="relative">
+                            <div class="relative group">
                                 @if($daySummary[$day]['is_budget_full'])
-                                    <div class="w-full p-4 rounded-lg border-2 border-emerald-500 bg-emerald-500/10 {{ $daySummary[$day]['is_distributed'] ? 'ring-2 ring-green-500' : '' }}">
+                                    <div class="w-full p-4 rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-900/20 dark:to-gray-800 shadow-md {{ $daySummary[$day]['is_distributed'] ? 'ring-2 ring-green-400' : '' }}">
                                         <div class="text-center">
-                                            <div class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Day {{ $day }}</div>
-                                            <div class="text-sm text-emerald-400 font-medium">
-                                                Budget Full (LKR {{ number_format($daySummary[$day]['daily_budget'], 2) }})
+                                            <div class="text-2xl font-black text-gray-900 dark:text-white mb-1">Day {{ $day }}</div>
+                                            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-tighter mb-2">
+                                                Budget Full
                                             </div>
-                                            <div class="text-xs text-gray-600 dark:text-gray-400">
-                                                {{ $daySummary[$day]['sponsors_count'] }} sponsors
+                                            <div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+                                                LKR {{ number_format($daySummary[$day]['daily_budget'], 0) }} • {{ $daySummary[$day]['sponsors_count'] }} sponsors
                                             </div>
                                             @if($daySummary[$day]['is_distributed'])
-                                                <div class="mt-2">
-                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                                                        Distributed
+                                                <div class="mt-2 text-center">
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold bg-green-500 text-white rounded-lg shadow-sm">
+                                                        DISTRIBUTED
                                                     </span>
                                                 </div>
                                             @else
-                                                <div class="mt-2">
-                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                                                        Sponsored
+                                                <div class="mt-2 text-center">
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold bg-blue-500 text-white rounded-lg shadow-sm">
+                                                        SPONSORED
                                                     </span>
                                                 </div>
                                             @endif
@@ -119,35 +138,36 @@
                                     </div>
                                 @else
                                     <button wire:click="openModal({{ $day }})"
-                                            class="w-full p-4 rounded-lg border-2 transition-all hover:scale-105
-                                                   {{ $daySummary[$day]['total_porridges'] > 0 ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-600 bg-gray-800/50 hover:border-emerald-400' }}
-                                                   {{ $daySummary[$day]['is_distributed'] ? 'ring-2 ring-green-500' : '' }}">
-                                        <div class="text-center">
-                                            <div class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Day {{ $day }}</div>
-                                            @if($daySummary[$day]['total_porridges'] > 0)
-                                                <div class="text-sm text-emerald-400 font-medium">
-                                                    LKR {{ number_format($daySummary[$day]['total_amount'], 2) }} collected
-                                                </div>
-                                                <div class="text-xs text-gray-600 dark:text-gray-400">
-                                                    {{ $daySummary[$day]['sponsors_count'] }} sponsors
-                                                </div>
-                                                <div class="text-xs text-blue-400 mt-1">
-                                                    LKR {{ number_format($daySummary[$day]['remaining_budget'], 2) }} remaining
-                                                </div>
-                                            @else
-                                                <div class="text-sm text-gray-500">Available for sponsorship</div>
-                                               
-                                            @endif
-                                        </div>
+                                            class="w-full p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-[1.03] hover:shadow-xl text-center
+                                                   {{ $daySummary[$day]['total_porridges'] > 0 
+                                                      ? 'border-emerald-400 bg-gradient-to-br from- emerald-50/50 to-white dark:from-emerald-900/10 dark:to-gray-800' 
+                                                      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-400' }}
+                                                   {{ $daySummary[$day]['is_distributed'] ? 'ring-2 ring-green-400' : '' }}">
+                                        <div class="text-2xl font-black text-gray-900 dark:text-white mb-1">Day {{ $day }}</div>
+                                        @if($daySummary[$day]['total_porridges'] > 0)
+                                            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-tighter mb-1">
+                                                Collected: LKR {{ number_format($daySummary[$day]['total_amount'], 0) }}
+                                            </div>
+                                            <div class="text-[10px] text-blue-600 dark:text-blue-400 font-bold">
+                                                Need: LKR {{ number_format($daySummary[$day]['remaining_budget'], 0) }}
+                                            </div>
+                                        @else
+                                            <div class="text-xs text-gray-400 dark:text-gray-500 font-medium">Available for sponsorship</div>
+                                            <div class="mt-2 inline-flex items-center text-[10px] font-bold text-blue-500 uppercase tracking-wider group-hover:translate-x-1 transition-transform">
+                                                Sponsor Now →
+                                            </div>
+                                        @endif
                                     </button>
                                 @endif
 
                                 @if($daySummary[$day]['sponsors_count'] > 0)
                                     <div class="mt-2 space-y-1">
                                         @foreach($daySummary[$day]['sponsors'] as $sponsor)
-                                            <div class="text-xs bg-gray-200 dark:bg-gray-700 rounded px-2 py-1">
-                                                <div class="font-medium text-gray-900 dark:text-white">{{ $sponsor->sponsor_name }}</div>
-                                                <div class="text-gray-600 dark:text-gray-400">{{ $sponsor->porridge_count }} × LKR {{ number_format($sponsor->amount_per_porridge, 2) }}</div>
+                                            <div class="text-[10px] bg-gray-100 dark:bg-gray-700/50 backdrop-blur-sm border border-gray-200 dark:border-gray-600 rounded-lg p-2 shadow-sm">
+                                                <div class="font-bold text-gray-800 dark:text-gray-200 truncate">{{ $sponsor->sponsor_name }}</div>
+                                                <div class="flex justify-between items-center text-gray-500 dark:text-gray-400 mt-0.5">
+                                                    <span class="font-semibold text-emerald-600 dark:text-emerald-400">LKR {{ number_format($sponsor->total_amount, 0) }}</span>
+                                                </div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -298,211 +318,123 @@
 
     <!-- Add/Edit Modal -->
     @if($showModal)
-        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" wire:click.self="closeModal">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto" wire:click.self="closeModal">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-lg w-full overflow-hidden">
                 <!-- Modal Header -->
-                <div class="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-3 rounded-t-2xl">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-bold">
-                            @if($editMode)
-                                Edit Porridge Sponsor
-                            @else
-                                Add Porridge Sponsor
-                            @endif
-                        </h3>
-                        <button wire:click="closeModal" class="text-white hover:text-gray-200 transition">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
+                <div class="bg-blue-600 px-6 py-4 flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-white">
+                        {{ $editMode ? 'Edit Sponsorship' : 'Add Porridge Sponsor' }}
+                    </h3>
+                    <button wire:click="closeModal" class="text-white/80 hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Modal Body -->
-                <div class="p-4">
-                    <!-- Validation Errors Summary -->
-                    @if ($errors->any())
-                        <div class="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-                            <div class="flex items-start">
-                                <svg class="w-5 h-5 text-red-600 dark:text-red-400 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <div class="flex-1">
-                                    <h4 class="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">Please correct the following errors:</h4>
-                                    <ul class="list-disc list-inside text-xs text-red-700 dark:text-red-400 space-y-1">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
+                <div class="p-6 max-h-[80vh] overflow-y-auto">
+                    <form wire:submit.prevent="saveSponsor" class="space-y-6">
+                        <!-- Primary Info Section -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="col-span-1">
+                                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1.5">Ramadan Day</label>
+                                <select wire:model="day_number" required
+                                    class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all">
+                                    @for($day = 1; $day <= 30; $day++)
+                                        <option value="{{ $day }}">Day {{ $day }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="col-span-1 flex items-end pb-2">
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input wire:model.live="is_anonymous" type="checkbox" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 transition-colors">Anonymous</span>
+                                </label>
                             </div>
                         </div>
-                    @endif
 
-                    <form wire:submit.prevent="saveSponsor" class="space-y-3">
-                        <!-- Day Number -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Ramadan Day <span class="text-red-500">*</span>
-                            </label>
-                            <select wire:model="day_number" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border @error('day_number') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
-                                @for($day = 1; $day <= 30; $day++)
-                                    <option value="{{ $day }}">Day {{ $day }}</option>
-                                @endfor
-                            </select>
-                            @error('day_number') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
-                        </div>
-
-                        <!-- Anonymous Checkbox -->
-                        <div>
-                            <label class="flex items-center">
-                                <input wire:model.live="is_anonymous" type="checkbox" class="rounded border-gray-300 dark:border-gray-600 text-emerald-600 focus:ring-emerald-500">
-                                <span class="ml-2 text-xs font-medium text-gray-700 dark:text-gray-300">Anonymous Sponsor</span>
-                            </label>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Check this if the sponsor wishes to remain anonymous</p>
-                        </div>
-
-                        <!-- Sponsor Name and Type (2 columns) -->
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Sponsor Name <span class="text-red-500">*</span>
-                                </label>
-                                <input wire:model="sponsor_name" type="text" {{ $is_anonymous ? 'disabled' : 'required' }} placeholder="{{ $is_anonymous ? 'Anonymous' : 'Individual or Group name' }}"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border @error('sponsor_name') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500 {{ $is_anonymous ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : '' }}">
-                                @error('sponsor_name') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="col-span-1">
+                                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1.5">Sponsor Name</label>
+                                <input wire:model="sponsor_name" type="text" {{ $is_anonymous ? 'disabled' : 'required' }} 
+                                    placeholder="{{ $is_anonymous ? 'Anonymous' : 'Name' }}"
+                                    class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all {{ $is_anonymous ? 'bg-gray-50 dark:bg-gray-700 cursor-not-allowed' : '' }}">
+                                @error('sponsor_name') <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p> @enderror
                             </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Type <span class="text-red-500">*</span>
-                                </label>
+                            <div class="col-span-1">
+                                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1.5">Type</label>
                                 <select wire:model="sponsor_type" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all">
                                     <option value="individual">Individual</option>
                                     <option value="group">Group</option>
                                 </select>
-                                @error('sponsor_type') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
-                        <!-- Phone -->
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Phone Number
-                            </label>
-                            <input wire:model="sponsor_phone" type="tel" placeholder="Contact phone"
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
-                            @error('sponsor_phone') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1.5">Contact Number</label>
+                            <input wire:model="sponsor_phone" type="tel" placeholder="07XXXXXXXX"
+                                class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all">
                         </div>
 
-                        <!-- Porridge Count -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Number of Porridges <span class="text-red-500">*</span>
-                            </label>
-                            <input wire:model.live="porridge_count" type="number" min="1" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border @error('porridge_count') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"
-                                placeholder="Enter number of porridges">
-                            @error('porridge_count') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
-                        </div>
-
-                        <!-- Custom Amount per Porridge -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Amount per Porridge (LKR)
-                            </label>
-                            <div class="relative">
-                                <input wire:model="custom_amount_per_porridge" type="number" step="0.01" min="0" :max="$porridgeAmount"
-                                    class="w-full pl-12 pr-4 py-1.5 text-xs rounded-lg border @error('custom_amount_per_porridge') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"
-                                    placeholder="Leave empty to use default: {{ number_format($porridgeAmount, 2) }}">
-                            </div>
-                            @error('custom_amount_per_porridge') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
-                            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                Maximum allowed: LKR {{ number_format($porridgeAmount, 2) }} (from settings). Leave empty to use default amount.
-                            </p>
-                        </div>
-
-                        <!-- Total Amount Display -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Amount:</span>
-                                <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                                    LKR {{ number_format(($porridge_count ?? 0) * ($custom_amount_per_porridge ?: $porridgeAmount), 2) }}
-                                </span>
-                            </div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                @if($custom_amount_per_porridge)
-                                    Custom amount: LKR {{ number_format($custom_amount_per_porridge, 2) }} per porridge
-                                @else
-                                    Using default: LKR {{ number_format($porridgeAmount, 2) }} per porridge (from settings)
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Payment Status and Method (2 columns) -->
-                        <div class="grid grid-cols-2 gap-2">
+                        <!-- Rate Section -->
+                        <div class="bg-gray-50 dark:bg-gray-700/30 p-4 rounded-xl space-y-4">
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Payment Status <span class="text-red-500">*</span>
-                                </label>
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1.5">Sponsorship Amount (LKR)</label>
+                                <input wire:model.live="custom_amount_per_porridge" type="number" step="0.01"
+                                    placeholder="{{ number_format($porridgeAmount, 0) }}"
+                                    class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all">
+                                <p class="mt-1 text-[10px] text-gray-400 font-medium italic">Leave empty to use the default rate: LKR {{ number_format($porridgeAmount, 0) }}</p>
+                            </div>
+
+                            <div class="pt-3 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
+                                <span class="text-sm font-bold text-gray-600 dark:text-gray-400">Total Amount</span>
+                                <div class="text-right">
+                                    <div class="text-xl font-black text-blue-600 dark:text-blue-400">
+                                        LKR {{ number_format(($custom_amount_per_porridge ?: $porridgeAmount), 2) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Section -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1.5">Payment</label>
                                 <select wire:model="payment_status" required
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
+                                    class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all">
                                     <option value="pending">Pending</option>
                                     <option value="paid">Paid</option>
                                     <option value="cancelled">Cancelled</option>
                                 </select>
-                                @error('payment_status') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Payment Method
-                                </label>
-                                <select wire:model="payment_method"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
-                                    <option value="">Select Method</option>
-                                    <option value="cash">Cash</option>
-                                    <option value="online">Online</option>
-                                    <option value="bank_transfer">Bank Transfer</option>
-                                    <option value="other">Other</option>
+                                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1.5">Distribution</label>
+                                <select wire:model="distribution_status" required
+                                    class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all">
+                                    <option value="pending">Pending</option>
+                                    <option value="distributed">Distributed</option>
+                                    <option value="cancelled">Cancelled</option>
                                 </select>
-                                @error('payment_method') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
-                        <!-- Distribution Status -->
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Distribution Status <span class="text-red-500">*</span>
-                            </label>
-                            <select wire:model="distribution_status" required
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500">
-                                <option value="pending">Pending</option>
-                                <option value="distributed">Distributed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                            @error('distribution_status') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1.5">Notes</label>
+                            <textarea wire:model="notes" rows="2" placeholder="Optional notes..."
+                                class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"></textarea>
                         </div>
 
-                        <!-- Notes -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Notes
-                            </label>
-                            <textarea wire:model="notes" rows="2" placeholder="Additional notes..."
-                                class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500"></textarea>
-                            @error('notes') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="flex gap-2 pt-1">
+                        <!-- Footer Actions -->
+                        <div class="flex gap-3 pt-2">
                             <button type="button" wire:click="closeModal"
-                                class="flex-1 px-3 py-1.5 text-xs bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold transition">
+                                class="flex-1 px-4 py-2.5 text-sm font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                                 Cancel
                             </button>
                             <button type="submit"
-                                class="flex-1 px-3 py-1.5 text-xs bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 font-semibold transition shadow-lg">
-                                {{ $editMode ? 'Update' : 'Save' }}
+                                class="flex-[2] px-4 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20">
+                                {{ $editMode ? 'Update Record' : 'Save Sponsorship' }}
                             </button>
                         </div>
                     </form>
@@ -510,4 +442,5 @@
             </div>
         </div>
     @endif
+</div>
 </div>

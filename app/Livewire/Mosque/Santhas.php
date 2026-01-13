@@ -156,7 +156,7 @@ class Santhas extends Component
             ->where('is_active', true)
             ->where(function($query) {
                 $query->where('family_head_name', 'like', '%' . $this->familySearch . '%')
-                      ->orWhere('id', 'like', '%' . $this->familySearch . '%')
+                      ->orWhere('family_id', 'like', '%' . $this->familySearch . '%')
                       ->orWhere('phone', 'like', '%' . $this->familySearch . '%');
             })
             ->orderBy('family_head_name')

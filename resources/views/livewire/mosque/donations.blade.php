@@ -15,7 +15,7 @@
                     </svg>
                     Receive
                 </button>
-                <button wire:click="openModal('given')" class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-700 transition shadow-lg text-sm sm:text-base">
+                <button wire:click="openModal('given')" class="flex-1 sm:flex-none inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-900 transition shadow-lg text-sm sm:text-base">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
@@ -25,15 +25,23 @@
         </div>
 
         <!-- Type Filter Tabs -->
-        <div class="mb-6 flex gap-2 border-b border-gray-300 dark:border-gray-700">
-            <button wire:click="$set('filterType', 'received')" 
-                class="px-4 py-3 font-medium text-sm text-white transition {{ $filterType === 'received' ? 'border-b-2 border-green-600 dark:border-green-400' : 'hover:opacity-80' }}">
-                💰 Donations Received
-            </button>
-            <button wire:click="$set('filterType', 'given')" 
-                class="px-4 py-3 font-medium text-sm text-white transition {{ $filterType === 'given' ? 'border-b-2 border-blue-600 dark:border-blue-400' : 'hover:opacity-80' }}">
-                🤝 Donations Given
-            </button>
+        <div class="mb-8 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+            <div class="flex p-1.5 bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-white/10 w-fit min-w-max">
+                <button wire:click="$set('filterType', 'received')"
+                    class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $filterType === 'received' ? 'bg-green-600 text-white shadow-lg shadow-green-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Donations Received
+                </button>
+                <button wire:click="$set('filterType', 'given')"
+                    class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $filterType === 'given' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    Donations Given
+                </button>
+            </div>
         </div>
 
         <!-- Filters -->
@@ -97,10 +105,10 @@
                     </div>
                     <p class="text-3xl font-bold">{{ $totalReceivedDonors }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-xl p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white rounded-xl p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-teal-100 text-sm font-medium">Average</span>
-                        <svg class="w-8 h-8 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="text-emerald-100 text-sm font-medium">Average</span>
+                        <svg class="w-8 h-8 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                     </div>
@@ -118,7 +126,7 @@
                     </div>
                     <p class="text-3xl font-bold">LKR{{ number_format($totalGivenDonations, 0) }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-blue-400 to-cyan-500 text-white rounded-xl p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-xl p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-blue-100 text-sm font-medium">This Month</span>
                         <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,19 +135,19 @@
                     </div>
                     <p class="text-3xl font-bold">LKR{{ number_format($thisMonthGivenDonations, 0) }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-cyan-500 to-teal-500 text-white rounded-xl p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-cyan-100 text-sm font-medium">Families Helped</span>
-                        <svg class="w-8 h-8 text-cyan-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="text-blue-100 text-sm font-medium">Families Helped</span>
+                        <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
                     <p class="text-3xl font-bold">{{ $totalGivenFamilies }}</p>
                 </div>
-                <div class="bg-gradient-to-br from-teal-500 to-cyan-600 text-white rounded-xl p-6 shadow-lg">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-xl p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-cyan-100 text-sm font-medium">Average</span>
-                        <svg class="w-8 h-8 text-cyan-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="text-blue-100 text-sm font-medium">Average</span>
+                        <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                     </div>
@@ -152,7 +160,7 @@
         <div class="content-overlay rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gradient-to-r {{ $filterType === 'received' ? 'from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30' : 'from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30' }}">
+                    <thead class="bg-gradient-to-r {{ $filterType === 'received' ? 'from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30' : 'from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30' }}">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Receipt #</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">{{ $filterType === 'received' ? 'Donor' : 'Recipient' }}</th>
@@ -301,7 +309,7 @@
                                     Amount (LKR) <span class="text-red-500">*</span>
                                 </label>
                                 <input wire:model="amount" type="number" step="0.01" required placeholder="0"
-                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-amber-500">
+                                    class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500">
                                 @error('amount') <p class="mt-0.5 text-xs text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -332,7 +340,7 @@
 
                                 @if($showFamilyDropdown && !empty($familySearch))
                                     <div class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-auto">
-                                        @forelse($this->filteredFamilies as $family)
+                                        @forelse($this->filteredFamilies() as $family)
                                             <button 
                                                 type="button"
                                                 wire:click="selectFamily({{ $family->id }}, '{{ $family->family_head_name }}')"
@@ -344,7 +352,9 @@
                                                             @if($family->phone)
                                                                 <span>{{ $family->phone }}</span>
                                                             @endif
-                                                            <span>ID: {{ $family->id }}</span>
+                                                            @if($family->family_id)
+                                                                <span>ID: {{ $family->family_id }}</span>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                     @if($family_id == $family->id)
@@ -460,7 +470,7 @@
                         <!-- Anonymous Donation -->
                         <div class="flex items-center gap-2">
                             <input wire:model="is_anonymous" type="checkbox" id="is_anonymous"
-                                class="w-4 h-4 text-amber-600 border-gray-300 dark:border-gray-600 rounded focus:ring-amber-500">
+                                class="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500">
                             <label for="is_anonymous" class="text-xs font-medium text-gray-700 dark:text-gray-300">
                                 Anonymous
                             </label>
@@ -483,7 +493,7 @@
                                 Cancel
                             </button>
                             <button type="submit"
-                                class="flex-1 px-3 py-1.5 text-xs bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg hover:from-green-700 hover:to-blue-700 font-semibold transition shadow-lg">
+                                class="flex-1 px-3 py-1.5 text-xs {{ $transaction_type === 'received' ? 'bg-gradient-to-r from-emerald-600 to-emerald-800' : 'bg-gradient-to-r from-blue-600 to-blue-800' }} text-white rounded-lg hover:opacity-90 font-semibold transition shadow-lg">
                                 {{ $editMode ? 'Update' : 'Save' }}
                             </button>
                         </div>

@@ -3,16 +3,16 @@
     {{-- Summary Statistics Table --}}
     <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden border border-slate-300 dark:border-slate-600">
         {{-- Table Header --}}
-        <div class="bg-gradient-to-r from-indigo-700 to-indigo-800 px-6 py-4 border-b-2 border-indigo-900">
+        <div class="bg-gradient-to-r from-blue-700 to-blue-900 px-6 py-4 border-b-2 border-blue-900">
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-2xl font-bold text-white">Mosque Overview Report</h2>
-                    <p class="text-indigo-100 text-sm mt-1">Comprehensive summary of all mosque activities</p>
+                    <p class="text-blue-100 text-sm mt-1">Comprehensive summary of all mosque activities</p>
                 </div>
                 <div class="text-right">
-                    <p class="text-indigo-100 text-xs uppercase tracking-wide">Report Period</p>
+                    <p class="text-blue-100 text-xs uppercase tracking-wide">Report Period</p>
                     <p class="text-lg font-bold text-white">{{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}</p>
-                    <p class="text-indigo-200 text-sm">{{ \Carbon\Carbon::parse($startDate)->diffInDays(\Carbon\Carbon::parse($endDate)) + 1 }} Days</p>
+                    <p class="text-blue-200 text-sm">{{ \Carbon\Carbon::parse($startDate)->diffInDays(\Carbon\Carbon::parse($endDate)) + 1 }} Days</p>
                 </div>
             </div>
         </div>
