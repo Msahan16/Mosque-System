@@ -61,6 +61,9 @@
                                         <button wire:click="openPrintModal({{ $doc->id }})" class="p-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm" title="Print & Download">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                                         </button>
+                                        <button wire:click="openTranslateModal({{ $doc->id }})" class="p-2.5 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm" title="Quick Translation">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+                                        </button>
                                         <button onclick="confirmDeleteDocument({{ $doc->id }})" class="p-2.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-600 hover:text-white transition-all border border-rose-100 dark:border-rose-500/20 shadow-sm" title="Delete">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                         </button>
@@ -239,6 +242,50 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if($showTranslateModal)
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto" wire:click.self="closeTranslateModal">
+            <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl max-w-2xl w-full my-auto overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-600 to-violet-700 text-white px-8 py-6 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-black uppercase tracking-tight">Quick AI Translation</h3>
+                        <p class="text-indigo-100 text-[10px] font-bold uppercase tracking-widest mt-1">Translate existing document content</p>
+                    </div>
+                    <button wire:click="closeTranslateModal" class="p-2 hover:bg-white/10 rounded-xl transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                
+                <div class="p-8">
+                    <div class="mb-6 flex flex-wrap justify-center gap-3">
+                        <button type="button" wire:click="translateContent('en', true)" wire:loading.attr="disabled" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all flex items-center gap-2">
+                            ENGLISH
+                        </button>
+                        <button type="button" wire:click="translateContent('si', true)" wire:loading.attr="disabled" class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 border border-indigo-100 dark:border-indigo-800 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-2">
+                            SINHALA
+                            <div wire:loading wire:target="translateContent('si', true)" class="w-3 h-3 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                        </button>
+                        <button type="button" wire:click="translateContent('ta', true)" wire:loading.attr="disabled" class="px-4 py-2 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 border border-emerald-100 dark:border-emerald-800 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all flex items-center gap-2">
+                            TAMIL
+                            <div wire:loading wire:target="translateContent('ta', true)" class="w-3 h-3 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Translated Content Preview</label>
+                        <textarea wire:model="translatingContent" rows="12" class="w-full px-6 py-5 rounded-[2rem] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-bold tracking-tight leading-relaxed focus:ring-4 focus:ring-indigo-500/10 outline-none mosque-scrollbar"></textarea>
+                    </div>
+
+                    <div class="flex gap-4 pt-8">
+                        <button type="button" wire:click="closeTranslateModal" class="flex-1 py-4 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-600 transition-all">Cancel</button>
+                        <button type="button" wire:click="saveTranslation" class="flex-[2] py-4 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 shadow-xl shadow-indigo-500/20 active:scale-95 transition-all">
+                            SAVE & UPDATE DOCUMENT
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

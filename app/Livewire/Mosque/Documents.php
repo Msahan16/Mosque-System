@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Stichoza\GoogleTranslate\GoogleTranslate;
+use Gemini\Laravel\Facades\Gemini;
 
 class Documents extends Component
 {
@@ -16,7 +17,11 @@ class Documents extends Component
     public $showModal = false;
     public $showPreview = false;
     public $showPrintModal = false;
+    public $showTranslateModal = false;
     public $editMode = false;
+    public $translatingDocumentId;
+    public $translatingContent;
+    public $translatingLanguage;
     public $documentId;
     public $printingDocumentId;
     public $mosqueId;
@@ -198,27 +203,100 @@ class Documents extends Component
         $this->printingDocumentId = null;
     }
 
-    public function translateContent($targetLanguage)
+    public function openTranslateModal($id)
     {
-        if (empty($this->content)) {
+        $doc = MosqueDocument::findOrFail($id);
+        $this->translatingDocumentId = $doc->id;
+        $this->translatingContent = $doc->content;
+        $this->translatingLanguage = $doc->language;
+        $this->showTranslateModal = true;
+    }
+
+    public function closeTranslateModal()
+    {
+        $this->showTranslateModal = false;
+        $this->translatingDocumentId = null;
+        $this->translatingContent = null;
+    }
+
+    public function saveTranslation()
+    {
+        if ($this->translatingDocumentId && $this->translatingContent) {
+            $doc = MosqueDocument::findOrFail($this->translatingDocumentId);
+            $doc->update([
+                'content' => $this->translatingContent,
+                'language' => $this->translatingLanguage
+            ]);
+            $this->dispatch('swal:success', title: 'Updated', text: 'Document translation saved successfully!');
+            $this->closeTranslateModal();
+        }
+    }
+
+    public function translateContent($targetLanguage, $isQuickTranslate = false)
+    {
+        $contentToTranslate = $isQuickTranslate ? $this->translatingContent : $this->content;
+
+        if (empty($contentToTranslate)) {
             $this->dispatch('swal:error', title: 'Error', text: 'Please enter some content first.');
             return;
         }
 
-        try {
-            $tr = new GoogleTranslate();
-            $tr->setTarget($targetLanguage);
-            
-            // Translate the content
-            $translated = $tr->translate($this->content);
-            
-            if ($translated) {
+        $apiKey = config('gemini.api_key');
+        $langNames = ['si' => 'Sinhalese', 'ta' => 'Tamil', 'en' => 'English'];
+        $targetLangName = $langNames[$targetLanguage] ?? $targetLanguage;
+        
+        $translated = null;
+        $usedService = 'Google Translate';
+
+        // 1. Attempt Gemini AI first
+        if ($apiKey) {
+            try {
+                // Manually create the client to bypass SSL verification in local dev
+                $client = \Gemini::factory()
+                    ->withApiKey($apiKey)
+                    ->withHttpClient(new \GuzzleHttp\Client(['verify' => false]))
+                    ->make();
+                
+                $prompt = "Translate the following official mosque document content into {$targetLangName}. 
+                Ensure the tone is formal and professional. Keep placeholders like {name}, {date}, {ref}, {recipient_id} exactly as they are.
+                Return ONLY the translated text.
+                
+                Content:
+                {$contentToTranslate}";
+
+                // Try the standard flash model
+                $result = $client->generativeModel(model: 'gemini-1.5-flash')->generateContent($prompt);
+                $translated = $result->text();
+                $usedService = 'Gemini AI';
+            } catch (\Exception $e) {
+                // Gemini failed -> proceed to fallback
+            }
+        }
+
+        // 2. Fallback to Google Translate
+        if (!$translated) {
+            try {
+                $tr = new GoogleTranslate();
+                $tr->setOptions(['verify' => false]);
+                $tr->setTarget($targetLanguage);
+                $translated = $tr->translate($contentToTranslate);
+                $usedService = 'Google Translate';
+            } catch (\Exception $e) {
+                $this->dispatch('swal:error', title: 'Translation Error', text: 'Translation failed. Error: ' . $e->getMessage());
+                return;
+            }
+        }
+        
+        if ($translated) {
+            $translated = trim($translated);
+            if ($isQuickTranslate) {
+                $this->translatingContent = $translated;
+                $this->translatingLanguage = $targetLanguage;
+            } else {
                 $this->content = $translated;
                 $this->language = $targetLanguage;
-                $this->dispatch('swal:success', title: 'Translated', text: 'Content translated' . ($targetLanguage == 'ta' ? ' to Tamil' : ' to Sinhala') . ' successfully!');
             }
-        } catch (\Exception $e) {
-            $this->dispatch('swal:error', title: 'Translation Error', text: 'Could not translate at this moment.');
+            $this->dispatch('swal:success', title: 'Translated', text: 'Content translated to ' . $targetLangName . ' successfully using ' . $usedService . '!');
         }
     }
 
