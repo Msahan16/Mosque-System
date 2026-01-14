@@ -16,6 +16,13 @@
             <!-- Tabs Navigation -->
             <div class="p-6 pb-0 overflow-x-auto scrollbar-hide">
                 <div class="flex p-1.5 bg-gray-100/50 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-gray-200 dark:border-white/10 w-fit min-w-max mx-auto">
+                    <button wire:click="setActiveTab('profile')"
+                        class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'profile' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        Mosque Profile
+                    </button>
                     <button wire:click="setActiveTab('santha')"
                         class="flex items-center gap-2.5 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 {{ $activeTab === 'santha' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5' }}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,6 +48,84 @@
             </div>
 
             <div class="p-6">
+                <!-- Mosque Profile Tab -->
+                @if($activeTab === 'profile')
+                    <form wire:submit.prevent="updateProfile" class="space-y-8">
+                        <div>
+                            <h4 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight mb-6">Mosque Branding & Identity</h4>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                                <!-- Logo Upload -->
+                                <div class="space-y-4">
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Official Mosque Logo</label>
+                                    <div class="relative group">
+                                        <div class="w-full aspect-square rounded-[2rem] bg-slate-50 dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden transition-all group-hover:border-indigo-500">
+                                            @if($masjid_logo)
+                                                <img src="{{ $masjid_logo->temporaryUrl() }}" class="w-full h-full object-contain p-4">
+                                            @elseif($current_logo)
+                                                <img src="{{ asset('storage/' . $current_logo) }}" class="w-full h-full object-contain p-4">
+                                            @else
+                                                <div class="text-center p-6">
+                                                    <svg class="w-12 h-12 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                    <p class="text-xs font-bold text-slate-400">Upload PNG/JPG</p>
+                                                </div>
+                                            @endif
+                                            
+                                            <!-- Overlay -->
+                                            <label class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                                                <span class="text-white text-[10px] font-black uppercase tracking-widest bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl">Change Logo</span>
+                                                <input type="file" wire:model="masjid_logo" class="hidden" accept="image/*">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div wire:loading wire:target="masjid_logo" class="text-[10px] font-bold text-indigo-500 animate-pulse">Uploading logo...</div>
+                                    @error('masjid_logo') <p class="mt-1 text-[10px] text-red-500 font-bold uppercase">{{ $message }}</p> @enderror
+                                </div>
+
+                                <!-- Mosque Details -->
+                                <div class="md:col-span-2 space-y-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Mosque Name (English) *</label>
+                                            <input wire:model="masjid_name" type="text" required placeholder="e.g. Masjid Al-Noor"
+                                                class="w-full px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all">
+                                            @error('masjid_name') <p class="mt-1 text-[10px] text-red-500 font-bold">{{ $message }}</p> @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Arabic Name (Optional)</label>
+                                            <input wire:model="masjid_arabic_name" type="text" dir="rtl" placeholder="مسجد النور"
+                                                class="w-full px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-right">
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Official Address *</label>
+                                            <textarea wire:model="masjid_address" required rows="2" placeholder="Full physical address for letterheads"
+                                                class="w-full px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"></textarea>
+                                            @error('masjid_address') <p class="mt-1 text-[10px] text-red-500 font-bold">{{ $message }}</p> @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Phone Number</label>
+                                            <input wire:model="masjid_phone" type="text" placeholder="+94 77 XXX XXXX"
+                                                class="w-full px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email Address</label>
+                                            <input wire:model="masjid_email" type="email" placeholder="mosque@example.com"
+                                                class="w-full px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-bold focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex pt-4">
+                            <button type="submit"
+                                class="px-10 py-4 bg-indigo-600 text-white rounded-[1.5rem] hover:bg-indigo-700 font-extrabold text-xs uppercase tracking-widest transition shadow-xl shadow-indigo-500/20 active:scale-95">
+                                Update Mosque Profile
+                            </button>
+                        </div>
+                    </form>
+                @endif
+
                 <form wire:submit.prevent="saveSetting" class="space-y-6">
                     <!-- Santha Collection Tab -->
                     @if($activeTab === 'santha')
@@ -230,12 +315,14 @@
                   
 
                     <!-- Submit Button -->
-                    <div class="flex pt-4">
-                        <button type="submit"
-                            class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 font-semibold transition shadow-lg">
-                            Save Settings
-                        </button>
-                    </div>
+                    @if($activeTab !== 'profile')
+                        <div class="flex pt-4">
+                            <button type="submit"
+                                class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 font-semibold transition shadow-lg">
+                                Save Settings
+                            </button>
+                        </div>
+                    @endif
                 </form>
             </div>
         </div>

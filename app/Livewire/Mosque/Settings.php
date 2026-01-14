@@ -6,13 +6,28 @@ use App\Models\Mosque;
 use App\Models\MosqueSetting;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
+use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 #[Layout('components.layouts.app')]
 class Settings extends Component
 {
+    use WithFileUploads;
+
     public $mosque;
     public $setting;
+    
+    // Mosque Profile
+    public $masjid_name;
+    public $masjid_arabic_name;
+    public $masjid_address;
+    public $masjid_phone;
+    public $masjid_email;
+    public $masjid_logo;
+    public $current_logo;
+
+    // Settings
     public $santha_amount;
     public $santha_collection_date;
     public $porridge_amount;
@@ -23,11 +38,20 @@ class Settings extends Component
     public $maghrib_iqamah_offset;
     public $isha_iqamah_offset;
     public $editMode = false;
-    public $activeTab = 'santha';
+    public $activeTab = 'profile';
 
     public function mount()
     {
         $this->mosque = Auth::user()->mosque;
+        
+        // Initialize Mosque Profile
+        $this->masjid_name = $this->mosque->name;
+        $this->masjid_arabic_name = $this->mosque->arabic_name;
+        $this->masjid_address = $this->mosque->address;
+        $this->masjid_phone = $this->mosque->phone;
+        $this->masjid_email = $this->mosque->email;
+        $this->current_logo = $this->mosque->logo;
+
         $this->setting = MosqueSetting::where('mosque_id', $this->mosque->id)->first();
         
         if ($this->setting) {
@@ -66,6 +90,38 @@ class Settings extends Component
             'maghrib_iqamah_offset' => 'required|integer|min:0|max:60',
             'isha_iqamah_offset' => 'required|integer|min:0|max:60',
         ];
+    }
+
+    public function updateProfile()
+    {
+        $this->validate([
+            'masjid_name' => 'required|string|max:255',
+            'masjid_arabic_name' => 'nullable|string|max:255',
+            'masjid_address' => 'required|string',
+            'masjid_phone' => 'nullable|string|max:20',
+            'masjid_email' => 'nullable|email|max:255',
+            'masjid_logo' => 'nullable|image|max:2048', // 2MB Max
+        ]);
+
+        $data = [
+            'name' => $this->masjid_name,
+            'arabic_name' => $this->masjid_arabic_name,
+            'address' => $this->masjid_address,
+            'phone' => $this->masjid_phone,
+            'email' => $this->masjid_email,
+        ];
+
+        if ($this->masjid_logo) {
+            // Delete old logo if exists
+            if ($this->mosque->logo) {
+                Storage::delete('public/' . $this->mosque->logo);
+            }
+            $data['logo'] = $this->masjid_logo->store('logos', 'public');
+            $this->current_logo = $data['logo'];
+        }
+
+        $this->mosque->update($data);
+        $this->dispatch('swal:success', title: 'Success', text: 'Mosque profile updated successfully');
     }
 
     public function saveSetting()

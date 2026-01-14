@@ -138,6 +138,7 @@ class StaffManagement extends Component
             'prayer_schedule' => 'Prayer Schedule',
             'families' => 'Family Management',
             'board' => 'Mosque Board',
+            'documents' => 'Document Management',
             'settings' => 'Mosque Settings',
             'reports' => 'Reports & Analytics',
         ];
