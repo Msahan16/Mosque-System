@@ -70,26 +70,6 @@
                     @enderror
                 </div>
 
-                <!-- Remember Me & Forgot Password -->
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0 text-xs sm:text-sm">
-                    <label class="flex items-center cursor-pointer">
-                        <input 
-                            wire:model="remember"
-                            type="checkbox" 
-                            class="rounded-lg border-white/40 bg-white/10 text-blue-400 focus:ring-blue-300 h-4 w-4 cursor-pointer"
-                        />
-                        <span class="ml-2 text-xs sm:text-sm text-white/80 font-medium">
-                            Remember me
-                        </span>
-                    </label>
-                    
-                    @if (Route::has('password.request'))
-                        <a class="text-xs sm:text-sm font-medium text-white/80 hover:text-white transition" href="{{ route('password.request') }}">
-                            Forgot Password?
-                        </a>
-                    @endif
-                </div>
-
                 <!-- Submit Button -->
                 <button 
                     type="submit"
